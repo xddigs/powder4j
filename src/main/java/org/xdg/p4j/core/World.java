@@ -7,7 +7,7 @@ import org.xdg.p4j.data.ElementID;
 import java.util.Arrays;
 
 /**
- * Represents a 2D grid of elements. Each element is represented by a byte.
+ * Represents a 2D grid of elements. A byte represents each element.
  * The byte represents the element ID. The ID is used to determine the element
  * type. The ID is also used to determine the element's color.
  */
@@ -29,6 +29,7 @@ public class World {
     }
 
     public void update() {
+        if (!Constants.IS_RUNNING) return;
         Arrays.fill(updated, false);
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = Math.random() > Constants.RANDOM_THRESHOLD;

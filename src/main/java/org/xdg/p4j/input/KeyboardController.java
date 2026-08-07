@@ -1,5 +1,6 @@
 package org.xdg.p4j.input;
 
+import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.data.ElementID;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,6 @@ import java.awt.event.KeyEvent;
  * Hold TAB to select the brush, use the mouse to select elements.
  */
 public class KeyboardController extends KeyAdapter {
-
     private final Brush brush;
     private final List<ElementID> selectableElements;
     private boolean tabPressed = false;
@@ -41,7 +41,7 @@ public class KeyboardController extends KeyAdapter {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            System.exit(0);
+            wasEscapePressed();
         }
     }
 
@@ -67,5 +67,9 @@ public class KeyboardController extends KeyAdapter {
 
     public List<ElementID> getSelectableElements() {
         return selectableElements;
+    }
+
+    private void wasEscapePressed() {
+        Constants.IS_RUNNING ^= true;
     }
 }

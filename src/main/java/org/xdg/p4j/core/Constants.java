@@ -15,6 +15,8 @@ public final class Constants {
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
 
+    public static boolean IS_RUNNING = true;
+
     public static final double TICKS_PER_SECOND = 60.0;
     public static final long NANOSECONDS_IN_SECOND = 1_000_000_000L;
 
