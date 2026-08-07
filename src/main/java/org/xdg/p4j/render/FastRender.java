@@ -23,16 +23,11 @@ import java.util.List;
  */
 public class FastRender extends Canvas {
     private static final Logger log = LoggerFactory.getLogger(FastRender.class);
-    private final int simWidth;
-    private final int simHeight;
     private final BufferedImage canvasImage;
     private final int[] pixelBuffer;
 
     public FastRender(int simWidth, int simHeight, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}", simWidth, simHeight, scale);
-        this.simWidth = simWidth;
-        this.simHeight = simHeight;
-
         Dimension size = new Dimension(simWidth * scale, simHeight * scale);
         setPreferredSize(size);
         setMinimumSize(size);
