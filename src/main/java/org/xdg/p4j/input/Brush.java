@@ -14,10 +14,12 @@ public class Brush {
     private static final Logger log = LoggerFactory.getLogger(Brush.class);
     private ElementID currentElement;
     private int radius;
+    private long lastRadiusChangeTime;
 
     public Brush(ElementID defaultElement, int initialRadius) {
         this.currentElement = defaultElement;
         this.radius = initialRadius;
+        this.lastRadiusChangeTime = 0;
     }
 
     public ElementID getCurrentElement() {
@@ -38,7 +40,12 @@ public class Brush {
         this.radius = Math.clamp(radius, Constants.MIN_BRUSH_RADIUS, Constants.MAX_BRUSH_RADIUS);
         if (oldRadius != this.radius) {
             log.debug("Brush radius changed to: {}", this.radius);
+            this.lastRadiusChangeTime = System.currentTimeMillis();
         }
+    }
+
+    public long getLastRadiusChangeTime() {
+        return lastRadiusChangeTime;
     }
 
     public void changeRadius(int delta) {

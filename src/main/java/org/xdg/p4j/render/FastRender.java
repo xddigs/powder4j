@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.data.ElementID;
+import org.xdg.p4j.input.Brush;
 import org.xdg.p4j.input.KeyboardController;
 import org.xdg.p4j.input.MouseController;
 
@@ -46,7 +47,7 @@ public class FastRender extends Canvas {
         }
     }
 
-    public void render(KeyboardController keyController, MouseController mouseController) {
+    public void render(KeyboardController keyController, MouseController mouseController, Brush brush) {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(Constants.BUFFER_STRATEGY_COUNT);
@@ -59,6 +60,8 @@ public class FastRender extends Canvas {
         if (keyController.isTabPressed()) {
             renderHUD(g, keyController, mouseController);
         }
+
+        renderBrushSizeSlider(g, brush);
 
         if (!Constants.IS_RUNNING) {
             g.setColor(Color.WHITE);
@@ -166,6 +169,55 @@ public class FastRender extends Canvas {
 
         g.setColor(Color.WHITE);
         g.drawString(elementName, textX, textY);
+    }
+
+    private void renderBrushSizeSlider(Graphics2D g, Brush brush) {
+        long timeSinceLastChange = System.currentTimeMillis() - brush.getLastRadiusChangeTime();
+        if (timeSinceLastChange > Constants.HUD_SLIDER_VISIBLE_MS) {
+            return;
+        }
+
+        float opacity = 1.0f;
+        long fadeStartTime = Constants.HUD_SLIDER_VISIBLE_MS - 500;
+        if (timeSinceLastChange > fadeStartTime) {
+            opacity = 1.0f - (float)(timeSinceLastChange - fadeStartTime) / 500f;
+        }
+        opacity = Math.clamp(opacity, 0.0f, 1.0f);
+
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int sliderWidth = Constants.HUD_SLIDER_WIDTH;
+        int sliderHeight = getHeight() - (Constants.HUD_SLIDER_Y_PADDING * 2);
+        int sliderX = Constants.HUD_SLIDER_X_PADDING;
+        int sliderY = Constants.HUD_SLIDER_Y_PADDING;
+
+        g.setColor(new Color(255, 255, 255, 60));
+        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight, 5, 5);
+
+        int minR = Constants.MIN_BRUSH_RADIUS;
+        int maxR = Constants.MAX_BRUSH_RADIUS;
+        int currentR = brush.getRadius();
+        
+        float ratio = (float)(currentR - minR) / (maxR - minR);
+        int knobHeight = (int)(ratio * sliderHeight);
+        int knobY = sliderY + sliderHeight - knobHeight;
+
+        g.setColor(Constants.HUD_SLIDER_COLOR);
+        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight, 5, 5);
+
+        g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, 20));
+        FontMetrics fm = g.getFontMetrics();
+        
+        String plus = "+";
+        g.drawString(plus, sliderX + (sliderWidth / 2) - (fm.stringWidth(plus) / 2), 
+                     sliderY - Constants.HUD_SLIDER_SYMBOL_OFFSET);
+        
+        String minus = "-";
+        g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2), 
+                     sliderY + sliderHeight + fm.getAscent());
+
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
 
     public int getParticleColor(int x, int y, ElementID element) {

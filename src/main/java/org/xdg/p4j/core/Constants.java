@@ -24,6 +24,7 @@ public final class Constants {
     public static final int MIN_BRUSH_RADIUS = 1;
     public static final int MAX_BRUSH_RADIUS = 50;
     public static final int TNT_EXPLOSION_RADIUS = 24;
+    public static final int CHLORINE_EXPLOSION_RADIUS = 12;
 
     public static final int BUFFER_STRATEGY_COUNT = 3;
     public static final int DEFAULT_PALETTE_COLOR = 0xFF000000;
@@ -56,4 +57,11 @@ public final class Constants {
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
     public static final double WOOD_BURN_CHANCE = 0.05;
+
+    public static final int HUD_SLIDER_X_PADDING = 25;
+    public static final int HUD_SLIDER_Y_PADDING = 50;
+    public static final int HUD_SLIDER_WIDTH = 10;
+    public static final int HUD_SLIDER_VISIBLE_MS = 2500;
+    public static final Color HUD_SLIDER_COLOR = Color.WHITE;
+    public static final int HUD_SLIDER_SYMBOL_OFFSET = 15;
 }

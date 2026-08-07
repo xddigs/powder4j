@@ -364,7 +364,7 @@ public class World {
             }
         }
 
-        updateFluid(x, y, idx);
+        updateSmoke(x, y, idx);
     }
 
     private void updateAcid(int x, int y, int idx) {
@@ -524,9 +524,10 @@ public class World {
     }
 
     private void explodeChlorine(int centerX, int centerY) {
-        for (int dy = -3; dy <= 3; dy++) {
-            for (int dx = -3; dx <= 3; dx++) {
-                if (dx * dx + dy * dy > 3 * 3) continue;
+        int radius = Constants.CHLORINE_EXPLOSION_RADIUS;
+        for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                if (dx * dx + dy * dy > radius * radius) continue;
 
                 int nx = centerX + dx;
                 int ny = centerY + dy;
@@ -536,12 +537,12 @@ public class World {
                     byte currentId = grid[nIdx];
 
                     if (currentId == ElementID.EMPTY.getId() ||
-                            currentId == ElementID.SMOKE_GRAY.getId()) {
-                        if (Math.random() < 0.7) {
-                            grid[nIdx] = ElementID.CHLORINE.getId();
-                            velocity[nIdx] = -((float) Math.random() * 2f);
-                            updated[nIdx] = true;
-                        }
+                            currentId == ElementID.ACID.getId() ||
+                            ElementID.fromId(currentId).isWater()) {
+
+                        grid[nIdx] = ElementID.CHLORINE.getId();
+                        velocity[nIdx] = -((float) Math.random() * 3f + 1f);
+                        updated[nIdx] = true;
                     }
                 }
             }
