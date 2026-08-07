@@ -3,6 +3,7 @@ package org.xdg.p4j.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.input.KeyboardController;
+import org.xdg.p4j.input.MouseController;
 import org.xdg.p4j.render.FastRender;
 import org.xdg.p4j.render.Palette;
 
@@ -19,13 +20,15 @@ public class SimulationLoop implements Runnable {
     private boolean running;
     private Thread thread;
     private final KeyboardController keyController;
+    private final MouseController mouseController;
 
     public SimulationLoop(World world, FastRender render, Palette palette,
-                          KeyboardController keyController) {
+                          KeyboardController keyController, MouseController mouseController) {
         this.world = world;
         this.render = render;
         this.palette = palette;
         this.keyController = keyController;
+        this.mouseController = mouseController;
     }
 
     public synchronized void start() {
@@ -51,7 +54,7 @@ public class SimulationLoop implements Runnable {
                 delta--;
             }
             render.updatePixels(world.getGrid(), palette);
-            render.render(keyController);
+            render.render(keyController, mouseController);
         }
     }
 }

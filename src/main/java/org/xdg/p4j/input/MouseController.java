@@ -26,6 +26,9 @@ public class MouseController extends MouseAdapter implements
     private int lastGridX = -1;
     private int lastGridY = -1;
 
+    private int mouseX;
+    private int mouseY;
+
     public MouseController(World world, Brush brush, int scale) {
         this.world = world;
         this.brush = brush;
@@ -56,6 +59,8 @@ public class MouseController extends MouseAdapter implements
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        mouseX = e.getX();
+        mouseY = e.getY();
         if (!isPressed) return;
 
         int gridX = e.getX() / scale;
@@ -117,5 +122,18 @@ public class MouseController extends MouseAdapter implements
                 }
             }
         }
+    }
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        mouseX = e.getX();
+        mouseY = e.getY();
+    }
+
+    public int getMouseX() {
+        return mouseX;
+    }
+
+    public int getMouseY() {
+        return mouseY;
     }
 }

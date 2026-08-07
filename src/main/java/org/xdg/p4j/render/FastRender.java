@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.data.ElementID;
 import org.xdg.p4j.input.KeyboardController;
+import org.xdg.p4j.input.MouseController;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -44,7 +45,7 @@ public class FastRender extends Canvas {
         }
     }
 
-    public void render(KeyboardController keyController) {
+    public void render(KeyboardController keyController, MouseController mouseController) {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(Constants.BUFFER_STRATEGY_COUNT);
@@ -55,18 +56,17 @@ public class FastRender extends Canvas {
         g.drawImage(canvasImage, 0, 0, getWidth(), getHeight(), null);
 
         if (keyController.isTabPressed()) {
-            renderHUD(g, keyController);
+            renderHUD(g, keyController, mouseController);
         }
 
         g.dispose();
         bs.show();
     }
 
-    private void renderHUD(Graphics2D g, KeyboardController keyController) {
+    private void renderHUD(Graphics2D g, KeyboardController keyController, MouseController mouseController) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         ElementID[] elements = ElementID.values();
-        int selectedIdx = keyController.getSelectedIndex();
         int totalElements = elements.length;
 
         int centerX = getWidth() / 2;
@@ -74,6 +74,27 @@ public class FastRender extends Canvas {
         int outerRadius = Constants.HUD_OUTER_RADIUS;
         int innerRadius = Constants.HUD_INNER_RADIUS;
         double angleStep = Constants.HUD_FULL_CIRCLE / totalElements;
+
+        int mx = mouseController.getMouseX();
+        int my = mouseController.getMouseY();
+        double dx = mx - centerX;
+        double dy = my - centerY;
+        double distSq = dx * dx + dy * dy;
+
+        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
+            double angle = Math.toDegrees(Math.atan2(dy, dx));
+            if (angle < 0) angle += 360;
+            
+            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % 360;
+            if (adjustedAngle < 0) adjustedAngle += 360;
+            
+            int hoveredIdx = (int) (adjustedAngle / angleStep);
+            if (hoveredIdx >= 0 && hoveredIdx < totalElements) {
+                keyController.setSelectedIndex(hoveredIdx);
+            }
+        }
+
+        int selectedIdx = keyController.getSelectedIndex();
 
         for (int i = 0; i < totalElements; i++) {
             ElementID el = elements[i];

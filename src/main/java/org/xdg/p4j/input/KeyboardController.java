@@ -18,13 +18,7 @@ public class KeyboardController extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
-            ElementID[] elements = ElementID.values();
-            if (!tabPressed) {
-                tabPressed = true;
-                selectedIndex = brush.getCurrentElement().ordinal();
-            } else {
-                selectedIndex = (selectedIndex + 1) % elements.length;
-            }
+            tabPressed = true;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && tabPressed) {
@@ -62,5 +56,9 @@ public class KeyboardController extends KeyAdapter {
 
     public int getSelectedIndex() {
         return selectedIndex;
+    }
+
+    public void setSelectedIndex(int selectedIndex) {
+        this.selectedIndex = selectedIndex;
     }
 }

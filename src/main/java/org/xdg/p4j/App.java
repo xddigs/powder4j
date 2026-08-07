@@ -34,6 +34,7 @@ public class App extends JFrame {
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
+        setFocusTraversalKeysEnabled(false);
 
         this.brush = new Brush(ElementID.SAND, Constants.DEFAULT_BRUSH_RADIUS);
         this.keyController = new KeyboardController(brush);
@@ -41,8 +42,8 @@ public class App extends JFrame {
         this.palette = new Palette();
         this.world = new World(simulationWidth, simulationHeight);
         this.render = new FastRender(simulationWidth, simulationHeight, scale);
-        this.loop = new SimulationLoop(world, render, palette, keyController);
         this.mouseController = new MouseController(world, brush, scale);
+        this.loop = new SimulationLoop(world, render, palette, keyController, mouseController);
 
         add(render);
         pack();
@@ -53,15 +54,17 @@ public class App extends JFrame {
         render.addMouseMotionListener(mouseController);
         render.addMouseWheelListener(mouseController);
         render.addKeyListener(keyController);
+        render.setFocusTraversalKeysEnabled(false);
         addKeyListener(keyController);
 
         loop.start();
         log.info("Application started successfully.");
     }
 
-    public static void main(String[] args) {
+    static void main() {
         log.info("Starting main entry point...");
         SwingUtilities.invokeLater(() -> new App(Constants.APP_TITLE,
-                Constants.DEFAULT_SIM_WIDTH, Constants.DEFAULT_SIM_HEIGHT, Constants.DEFAULT_SCALE));
+                Constants.DEFAULT_SIM_WIDTH, Constants.DEFAULT_SIM_HEIGHT,
+                Constants.DEFAULT_SCALE));
     }
 }
