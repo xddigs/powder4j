@@ -25,7 +25,8 @@ public enum ElementID {
     GASOLINE((byte) 16, "Gasoline", "C8H18", 0xFFD4A373, true, 1, true, true, false, false, true, 5),
     TNT((byte) 17, "TNT", "C2H4", 0xFFC23616, false, 1, true, true, false, false, false, 0),
     MERCURY((byte) 18, "Mercury", "Hg", 0xFFCFD8DC, true, 5, false, false, false, false, true, 1),
-    CHLORINE((byte) 19, "Chlorine", "Cl2", 0xFF88FF00, false, 1, false, false, false, false, false, 0);
+    CHLORINE((byte) 19, "Chlorine", "Cl2", 0xFF88FF00, false, 1, false, false, false, false, false, 0),
+    SALT((byte) 20, "Salt", "NaCl", 0xFFF5F5F5, true, 3, false, false, false, false, false, 0);
 
     private final byte id;
     private final String name;
