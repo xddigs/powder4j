@@ -1,6 +1,7 @@
 package org.xdg.p4j.input;
 
 import org.xdg.p4j.core.Constants;
+import org.xdg.p4j.data.BrushShape;
 import org.xdg.p4j.data.ElementID;
 import java.util.Arrays;
 import java.util.List;
@@ -11,14 +12,17 @@ import java.awt.event.KeyEvent;
 
 /*
  * Handles keyboard input events for the simulation.
- * This class allows for element selection.
- * Hold TAB to select the brush, use the mouse to select elements.
+ * This class allows for element and brush shape selection.
+ * Hold TAB to select the element, hold ALT to select the brush shape.
  */
 public class KeyboardController extends KeyAdapter {
     private final Brush brush;
     private final List<ElementID> selectableElements;
-    private boolean tabPressed = false;
+    private final List<BrushShape> selectableShapes;
+    private boolean wasTabPressed = false;
+    private boolean wasAltPressed = false;
     private int selectedIndex = 0;
+    private int selectedShapeIndex = 0;
     private long lastEscapeTime = 0;
 
     public KeyboardController(Brush brush) {
@@ -26,10 +30,18 @@ public class KeyboardController extends KeyAdapter {
         this.selectableElements = Arrays.stream(ElementID.values())
                 .filter(ElementID::isSelectable)
                 .collect(Collectors.toList());
-        
+        this.selectableShapes = List.of(BrushShape.values());
+
         for (int i = 0; i < selectableElements.size(); i++) {
-            if (selectableElements.get(i) == brush.getCurrentElement()) {
+            if (selectableElements.get(i) == brush.getElement()) {
                 this.selectedIndex = i;
+                break;
+            }
+        }
+
+        for (int i = 0; i < selectableShapes.size(); i++) {
+            if (selectableShapes.get(i) == brush.getShape()) {
+                this.selectedShapeIndex = i;
                 break;
             }
         }
@@ -38,7 +50,11 @@ public class KeyboardController extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
-            tabPressed = true;
+            wasTabPressed = true;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ALT) {
+            wasAltPressed = true;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -49,13 +65,22 @@ public class KeyboardController extends KeyAdapter {
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
-            tabPressed = false;
-            brush.setCurrentElement(selectableElements.get(selectedIndex));
+            wasTabPressed = false;
+            brush.setElement(selectableElements.get(selectedIndex));
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ALT) {
+            wasAltPressed = false;
+            brush.setShape(selectableShapes.get(selectedShapeIndex));
         }
     }
 
-    public boolean isTabPressed() {
-        return tabPressed;
+    public boolean wasTabPressed() {
+        return wasTabPressed;
+    }
+
+    public boolean wasAltPressed() {
+        return wasAltPressed;
     }
 
     public int getSelectedIndex() {
@@ -66,13 +91,26 @@ public class KeyboardController extends KeyAdapter {
         this.selectedIndex = selectedIndex;
     }
 
+    public int getSelectedShapeIndex() {
+        return selectedShapeIndex;
+    }
+
+    public void setSelectedShapeIndex(int selectedShapeIndex) {
+        this.selectedShapeIndex = selectedShapeIndex;
+    }
+
     public List<ElementID> getSelectableElements() {
         return selectableElements;
     }
 
+    public List<BrushShape> getSelectableShapes() {
+        return selectableShapes;
+    }
+
     private void toggleEscape() {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEscapeTime < Constants.ESCAPE_DOUBLE_PRESS_INTERVAL) {
+        if (currentTime - lastEscapeTime <
+                Constants.ESCAPE_DOUBLE_PRESS_INTERVAL) {
             System.exit(0);
         }
         lastEscapeTime = currentTime;

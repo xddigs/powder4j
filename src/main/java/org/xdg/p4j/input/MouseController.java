@@ -39,7 +39,8 @@ public class MouseController extends MouseAdapter implements
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (keyboardController.isTabPressed()) return;
+        if (keyboardController.wasTabPressed()) return;
+        if (keyboardController.wasAltPressed()) return;
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
         isRightClick = (e.getButton() == Constants.MOUSE_BUTTON_RIGHT);
@@ -64,7 +65,10 @@ public class MouseController extends MouseAdapter implements
     public void mouseDragged(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
-        if (!isPressed || keyboardController.isTabPressed()) return;
+        if (!isPressed || keyboardController.wasTabPressed() ||
+                keyboardController.wasAltPressed()) {
+            return;
+        }
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
@@ -114,13 +118,11 @@ public class MouseController extends MouseAdapter implements
     }
 
     private void paint(int centerX, int centerY) {
-        ElementID targetType = isRightClick ? ElementID.EMPTY : brush.getCurrentElement();
+        ElementID targetType = isRightClick ? ElementID.EMPTY : brush.getElement();
         int r = brush.getRadius();
-        int rSquared = r * r;
-
         for (int dy = -r; dy <= r; dy++) {
             for (int dx = -r; dx <= r; dx++) {
-                if (dx * dx + dy * dy <= rSquared) {
+                if (brush.contains(dx, dy)) {
                     world.setCell(centerX + dx, centerY + dy, targetType);
                 }
             }

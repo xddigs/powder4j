@@ -3,6 +3,7 @@ package org.xdg.p4j.input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.Constants;
+import org.xdg.p4j.data.BrushShape;
 import org.xdg.p4j.data.ElementID;
 
 /**
@@ -12,23 +13,34 @@ import org.xdg.p4j.data.ElementID;
  */
 public class Brush {
     private static final Logger log = LoggerFactory.getLogger(Brush.class);
-    private ElementID currentElement;
+    private ElementID element;
+    private BrushShape shape;
     private int radius;
     private long lastRadiusChangeTime;
 
     public Brush(ElementID defaultElement, int initialRadius) {
-        this.currentElement = defaultElement;
+        this.element = defaultElement;
+        this.shape = BrushShape.CIRCLE;
         this.radius = initialRadius;
         this.lastRadiusChangeTime = 0;
     }
 
-    public ElementID getCurrentElement() {
-        return currentElement;
+    public ElementID getElement() {
+        return element;
     }
 
-    public void setCurrentElement(ElementID currentElement) {
+    public void setElement(ElementID currentElement) {
         log.debug("Brush element changed to: {}", currentElement);
-        this.currentElement = currentElement;
+        this.element = currentElement;
+    }
+
+    public BrushShape getShape() {
+        return shape;
+    }
+
+    public void setShape(BrushShape shape) {
+        log.debug("Brush shape changed to: {}", shape);
+        this.shape = shape;
     }
 
     public int getRadius() {
@@ -50,5 +62,18 @@ public class Brush {
 
     public void changeRadius(int delta) {
         setRadius(this.radius + delta);
+    }
+
+    public boolean contains(int dx, int dy) {
+        int r = this.radius;
+        return switch (shape) {
+            case CIRCLE -> (dx * dx + dy * dy) <= (r * r);
+            case SQUARE -> Math.abs(dx) <= r && Math.abs(dy) <= r;
+            case TRIANGLE -> {
+                if (dy < -r || dy > r) yield false;
+                int maxWidthAtY = (int) ((r - dy) * 0.866f);
+                yield Math.abs(dx) <= maxWidthAtY;
+            }
+        };
     }
 }

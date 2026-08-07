@@ -3,6 +3,7 @@ package org.xdg.p4j.render;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.Constants;
+import org.xdg.p4j.data.BrushShape;
 import org.xdg.p4j.data.ElementID;
 import org.xdg.p4j.input.Brush;
 import org.xdg.p4j.input.KeyboardController;
@@ -57,11 +58,15 @@ public class FastRender extends Canvas {
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         g.drawImage(canvasImage, 0, 0, getWidth(), getHeight(), null);
 
-        if (keyController.isTabPressed()) {
-            renderHUD(g, keyController, mouseController);
+        if (keyController.wasTabPressed()) {
+            wheel(g, keyController, mouseController);
         }
 
-        renderBrushSizeSlider(g, brush);
+        if (keyController.wasAltPressed()) {
+            shaper(g, keyController, mouseController);
+        }
+
+        slider(g, brush);
 
         if (!Constants.IS_RUNNING) {
             g.setColor(Color.WHITE);
@@ -78,8 +83,8 @@ public class FastRender extends Canvas {
         bs.show();
     }
 
-    private void renderHUD(Graphics2D g, KeyboardController keyController, 
-                           MouseController mouseController) {
+    private void wheel(Graphics2D g, KeyboardController keyController,
+                       MouseController mouseController) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
@@ -171,7 +176,111 @@ public class FastRender extends Canvas {
         g.drawString(elementName, textX, textY);
     }
 
-    private void renderBrushSizeSlider(Graphics2D g, Brush brush) {
+    private void shaper(Graphics2D g, KeyboardController keyController,
+                        MouseController mouseController) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        List<BrushShape> shapes = keyController.getSelectableShapes();
+        int totalShapes = shapes.size();
+
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+        double outerRadius = Constants.HUD_OUTER_RADIUS;
+        double innerRadius = Constants.HUD_INNER_RADIUS;
+        double angleStep = Constants.HUD_FULL_CIRCLE / totalShapes;
+
+        int mx = mouseController.getMouseX();
+        int my = mouseController.getMouseY();
+        double dx = mx - centerX;
+        double dy = my - centerY;
+        double distSq = dx * dx + dy * dy;
+
+        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
+            double angle = Math.toDegrees(Math.atan2(dy, dx));
+            if (angle < 0) angle += 360;
+
+            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % 360;
+            if (adjustedAngle < 0) adjustedAngle += 360;
+
+            int hoveredIdx = (int) (adjustedAngle / angleStep);
+            if (hoveredIdx >= 0 && hoveredIdx < totalShapes) {
+                keyController.setSelectedShapeIndex(hoveredIdx);
+            }
+        }
+
+        int selectedIdx = keyController.getSelectedShapeIndex();
+        Ellipse2D.Double innerHole = new Ellipse2D.Double(
+                centerX - innerRadius, centerY - innerRadius,
+                innerRadius * 2, innerRadius * 2
+        );
+
+        Area holeArea = new Area(innerHole);
+        Area selectedSliceArea = null;
+
+        for (int i = 0; i < totalShapes; i++) {
+            BrushShape shape = shapes.get(i);
+            double startAngle = i * angleStep + Constants.HUD_START_OFFSET_DEG;
+
+            Arc2D.Double outerPie = new Arc2D.Double(
+                    centerX - outerRadius, centerY - outerRadius,
+                    outerRadius * 2, outerRadius * 2,
+                    -startAngle, -angleStep, Arc2D.PIE
+            );
+
+            Area sliceArea = new Area(outerPie);
+            sliceArea.subtract(holeArea);
+
+            if (i == selectedIdx) {
+                selectedSliceArea = sliceArea;
+                g.setColor(new Color(60, 120, 210, 200));
+            } else {
+                g.setColor(Constants.HUD_BACKGROUND_COLOR);
+            }
+
+            g.fill(sliceArea);
+
+            g.setStroke(new BasicStroke(1.0f));
+            g.setColor(Constants.HUD_BORDER_COLOR);
+            g.draw(sliceArea);
+
+            double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
+            double iconRadius = (innerRadius + outerRadius) / 2.0;
+            int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
+            int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
+
+            g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, 22));
+            g.setColor(Color.WHITE);
+            FontMetrics iconFm = g.getFontMetrics();
+            g.drawString(shape.getSymbol(),
+                    iconX - iconFm.stringWidth(shape.getSymbol()) / 2,
+                    iconY + iconFm.getAscent() / 2 - 2);
+        }
+
+        if (selectedSliceArea != null) {
+            g.setStroke(new BasicStroke(2.5f));
+            g.setColor(Color.WHITE);
+            g.draw(selectedSliceArea);
+        }
+
+        g.setColor(Constants.HUD_CENTER_COLOR);
+        g.fill(innerHole);
+        g.setStroke(new BasicStroke(1.5f));
+        g.setColor(Constants.HUD_TEXT_UNSELECTED);
+        g.draw(innerHole);
+
+        BrushShape selectedShape = shapes.get(selectedIdx);
+        String shapeText = selectedShape.getName();
+        g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, Constants.HUD_FONT_SIZE));
+        FontMetrics fm = g.getFontMetrics();
+        int textX = centerX - fm.stringWidth(shapeText) / 2;
+        int textY = centerY + (int) outerRadius + Constants.HUD_TEXT_Y_OFFSET + fm.getAscent();
+
+        g.setColor(Color.WHITE);
+        g.drawString(shapeText, textX, textY);
+    }
+
+    private void slider(Graphics2D g, Brush brush) {
         long timeSinceLastChange = System.currentTimeMillis() - brush.getLastRadiusChangeTime();
         if (timeSinceLastChange > Constants.HUD_SLIDER_VISIBLE_MS) {
             return;
