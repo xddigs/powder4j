@@ -21,7 +21,6 @@ public class World {
         this.grid = new byte[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
-        spawnTest();
     }
 
     public void update() {
@@ -39,8 +38,9 @@ public class World {
 
                 switch (type) {
                     case SAND, GRAVEL -> updateSand(x, y, index);
-                    case WATER, OIL -> updateFluid(x, y, index);
                     case SODIUM -> updateSodium(x, y, index);
+                    case WATER, OIL -> updateFluid(x, y, index);
+                    case ACID -> updateAcid(x, y, index);
                     case FIRE -> updateFire(x, y, index);
                     case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> updateSmoke(x, y, index);
                     default -> velocity[index] = 0;
@@ -53,7 +53,7 @@ public class World {
         ElementID el = ElementID.fromId(id);
         return switch (el) {
             case SAND, GRAVEL, SODIUM -> 3;
-            case WATER -> 2;
+            case WATER, ACID -> 2;
             case OIL -> 1;
             case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> -1;
             default -> 0;
@@ -234,6 +234,37 @@ public class World {
         updateSand(x, y, idx);
     }
 
+    private void updateAcid(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    boolean isCorrosible = neighbor != ElementID.EMPTY
+                            && neighbor != ElementID.ACID
+                            && neighbor != ElementID.SMOKE_DARK
+                            && neighbor != ElementID.SMOKE_GRAY
+                            && neighbor != ElementID.SMOKE_LIGHT;
+
+                    if (isCorrosible) {
+                        grid[nIdx] = ElementID.SMOKE_GRAY.getId();
+                        velocity[nIdx] = 0;
+                        updated[nIdx] = true;
+                        grid[idx] = ElementID.EMPTY.getId();
+                        velocity[idx] = 0;
+                        return;
+                    }
+                }
+            }
+        }
+
+        updateFluid(x, y, idx);
+    }
+
     private void explode(int centerX, int centerY) {
         for (int dy = -4; dy <= 4; dy++) {
             for (int dx = -4; dx <= 4; dx++) {
@@ -385,23 +416,6 @@ public class World {
             int index = y * width + x;
             grid[index] = type.getId();
             velocity[index] = 0;
-        }
-    }
-
-    private void spawnTest() {
-        log.debug("Spawning initial test particles.");
-        int centerX = width / 2;
-
-        for (int y = height - 20; y < height - 10; y++) {
-            for (int x = centerX - 30; x < centerX + 30; x++) {
-                setCell(x, y, ElementID.WATER);
-            }
-        }
-
-        for (int y = height - 35; y < height - 25; y++) {
-            for (int x = centerX - 15; x < centerX + 15; x++) {
-                setCell(x, y, ElementID.OIL);
-            }
         }
     }
 
