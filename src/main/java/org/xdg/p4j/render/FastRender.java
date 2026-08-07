@@ -37,10 +37,12 @@ public class FastRender extends Canvas {
         this.pixelBuffer = ((DataBufferInt) canvasImage.getRaster().getDataBuffer()).getData();
     }
 
-    public void updatePixels(byte[] grid, Palette palette) {
+    public void updatePixels(byte[] grid, int width) {
         int length = Math.min(grid.length, pixelBuffer.length);
         for (int i = 0; i < length; i++) {
-            pixelBuffer[i] = palette.getColor(grid[i]);
+            int x = i % width;
+            int y = i / width;
+            pixelBuffer[i] = getParticleColor(x, y, ElementID.fromId(grid[i]));
         }
     }
 
@@ -164,5 +166,38 @@ public class FastRender extends Canvas {
 
         g.setColor(Color.WHITE);
         g.drawString(elementName, textX, textY);
+    }
+
+    public int getParticleColor(int x, int y, ElementID element) {
+        int baseColor = element.getColorArgb();
+        if (element == ElementID.EMPTY) {
+            return baseColor;
+        }
+
+        if (element == ElementID.MERCURY) {
+            int shift = (int) ((Math.sin(x * 0.5 + y * 0.5) + 1) * 15);
+            return adjustBrightness(baseColor, shift);
+        }
+
+        if (element == ElementID.FIRE || element == ElementID.LAVA) {
+            int noise = (int) (Math.random() * 20 - 10);
+            return adjustBrightness(baseColor, noise);
+        }
+
+        int grain = ((x * 7 + y * 13) % 21) - 10;
+        return adjustBrightness(baseColor, grain);
+    }
+
+    private static int adjustBrightness(int argb, int delta) {
+        int a = (argb >> 24) & 0xFF;
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+
+        r = Math.clamp(r + delta, 0, 255);
+        g = Math.clamp(g + delta, 0, 255);
+        b = Math.clamp(b + delta, 0, 255);
+
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 }

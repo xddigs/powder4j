@@ -48,7 +48,7 @@ public class World {
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case TNT -> updateTNT(x, y, index);
                     case WOOD -> updateWood(x, y, index);
-                    case WATER, OIL, GASOLINE -> updateFluid(x, y, index);
+                    case WATER, OIL, GASOLINE, MERCURY -> updateFluid(x, y, index);
                     case ACID -> updateAcid(x, y, index);
                     case LAVA -> updateLava(x, y, index);
                     case FIRE -> updateFire(x, y, index);
@@ -62,7 +62,8 @@ public class World {
 
     private boolean canDisplace(byte upperId, byte lowerId) {
         if (lowerId == ElementID.STONE.getId()) return false;
-        return ElementID.fromId(upperId).getDensity() > ElementID.fromId(lowerId).getDensity();
+        return ElementID.fromId(upperId).getDensity() >
+                ElementID.fromId(lowerId).getDensity();
     }
 
     private void updateSand(int x, int y, int idx) {
@@ -612,6 +613,14 @@ public class World {
             grid[index] = type.getId();
             velocity[index] = 0;
         }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public byte[] getGrid() { return grid; }
