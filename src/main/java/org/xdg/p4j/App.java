@@ -34,7 +34,8 @@ public class App extends JFrame {
     private int lastWindowY = Integer.MIN_VALUE;
 
     public App(String title, int simulationWidth, int simulationHeight, int scale) {
-        log.info("Initializing Powder4J: {}x{} (scale: {})", simulationWidth, simulationHeight, scale);
+        log.info("Initializing Powder4J: {}x{} (scale: {})",
+                simulationWidth, simulationHeight, scale);
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -46,8 +47,10 @@ public class App extends JFrame {
         this.palette = new Palette();
         this.world = new World(simulationWidth, simulationHeight);
         this.render = new FastRender(simulationWidth, simulationHeight, scale);
-        this.mouseController = new MouseController(world, brush, keyController, scale);
-        this.loop = new SimulationLoop(world, render, palette, keyController, mouseController, brush);
+        this.mouseController = new MouseController(
+                world, brush, keyController, scale);
+        this.loop = new SimulationLoop(world, render, palette,
+                keyController, mouseController, brush);
 
         add(render);
         pack();
