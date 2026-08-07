@@ -32,7 +32,6 @@ public final class Constants {
     public static final Color HUD_BACKGROUND_COLOR = new Color(30, 35, 45, 200);
     public static final Color HUD_BORDER_COLOR = new Color(255, 255, 255, 50);
     public static final Color HUD_CENTER_COLOR = new Color(15, 18, 25);
-    public static final Color HUD_TEXT_SELECTED = Color.BLACK;
     public static final Color HUD_TEXT_UNSELECTED = Color.WHITE;
     public static final String HUD_FONT_FAMILY = "Arial";
     public static final int HUD_FONT_SIZE = 16;
