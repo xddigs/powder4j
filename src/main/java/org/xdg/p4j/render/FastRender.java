@@ -159,7 +159,4 @@ public class FastRender extends Canvas {
         g.setColor(Color.WHITE);
         g.drawString(elementName, textX, textY);
     }
-
-    public int getSimWidth() { return simWidth; }
-    public int getSimHeight() { return simHeight; }
 }
