@@ -43,8 +43,10 @@ public class World {
                     case WOOD -> updateWood(x, y, index);
                     case WATER, OIL -> updateFluid(x, y, index);
                     case ACID -> updateAcid(x, y, index);
+                    case LAVA -> updateLava(x, y, index);
                     case FIRE -> updateFire(x, y, index);
-                    case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> updateSmoke(x, y, index);
+                    case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT ->
+                            updateSmoke(x, y, index);
                     default -> velocity[index] = 0;
                 }
             }
@@ -55,7 +57,7 @@ public class World {
         ElementID el = ElementID.fromId(id);
         return switch (el) {
             case WOOD, STONE -> 4;
-            case SAND, GRAVEL, SODIUM, GUNPOWDER -> 3;
+            case SAND, GRAVEL, SODIUM, GUNPOWDER, LAVA -> 3;
             case ACID, WATER -> 2;
             case OIL -> 1;
             case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> -1;
@@ -110,16 +112,54 @@ public class World {
         int belowRight = (y + 1) * width + (x + 1);
 
         boolean canLeft = (x > 0 && canDisplace(currentId, grid[belowLeft]));
-        boolean canRight = (x < width - 1 && canDisplace(currentId, grid[belowRight]));
+        boolean canRight = (x < width - 1 && canDisplace(currentId,
+                grid[belowRight]));
 
         if (canLeft && canRight) {
-            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ? belowLeft : belowRight;
+            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ?
+                    belowLeft : belowRight;
             swap(idx, target);
         } else if (canLeft) {
             swap(idx, belowLeft);
         } else if (canRight) {
             swap(idx, belowRight);
         }
+    }
+
+    private void updateLava(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    if (neighbor == ElementID.WATER) {
+                        grid[idx] = ElementID.STONE.getId();
+                        grid[nIdx] = ElementID.SMOKE_LIGHT.getId();
+                        velocity[idx] = 0;
+                        velocity[nIdx] = 0;
+                        updated[idx] = true;
+                        updated[nIdx] = true;
+                        return;
+                    }
+                    else if (neighbor == ElementID.WOOD ||
+                            neighbor == ElementID.OIL ||
+                            neighbor == ElementID.GUNPOWDER) {
+                        grid[nIdx] = ElementID.FIRE.getId();
+                        updated[nIdx] = true;
+                    }
+                }
+            }
+        }
+
+        if (Math.random() < 0.65) {
+            return;
+        }
+
+        updateFluid(x, y, idx);
     }
 
     private void updateFluid(int x, int y, int idx) {
@@ -156,10 +196,12 @@ public class World {
         int belowRight = (y + 1) * width + (x + 1);
 
         boolean canBelowLeft = (x > 0 && canDisplace(currentId, grid[belowLeft]));
-        boolean canBelowRight = (x < width - 1 && canDisplace(currentId, grid[belowRight]));
+        boolean canBelowRight = (x < width - 1 && canDisplace(currentId,
+                grid[belowRight]));
 
         if (canBelowLeft && canBelowRight) {
-            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ? belowLeft : belowRight;
+            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ?
+                    belowLeft : belowRight;
             swap(idx, target);
             return;
         } else if (canBelowLeft) {
