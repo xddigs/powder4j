@@ -39,6 +39,7 @@ public final class Constants {
     public static final String HUD_FONT_FAMILY = "Arial";
     public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
+    public static final int PAUSE_FONT_SIZE = 32;
 
     public static final double RANDOM_THRESHOLD = 0.5;
     public static final float GRAVITY = 0.4f;
