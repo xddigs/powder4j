@@ -44,7 +44,7 @@ public class World {
 
                 switch (type) {
                     case SAND, GRAVEL -> updateSand(x, y, index);
-                    case SODIUM -> updateSodium(x, y, index);
+                    case SODIUM, SALT -> updatePowder(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case TNT -> updateTNT(x, y, index);
                     case WOOD -> updateWood(x, y, index);
@@ -319,7 +319,7 @@ public class World {
         return false;
     }
 
-    private void updateSodium(int x, int y, int idx) {
+    private void updatePowder(int x, int y, int idx) {
         boolean hasTouchedWater = false;
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -335,6 +335,12 @@ public class World {
                         grid[idx] = ElementID.CHLORINE.getId();
                         grid[nIdx] = ElementID.SAND.getId();
                         explode(x, y);
+                        return;
+                    }
+
+                    if (neighbor.isWater() && grid[idx] == ElementID.SALT.getId()) {
+                        grid[idx] = ElementID.SMOKE_GRAY.getId();
+                        grid[nIdx] = ElementID.SMOKE_LIGHT.getId();
                         return;
                     }
 
