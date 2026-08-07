@@ -100,4 +100,38 @@ public final class Constants {
     public static final float SHOCKWAVE_ALPHA = 1.0f;
     public static final float SHOCKWAVE_INCREMENT = 2.0f;
     public static final float SHOCKWAVE_WIDTH = 4f;
+
+    public static final int RENDERING_FULL_CIRCLE_DEGREES = 360;
+
+    public static final float SHOCKWAVE_RING_EXTRA_THICKNESS = 2.0f;
+    public static final float SHOCKWAVE_MIN_ALPHA = 0.0f;
+    public static final float SHOCKWAVE_MAX_ALPHA = 1.0f;
+
+    public static final float HUD_BORDER_STROKE_WIDTH = 1.0f;
+    public static final float HUD_SELECTED_STROKE_WIDTH = 2.5f;
+    public static final float HUD_CENTER_STROKE_WIDTH = 1.5f;
+
+    public static final int SHAPER_ICON_FONT_SIZE = 22;
+    public static final int SHAPER_ICON_Y_OFFSET = 2;
+
+    public static final long HUD_SLIDER_FADE_DURATION_MS = 500L;
+    public static final float HUD_SLIDER_MIN_OPACITY = 0.0f;
+    public static final float HUD_SLIDER_MAX_OPACITY = 1.0f;
+    public static final int HUD_SLIDER_CORNER_RADIUS = 5;
+    public static final int HUD_SLIDER_LABEL_FONT_SIZE = 20;
+    public static final int HUD_SLIDER_LABEL_ALPHA = 60;
+    public static final int HUD_SLIDER_TRACK_ALPHA = 60;
+
+    public static final double MERCURY_COLOR_WAVE_FREQUENCY = 0.5;
+    public static final int MERCURY_COLOR_SHIFT_MULTIPLIER = 15;
+
+    public static final int FIRE_LAVA_COLOR_NOISE_RANGE = 20;
+    public static final int FIRE_LAVA_COLOR_NOISE_OFFSET = 10;
+
+    public static final int PARTICLE_GRAIN_X_MULTIPLIER = 7;
+    public static final int PARTICLE_GRAIN_Y_MULTIPLIER = 13;
+    public static final int PARTICLE_GRAIN_MODULO = 21;
+    public static final int PARTICLE_GRAIN_OFFSET = 10;
+
+    public static final int COLOR_CHANNEL_MAX = 255;
 }

@@ -33,7 +33,7 @@ public class FastRender extends Canvas {
     private boolean shockwaveActive = false;
     private float shockwaveRadius = 0f;
     private float maxShockwaveRadius = 0f;
-    private float shockwaveAlpha = 1.0f;
+    private float shockwaveAlpha = Constants.SHOCKWAVE_ALPHA;
     private int shockwaveCenterX;
     private int shockwaveCenterY;
 
@@ -112,12 +112,12 @@ public class FastRender extends Canvas {
             int centerSimX = shockwaveCenterX / scale;
             int centerSimY = shockwaveCenterY / scale;
             float currentSimRadius = shockwaveRadius / scale;
-            float ringThicknessSim = Constants.SHOCKWAVE_WIDTH / scale + 2f;
+            float ringThicknessSim = Constants.SHOCKWAVE_WIDTH / scale + Constants.SHOCKWAVE_RING_EXTRA_THICKNESS;
 
-            int minX = Math.max(0, (int)(centerSimX - currentSimRadius - ringThicknessSim));
-            int maxX = Math.min(simWidth - 1, (int)(centerSimX + currentSimRadius + ringThicknessSim));
-            int minY = Math.max(0, (int)(centerSimY - currentSimRadius - ringThicknessSim));
-            int maxY = Math.min(simHeight - 1, (int)(centerSimY + currentSimRadius + ringThicknessSim));
+            int minX = Math.max(0, (int) (centerSimX - currentSimRadius - ringThicknessSim));
+            int maxX = Math.min(simWidth - 1, (int) (centerSimX + currentSimRadius + ringThicknessSim));
+            int minY = Math.max(0, (int) (centerSimY - currentSimRadius - ringThicknessSim));
+            int maxY = Math.min(simHeight - 1, (int) (centerSimY + currentSimRadius + ringThicknessSim));
 
             for (int sy = minY; sy <= maxY; sy++) {
                 for (int sx = minX; sx <= maxX; sx++) {
@@ -129,7 +129,7 @@ public class FastRender extends Canvas {
                 }
             }
 
-            if (shockwaveAlpha <= 0f || shockwaveRadius >= maxShockwaveRadius) {
+            if (shockwaveAlpha <= Constants.SHOCKWAVE_MIN_ALPHA || shockwaveRadius >= maxShockwaveRadius) {
                 shockwaveActive = false;
             } else {
                 Graphics2D g2d = (Graphics2D) g.create();
@@ -138,15 +138,15 @@ public class FastRender extends Canvas {
 
                 g2d.setComposite(AlphaComposite.getInstance(
                         AlphaComposite.SRC_OVER,
-                        Math.clamp(shockwaveAlpha, 0f, 1f)));
+                        Math.clamp(shockwaveAlpha, Constants.SHOCKWAVE_MIN_ALPHA, Constants.SHOCKWAVE_MAX_ALPHA)));
 
                 g2d.setColor(Color.WHITE);
                 g2d.setStroke(new BasicStroke(Constants.SHOCKWAVE_WIDTH,
                         BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
                 int diameter = (int) (shockwaveRadius * 2);
-                g2d.drawOval(shockwaveCenterX - (int)shockwaveRadius,
-                        shockwaveCenterY - (int)shockwaveRadius, diameter, diameter);
+                g2d.drawOval(shockwaveCenterX - (int) shockwaveRadius,
+                        shockwaveCenterY - (int) shockwaveRadius, diameter, diameter);
                 g2d.dispose();
             }
         }
@@ -177,10 +177,11 @@ public class FastRender extends Canvas {
 
         if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
             double angle = Math.toDegrees(Math.atan2(dy, dx));
-            if (angle < 0) angle += 360;
+            if (angle < 0) angle += Constants.RENDERING_FULL_CIRCLE_DEGREES;
 
-            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % 360;
-            if (adjustedAngle < 0) adjustedAngle += 360;
+            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % Constants.RENDERING_FULL_CIRCLE_DEGREES;
+            if (adjustedAngle < 0)
+                adjustedAngle += Constants.RENDERING_FULL_CIRCLE_DEGREES;
 
             int hoveredIdx = (int) (adjustedAngle / angleStep);
             if (hoveredIdx >= 0 && hoveredIdx < totalElements) {
@@ -219,20 +220,20 @@ public class FastRender extends Canvas {
 
             g.fill(sliceArea);
 
-            g.setStroke(new BasicStroke(1.0f));
+            g.setStroke(new BasicStroke(Constants.HUD_BORDER_STROKE_WIDTH));
             g.setColor(Constants.HUD_BORDER_COLOR);
             g.draw(sliceArea);
         }
 
         if (selectedSliceArea != null) {
-            g.setStroke(new BasicStroke(2.5f));
+            g.setStroke(new BasicStroke(Constants.HUD_SELECTED_STROKE_WIDTH));
             g.setColor(Color.WHITE);
             g.draw(selectedSliceArea);
         }
 
         g.setColor(Constants.HUD_CENTER_COLOR);
         g.fill(innerHole);
-        g.setStroke(new BasicStroke(1.5f));
+        g.setStroke(new BasicStroke(Constants.HUD_CENTER_STROKE_WIDTH));
         g.setColor(Constants.HUD_TEXT_UNSELECTED);
         g.draw(innerHole);
 
@@ -270,10 +271,11 @@ public class FastRender extends Canvas {
 
         if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
             double angle = Math.toDegrees(Math.atan2(dy, dx));
-            if (angle < 0) angle += 360;
+            if (angle < 0) angle += Constants.RENDERING_FULL_CIRCLE_DEGREES;
 
-            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % 360;
-            if (adjustedAngle < 0) adjustedAngle += 360;
+            double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % Constants.RENDERING_FULL_CIRCLE_DEGREES;
+            if (adjustedAngle < 0)
+                adjustedAngle += Constants.RENDERING_FULL_CIRCLE_DEGREES;
 
             int hoveredIdx = (int) (adjustedAngle / angleStep);
             if (hoveredIdx >= 0 && hoveredIdx < totalShapes) {
@@ -312,7 +314,7 @@ public class FastRender extends Canvas {
 
             g.fill(sliceArea);
 
-            g.setStroke(new BasicStroke(1.0f));
+            g.setStroke(new BasicStroke(Constants.HUD_BORDER_STROKE_WIDTH));
             g.setColor(Constants.HUD_BORDER_COLOR);
             g.draw(sliceArea);
 
@@ -321,23 +323,23 @@ public class FastRender extends Canvas {
             int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
             int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
 
-            g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, 22));
+            g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, Constants.SHAPER_ICON_FONT_SIZE));
             g.setColor(Color.WHITE);
             FontMetrics iconFm = g.getFontMetrics();
             g.drawString(shape.getSymbol(),
                     iconX - iconFm.stringWidth(shape.getSymbol()) / 2,
-                    iconY + iconFm.getAscent() / 2 - 2);
+                    iconY + iconFm.getAscent() / 2 - Constants.SHAPER_ICON_Y_OFFSET);
         }
 
         if (selectedSliceArea != null) {
-            g.setStroke(new BasicStroke(2.5f));
+            g.setStroke(new BasicStroke(Constants.HUD_SELECTED_STROKE_WIDTH));
             g.setColor(Color.WHITE);
             g.draw(selectedSliceArea);
         }
 
         g.setColor(Constants.HUD_CENTER_COLOR);
         g.fill(innerHole);
-        g.setStroke(new BasicStroke(1.5f));
+        g.setStroke(new BasicStroke(Constants.HUD_CENTER_STROKE_WIDTH));
         g.setColor(Constants.HUD_TEXT_UNSELECTED);
         g.draw(innerHole);
 
@@ -358,12 +360,12 @@ public class FastRender extends Canvas {
             return;
         }
 
-        float opacity = 1.0f;
-        long fadeStartTime = Constants.HUD_SLIDER_VISIBLE_MS - 500;
+        float opacity = Constants.HUD_SLIDER_MAX_OPACITY;
+        long fadeStartTime = Constants.HUD_SLIDER_VISIBLE_MS - Constants.HUD_SLIDER_FADE_DURATION_MS;
         if (timeSinceLastChange > fadeStartTime) {
-            opacity = 1.0f - (float)(timeSinceLastChange - fadeStartTime) / 500f;
+            opacity = Constants.HUD_SLIDER_MAX_OPACITY - (float) (timeSinceLastChange - fadeStartTime) / (float) Constants.HUD_SLIDER_FADE_DURATION_MS;
         }
-        opacity = Math.clamp(opacity, 0.0f, 1.0f);
+        opacity = Math.clamp(opacity, Constants.HUD_SLIDER_MIN_OPACITY, Constants.HUD_SLIDER_MAX_OPACITY);
 
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -373,21 +375,21 @@ public class FastRender extends Canvas {
         int sliderX = Constants.HUD_SLIDER_X_PADDING;
         int sliderY = Constants.HUD_SLIDER_Y_PADDING;
 
-        g.setColor(new Color(255, 255, 255, 60));
-        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight, 5, 5);
+        g.setColor(new Color(Constants.COLOR_CHANNEL_MAX, Constants.COLOR_CHANNEL_MAX, Constants.COLOR_CHANNEL_MAX, Constants.HUD_SLIDER_TRACK_ALPHA));
+        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight, Constants.HUD_SLIDER_CORNER_RADIUS, Constants.HUD_SLIDER_CORNER_RADIUS);
 
         int minR = Constants.MIN_BRUSH_RADIUS;
         int maxR = Constants.MAX_BRUSH_RADIUS;
         int currentR = brush.getRadius();
 
-        float ratio = (float)(currentR - minR) / (maxR - minR);
-        int knobHeight = (int)(ratio * sliderHeight);
+        float ratio = (float) (currentR - minR) / (maxR - minR);
+        int knobHeight = (int) (ratio * sliderHeight);
         int knobY = sliderY + sliderHeight - knobHeight;
 
         g.setColor(Constants.HUD_SLIDER_COLOR);
-        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight, 5, 5);
+        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight, Constants.HUD_SLIDER_CORNER_RADIUS, Constants.HUD_SLIDER_CORNER_RADIUS);
 
-        g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, 20));
+        g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, Constants.HUD_SLIDER_LABEL_FONT_SIZE));
         FontMetrics fm = g.getFontMetrics();
 
         String plus = "+";
@@ -398,7 +400,7 @@ public class FastRender extends Canvas {
         g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2),
                 sliderY + sliderHeight + fm.getAscent());
 
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Constants.HUD_SLIDER_MAX_OPACITY));
     }
 
     public int getParticleColor(int x, int y, ElementID element) {
@@ -408,28 +410,28 @@ public class FastRender extends Canvas {
         }
 
         if (element == ElementID.MERCURY) {
-            int shift = (int) ((Math.sin(x * 0.5 + y * 0.5) + 1) * 15);
+            int shift = (int) ((Math.sin(x * Constants.MERCURY_COLOR_WAVE_FREQUENCY + y * Constants.MERCURY_COLOR_WAVE_FREQUENCY) + 1) * Constants.MERCURY_COLOR_SHIFT_MULTIPLIER);
             return adjustBrightness(baseColor, shift);
         }
 
         if (element == ElementID.FIRE || element == ElementID.LAVA) {
-            int noise = (int) (Math.random() * 20 - 10);
+            int noise = (int) (Math.random() * Constants.FIRE_LAVA_COLOR_NOISE_RANGE - Constants.FIRE_LAVA_COLOR_NOISE_OFFSET);
             return adjustBrightness(baseColor, noise);
         }
 
-        int grain = ((x * 7 + y * 13) % 21) - 10;
+        int grain = ((x * Constants.PARTICLE_GRAIN_X_MULTIPLIER + y * Constants.PARTICLE_GRAIN_Y_MULTIPLIER) % Constants.PARTICLE_GRAIN_MODULO) - Constants.PARTICLE_GRAIN_OFFSET;
         return adjustBrightness(baseColor, grain);
     }
 
     private static int adjustBrightness(int argb, int delta) {
-        int a = (argb >> 24) & 0xFF;
-        int r = (argb >> 16) & 0xFF;
-        int g = (argb >> 8) & 0xFF;
-        int b = argb & 0xFF;
+        int a = (argb >> 24) & Constants.COLOR_CHANNEL_MAX;
+        int r = (argb >> 16) & Constants.COLOR_CHANNEL_MAX;
+        int g = (argb >> 8) & Constants.COLOR_CHANNEL_MAX;
+        int b = argb & Constants.COLOR_CHANNEL_MAX;
 
-        r = Math.clamp(r + delta, 0, 255);
-        g = Math.clamp(g + delta, 0, 255);
-        b = Math.clamp(b + delta, 0, 255);
+        r = Math.clamp(r + delta, 0, Constants.COLOR_CHANNEL_MAX);
+        g = Math.clamp(g + delta, 0, Constants.COLOR_CHANNEL_MAX);
+        b = Math.clamp(b + delta, 0, Constants.COLOR_CHANNEL_MAX);
 
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
