@@ -8,9 +8,13 @@ import org.xdg.p4j.input.KeyboardController;
 import org.xdg.p4j.input.MouseController;
 
 import java.awt.*;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.List;
 
 /**
  * Responsible for visual representation of the simulation state.
@@ -63,16 +67,18 @@ public class FastRender extends Canvas {
         bs.show();
     }
 
-    private void renderHUD(Graphics2D g, KeyboardController keyController, MouseController mouseController) {
+    private void renderHUD(Graphics2D g, KeyboardController keyController, 
+                           MouseController mouseController) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        ElementID[] elements = ElementID.values();
-        int totalElements = elements.length;
+        List<ElementID> elements = keyController.getSelectableElements();
+        int totalElements = elements.size();
 
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
-        int outerRadius = Constants.HUD_OUTER_RADIUS;
-        int innerRadius = Constants.HUD_INNER_RADIUS;
+        double outerRadius = Constants.HUD_OUTER_RADIUS;
+        double innerRadius = Constants.HUD_INNER_RADIUS;
         double angleStep = Constants.HUD_FULL_CIRCLE / totalElements;
 
         int mx = mouseController.getMouseX();
@@ -84,10 +90,10 @@ public class FastRender extends Canvas {
         if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
             double angle = Math.toDegrees(Math.atan2(dy, dx));
             if (angle < 0) angle += 360;
-            
+
             double adjustedAngle = (angle - Constants.HUD_START_OFFSET_DEG) % 360;
             if (adjustedAngle < 0) adjustedAngle += 360;
-            
+
             int hoveredIdx = (int) (adjustedAngle / angleStep);
             if (hoveredIdx >= 0 && hoveredIdx < totalElements) {
                 keyController.setSelectedIndex(hoveredIdx);
@@ -95,38 +101,62 @@ public class FastRender extends Canvas {
         }
 
         int selectedIdx = keyController.getSelectedIndex();
+        Ellipse2D.Double innerHole = new Ellipse2D.Double(
+                centerX - innerRadius, centerY - innerRadius,
+                innerRadius * 2, innerRadius * 2
+        );
+
+        Area holeArea = new Area(innerHole);
+        Area selectedSliceArea = null;
 
         for (int i = 0; i < totalElements; i++) {
-            ElementID el = elements[i];
+            ElementID el = elements.get(i);
             double startAngle = i * angleStep + Constants.HUD_START_OFFSET_DEG;
 
+            Arc2D.Double outerPie = new Arc2D.Double(
+                    centerX - outerRadius, centerY - outerRadius,
+                    outerRadius * 2, outerRadius * 2,
+                    -startAngle, -angleStep, Arc2D.PIE
+            );
+
+            Area sliceArea = new Area(outerPie);
+            sliceArea.subtract(holeArea);
+
             if (i == selectedIdx) {
+                selectedSliceArea = sliceArea;
                 g.setColor(new Color(el.getColorArgb()));
             } else {
                 g.setColor(Constants.HUD_BACKGROUND_COLOR);
             }
 
-            g.fillArc(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2,
-                    (int) -startAngle, (int) -angleStep);
+            g.fill(sliceArea);
 
+            g.setStroke(new BasicStroke(1.0f));
             g.setColor(Constants.HUD_BORDER_COLOR);
-            g.drawArc(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2,
-                    (int) -startAngle, (int) -angleStep);
+            g.draw(sliceArea);
+        }
+
+        if (selectedSliceArea != null) {
+            g.setStroke(new BasicStroke(2.5f));
+            g.setColor(Color.WHITE);
+            g.draw(selectedSliceArea);
         }
 
         g.setColor(Constants.HUD_CENTER_COLOR);
-        g.fillOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+        g.fill(innerHole);
+        g.setStroke(new BasicStroke(1.5f));
         g.setColor(Constants.HUD_TEXT_UNSELECTED);
-        g.drawOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+        g.draw(innerHole);
 
-        ElementID selectedElement = elements[selectedIdx];
+        ElementID selectedElement = elements.get(selectedIdx);
         String elementName = selectedElement.getName();
+        elementName += " (" + selectedElement.getSymbol() + ")";
         g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, Constants.HUD_FONT_SIZE));
         FontMetrics fm = g.getFontMetrics();
         int textX = centerX - fm.stringWidth(elementName) / 2;
-        int textY = centerY + outerRadius + Constants.HUD_TEXT_Y_OFFSET + fm.getAscent();
-        
-        g.setColor(Constants.HUD_TEXT_UNSELECTED);
+        int textY = centerY + (int) outerRadius + Constants.HUD_TEXT_Y_OFFSET + fm.getAscent();
+
+        g.setColor(Color.WHITE);
         g.drawString(elementName, textX, textY);
     }
 
