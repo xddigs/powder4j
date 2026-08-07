@@ -172,7 +172,7 @@ public class World {
             }
         }
 
-        if (Math.random() < 0.65) {
+        if (Math.random() < Constants.LAVA_FLOW_SKIP_CHANCE) {
             return;
         }
 
@@ -217,11 +217,18 @@ public class World {
         }
 
         byte currentId = grid[idx];
-        byte emptyId = ElementID.EMPTY.getId();
+
+        float currentVel = velocity[idx] + Constants.GRAVITY;
+        if (currentVel > Constants.MAX_FALL_SPEED) {
+            currentVel = Constants.MAX_FALL_SPEED;
+        }
+
+        int maxPossibleSteps = (int) currentVel;
+        if (maxPossibleSteps < 1) maxPossibleSteps = 1;
         int actualSteps = 0;
         int currentY = y;
 
-        while (actualSteps < Constants.WATER_FALL_SPEED) {
+        while (actualSteps < maxPossibleSteps) {
             int nextY = currentY + 1;
             if (nextY >= height) break;
 
@@ -236,6 +243,7 @@ public class World {
 
         if (actualSteps > 0) {
             int targetIdx = currentY * width + x;
+            velocity[idx] = currentVel;
             swap(idx, targetIdx);
             return;
         }
@@ -244,61 +252,71 @@ public class World {
         int belowRight = (y + 1) * width + (x + 1);
 
         boolean canBelowLeft = (x > 0 && canDisplace(currentId, grid[belowLeft]));
-        boolean canBelowRight = (x < width - 1 && canDisplace(currentId,
-                grid[belowRight]));
+        boolean canBelowRight = (x < width - 1 && canDisplace(currentId, grid[belowRight]));
 
         if (canBelowLeft && canBelowRight) {
-            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ?
-                    belowLeft : belowRight;
+            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ? belowLeft : belowRight;
+            velocity[target] = currentVel * Constants.FLUID_DIAGONAL_VELOCITY_RETENTION;
             swap(idx, target);
             return;
         } else if (canBelowLeft) {
+            velocity[belowLeft] = currentVel *
+                    Constants.FLUID_DIAGONAL_VELOCITY_RETENTION;
             swap(idx, belowLeft);
             return;
         } else if (canBelowRight) {
+            velocity[belowRight] = currentVel *
+                    Constants.FLUID_DIAGONAL_VELOCITY_RETENTION;
             swap(idx, belowRight);
             return;
         }
 
-        boolean leftToRight = Math.random() > 0.5;
-        int bestTargetIdx = -1;
+        int dispersion = currentElement.getDispersionRate();
+        if (currentVel > Constants.FLUID_MOMENTUM_THRESHOLD) {
+            dispersion += (int) (currentVel * Constants.FLUID_MOMENTUM_DISPERSION_MULTIPLIER);
+        }
 
-        for (int i = Constants.WATER_DISPERSION_RATE; i >= 1; i--) {
-            int dir = leftToRight ? 1 : -1;
-            int nextX = x + (i * dir);
-            if (nextX >= 0 && nextX < width) {
-                int targetIdx = y * width + nextX;
-                if (grid[targetIdx] == emptyId) {
-                    if (isPathClearHorizontal(x, nextX, y)) {
-                        bestTargetIdx = targetIdx;
-                        break;
-                    }
-                }
+        if (y > 0) {
+            ElementID aboveElement = ElementID.fromId(grid[(y - 1) * width + x]);
+            if (aboveElement.isLiquid() || aboveElement == currentElement) {
+                dispersion += Constants.FLUID_HYDROSTATIC_PRESSURE_BONUS;
             }
         }
 
-        if (bestTargetIdx != -1) {
-            swap(idx, bestTargetIdx);
-            return;
-        }
+        velocity[idx] = 0;
+        boolean goRightFirst = Math.random() > Constants.RANDOM_THRESHOLD;
+        int primaryDir = goRightFirst ? 1 : -1;
 
-        for (int i = Constants.WATER_DISPERSION_RATE; i >= 1; i--) {
-            int dir = leftToRight ? -1 : 1;
-            int nextX = x + (i * dir);
-            if (nextX >= 0 && nextX < width) {
-                int targetIdx = y * width + nextX;
-                if (grid[targetIdx] == emptyId) {
-                    if (isPathClearHorizontal(x, nextX, y)) {
-                        bestTargetIdx = targetIdx;
-                        break;
-                    }
+        if (!flow(x, y, idx, primaryDir, dispersion, currentId)) {
+            flow(x, y, idx, -primaryDir, dispersion, currentId);
+        }
+    }
+
+    private boolean flow(int x, int y, int idx, int dir,
+                         int maxDistance, byte currentId) {
+        int bestX = x;
+        for (int i = 1; i <= maxDistance; i++) {
+            int nextX = x + (dir * i);
+            if (nextX < 0 || nextX >= width) break;
+
+            int targetIdx = y * width + nextX;
+            byte targetId = grid[targetIdx];
+
+            if (canDisplace(currentId, targetId)) {
+                bestX = nextX;
+                if (targetId == ElementID.EMPTY.getId()) {
+                    break;
                 }
+            } else {
+                break;
             }
         }
 
-        if (bestTargetIdx != -1) {
-            swap(idx, bestTargetIdx);
+        if (bestX != x) {
+            swap(idx, y * width + bestX);
+            return true;
         }
+        return false;
     }
 
     private void updateSodium(int x, int y, int idx) {
@@ -413,7 +431,7 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
                     if (neighbor == ElementID.SAND) {
-                        if (Math.random() < 0.1) {
+                        if (Math.random() < Constants.TNT_CRAFTING_CHANCE) {
                             grid[idx] = ElementID.TNT.getId();
                             grid[nIdx] = ElementID.EMPTY.getId();
                             velocity[idx] = 0;
@@ -463,9 +481,10 @@ public class World {
     }
 
     private void explode(int centerX, int centerY) {
-        for (int dy = -4; dy <= 4; dy++) {
-            for (int dx = -4; dx <= 4; dx++) {
-                if (dx * dx + dy * dy > 4 * 4) continue;
+        int radius = Constants.GENERAL_EXPLOSION_RADIUS;
+        for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                if (dx * dx + dy * dy > radius * radius) continue;
 
                 int nx = centerX + dx;
                 int ny = centerY + dy;
@@ -476,7 +495,7 @@ public class World {
 
                     if (currentId != ElementID.STONE.getId()) {
                         ElementID resultType;
-                        if (Math.random() > 0.3) {
+                        if (Math.random() > Constants.WOOD_IGNITION_CHANCE) {
                             resultType = ElementID.FIRE;
                         } else {
                             resultType = ElementID.SMOKE_LIGHT;
@@ -512,10 +531,11 @@ public class World {
                         continue;
                     }
 
-                    if (Math.random() < 0.8) {
-                        grid[nIdx] = (Math.random() > 0.4) ?
+                    if (Math.random() < Constants.TNT_SPAWN_DEBRIS_CHANCE) {
+                        grid[nIdx] = (Math.random() > Constants.TNT_FIRE_SPAWN_THRESHOLD) ?
                                 ElementID.FIRE.getId() : ElementID.SMOKE_DARK.getId();
-                        velocity[nIdx] = -((float) Math.random() * 8f + 4f);
+                        velocity[nIdx] = -((float) Math.random() * Constants.TNT_DEBRIS_MAX_VELOCITY
+                                + Constants.TNT_DEBRIS_MIN_VELOCITY);
                         updated[nIdx] = true;
                     }
                 }
@@ -541,7 +561,9 @@ public class World {
                             ElementID.fromId(currentId).isWater()) {
 
                         grid[nIdx] = ElementID.CHLORINE.getId();
-                        velocity[nIdx] = -((float) Math.random() * 3f + 1f);
+                        velocity[nIdx] = -((float) Math.random()
+                                * Constants.CHLORINE_DEBRIS_MAX_VELOCITY
+                                + Constants.CHLORINE_DEBRIS_MIN_VELOCITY);
                         updated[nIdx] = true;
                     }
                 }
@@ -588,7 +610,10 @@ public class World {
                             Math.random() < Constants.FIRE_EVAPORATION_CHANCE) {
                         double rand = Math.random();
                         ElementID smokeType = ElementID.SMOKE_LIGHT;
-                        if (rand > 0.66) smokeType = ElementID.SMOKE_GRAY;
+                        if (rand > Constants.FIRE_SMOKE_GRAY_THRESHOLD) {
+                            smokeType = ElementID.SMOKE_GRAY;
+                        }
+
                         grid[nIdx] = smokeType.getId();
                         updated[nIdx] = true;
                         grid[idx] = ElementID.EMPTY.getId();
@@ -608,7 +633,7 @@ public class World {
             return;
         }
 
-        if (nearFuel && Math.random() < 0.7) {
+        if (nearFuel && Math.random() < Constants.FIRE_NEAR_FUEL_PAUSE_CHANCE) {
             return;
         }
 
@@ -690,14 +715,13 @@ public class World {
     }
 
     public void applyInertia(float forceX, float forceY) {
-        float sensitivity = 0.35f;
-        int stepsX = Math.round(forceX * sensitivity);
-        int stepsY = Math.round(forceY * sensitivity);
+        int stepsX = Math.round(forceX * Constants.INERTIA_SENSITIVITY);
+        int stepsY = Math.round(forceY * Constants.INERTIA_SENSITIVITY);
 
         if (stepsX == 0 && stepsY == 0) return;
 
-        stepsX = Math.clamp(stepsX, -20, 20);
-        stepsY = Math.clamp(stepsY, -20, 20);
+        stepsX = Math.clamp(stepsX, -Constants.INERTIA_MAX_STEP_LIMIT, Constants.INERTIA_MAX_STEP_LIMIT);
+        stepsY = Math.clamp(stepsY, -Constants.INERTIA_MAX_STEP_LIMIT, Constants.INERTIA_MAX_STEP_LIMIT);
 
         if (stepsY != 0) {
             boolean moveUp = stepsY < 0;
