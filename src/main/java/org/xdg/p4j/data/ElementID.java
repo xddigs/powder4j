@@ -7,10 +7,15 @@ package org.xdg.p4j.data;
  */
 public enum ElementID {
     EMPTY((byte) 0, "Air", 0xFF0B0E14),
-    WALL ((byte) 1, "Stone", 0xFF808080),
-    SAND ((byte) 2, "Sand", 0xFFE5C07B),
-    WATER((byte) 3, "Water", 0xFF4FA6ED),
-    FIRE ((byte) 4, "Fire", 0xFFE06C75);
+    WALL((byte) 1, "Stone", 0xFF808080),
+    SAND((byte) 2, "Sand", 0xFFE5C07B),
+    GRAVEL((byte) 3, "Gravel", 0xFF9B8773),
+    WATER((byte) 4, "Water", 0xFF4FA6ED),
+    FIRE((byte) 5, "Fire", 0xFFE06C75),
+    OIL((byte) 6, "Oil", 0xFF8A9A20),
+    SMOKE_DARK((byte) 7, "Dark Smoke", 0xFF3E4451),
+    SMOKE_GRAY((byte) 8, "Smoke", 0xFFABB2BF),
+    SMOKE_LIGHT((byte) 9, "Light Smoke", 0xFFDCDFE4);
 
     private final byte id;
     private final String name;
