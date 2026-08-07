@@ -16,6 +16,7 @@ import java.awt.event.*;
 public class MouseController extends MouseAdapter implements 
         MouseMotionListener, MouseWheelListener {
     private static final Logger log = LoggerFactory.getLogger(MouseController.class);
+    private final KeyboardController keyboardController;
     private final World world;
     private final Brush brush;
     private final int scale;
@@ -29,14 +30,16 @@ public class MouseController extends MouseAdapter implements
     private int mouseX;
     private int mouseY;
 
-    public MouseController(World world, Brush brush, int scale) {
+    public MouseController(World world, Brush brush, KeyboardController keyboardController, int scale) {
         this.world = world;
         this.brush = brush;
+        this.keyboardController = keyboardController;
         this.scale = scale;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (keyboardController.isTabPressed()) return;
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
         isRightClick = (e.getButton() == Constants.MOUSE_BUTTON_RIGHT);
@@ -61,7 +64,7 @@ public class MouseController extends MouseAdapter implements
     public void mouseDragged(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
-        if (!isPressed) return;
+        if (!isPressed || keyboardController.isTabPressed()) return;
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
