@@ -15,7 +15,13 @@ public enum ElementID {
     OIL((byte) 6, "Oil", 0xFF8A9A20),
     SMOKE_DARK((byte) 7, "Dark Smoke", 0xFF3E4451),
     SMOKE_GRAY((byte) 8, "Smoke", 0xFFABB2BF),
-    SMOKE_LIGHT((byte) 9, "Light Smoke", 0xFFDCDFE4);
+    SMOKE_LIGHT((byte) 9, "Light Smoke", 0xFFDCDFE4),
+    LAVA((byte) 10, "Lava", 0xFFFF4500),
+    ACID((byte) 11, "Acid", 0xFF2ECC71),
+    WOOD((byte) 12, "Wood", 0xFF8B5A2B),
+    GUNPOWDER((byte) 13, "Gunpowder", 0xFF53565A),
+    SODIUM((byte) 14, "Sodium", 0xFFD1D5DB),
+    ICE((byte) 15, "Ice", 0xFFA5F2F3);
 
     private final byte id;
     private final String name;
