@@ -29,7 +29,7 @@ public class World {
     public void update() {
         Arrays.fill(updated, false);
         for (int y = height - 1; y >= 0; y--) {
-            boolean leftToRight = Math.random() > 0.5;
+            boolean leftToRight = Math.random() > Constants.RANDOM_THRESHOLD;
             for (int i = 0; i < width; i++) {
                 int x = leftToRight ? i : (width - 1 - i);
                 int index = y * width + x;
@@ -57,7 +57,7 @@ public class World {
             boolean canRight = (x < width - 1 && grid[belowRight] == emptyId);
 
             if (canLeft && canRight) {
-                int target = (Math.random() > 0.5) ? belowLeft : belowRight;
+                int target = (Math.random() > Constants.RANDOM_THRESHOLD) ? belowLeft : belowRight;
                 swap(idx, target);
             } else if (canLeft) {
                 swap(idx, belowLeft);
@@ -84,8 +84,8 @@ public class World {
     private void spawnTest() {
         log.debug("Spawning initial test particles.");
         int centerX = width / 2;
-        for (int y = 10; y < 40; y++) {
-            for (int x = centerX - 15; x < centerX + 15; x++) {
+        for (int y = Constants.SPAWN_TEST_Y_START; y < Constants.SPAWN_TEST_Y_END; y++) {
+            for (int x = centerX - Constants.SPAWN_TEST_X_OFFSET; x < centerX + Constants.SPAWN_TEST_X_OFFSET; x++) {
                 setCell(x, y, ElementID.SAND);
             }
         }

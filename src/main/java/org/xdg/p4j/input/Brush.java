@@ -2,6 +2,7 @@ package org.xdg.p4j.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.data.ElementID;
 
 /**
@@ -34,7 +35,7 @@ public class Brush {
 
     public void setRadius(int radius) {
         int oldRadius = this.radius;
-        this.radius = Math.clamp(radius, 1, 50);
+        this.radius = Math.clamp(radius, Constants.MIN_BRUSH_RADIUS, Constants.MAX_BRUSH_RADIUS);
         if (oldRadius != this.radius) {
             log.debug("Brush radius changed to: {}", this.radius);
         }

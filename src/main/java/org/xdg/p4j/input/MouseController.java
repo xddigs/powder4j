@@ -2,6 +2,7 @@ package org.xdg.p4j.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.core.World;
 import org.xdg.p4j.data.ElementID;
 
@@ -35,7 +36,7 @@ public class MouseController extends MouseAdapter implements
     public void mousePressed(MouseEvent e) {
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
-        isRightClick = (e.getButton() == MouseEvent.BUTTON3);
+        isRightClick = (e.getButton() == Constants.MOUSE_BUTTON_RIGHT);
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;

@@ -2,6 +2,8 @@ package org.xdg.p4j.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xdg.p4j.core.Constants;
+import org.xdg.p4j.data.ElementID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +16,13 @@ import java.util.Map;
 public class Palette {
     private static final Logger log = LoggerFactory.getLogger(Palette.class);
     private final Map<Byte, Integer> colorMap = new HashMap<>();
-    private final int defaultColor = 0xFF000000;
+    private final int defaultColor = Constants.DEFAULT_PALETTE_COLOR;
 
     public Palette() {
         log.debug("Initializing color palette.");
-        setColor((byte) 0, 0xFF0B0E14);
-        setColor((byte) 1, 0xFF808080);
-        setColor((byte) 2, 0xFFE5C07B);
-        setColor((byte) 3, 0xFF4FA6ED);
-        setColor((byte) 4, 0xFFE06C75);
+        for (ElementID el : ElementID.values()) {
+            setColor(el.getId(), el.getColorArgb());
+        }
     }
 
     public void setColor(byte elementId, int argb) {
