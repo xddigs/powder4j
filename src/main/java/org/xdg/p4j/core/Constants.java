@@ -38,9 +38,12 @@ public final class Constants {
     public static final int HUD_TEXT_Y_OFFSET = 20;
 
     public static final double RANDOM_THRESHOLD = 0.5;
-    
-    public static final int SPAWN_TEST_Y_START = 10;
-    public static final int SPAWN_TEST_Y_END = 40;
-    public static final int SPAWN_TEST_X_OFFSET = 15;
+    public static final float GRAVITY = 0.4f;
+    public static final int MAX_FALL_SPEED = 6;
+    public static final int WATER_FALL_SPEED = 2;
+    public static final int WATER_DISPERSION_RATE = 16;
     public static final int MOUSE_BUTTON_RIGHT = 3;
+
+    public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
+    public static final double FIRE_EVAPORATION_CHANCE = 0.2;
 }
