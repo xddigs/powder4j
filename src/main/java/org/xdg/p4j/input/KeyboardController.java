@@ -1,6 +1,9 @@
 package org.xdg.p4j.input;
 
 import org.xdg.p4j.data.ElementID;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -13,11 +16,23 @@ import java.awt.event.KeyEvent;
 public class KeyboardController extends KeyAdapter {
 
     private final Brush brush;
+    private final List<ElementID> selectableElements;
     private boolean tabPressed = false;
     private int selectedIndex = 0;
 
     public KeyboardController(Brush brush) {
         this.brush = brush;
+        this.selectableElements = Arrays.stream(ElementID.values())
+                .filter(ElementID::isSelectable)
+                .collect(Collectors.toList());
+        
+        // Find initial index of current brush element if it exists in selectable list
+        for (int i = 0; i < selectableElements.size(); i++) {
+            if (selectableElements.get(i) == brush.getCurrentElement()) {
+                this.selectedIndex = i;
+                break;
+            }
+        }
     }
 
     @Override
@@ -27,20 +42,17 @@ public class KeyboardController extends KeyAdapter {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && tabPressed) {
-            ElementID[] elements = ElementID.values();
-            selectedIndex = (selectedIndex - 1 + elements.length) % elements.length;
+            selectedIndex = (selectedIndex - 1 + selectableElements.size()) % selectableElements.size();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT && tabPressed) {
-            ElementID[] elements = ElementID.values();
-            selectedIndex = (selectedIndex + 1) % elements.length;
+            selectedIndex = (selectedIndex + 1) % selectableElements.size();
         }
 
         if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
             int index = e.getKeyCode() - KeyEvent.VK_1;
-            ElementID[] elements = ElementID.values();
-            if (index < elements.length) {
-                brush.setCurrentElement(elements[index]);
+            if (index < selectableElements.size()) {
+                brush.setCurrentElement(selectableElements.get(index));
                 selectedIndex = index;
             }
         }
@@ -50,8 +62,7 @@ public class KeyboardController extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
             tabPressed = false;
-            ElementID[] elements = ElementID.values();
-            brush.setCurrentElement(elements[selectedIndex]);
+            brush.setCurrentElement(selectableElements.get(selectedIndex));
         }
     }
 
@@ -65,5 +76,9 @@ public class KeyboardController extends KeyAdapter {
 
     public void setSelectedIndex(int selectedIndex) {
         this.selectedIndex = selectedIndex;
+    }
+
+    public List<ElementID> getSelectableElements() {
+        return selectableElements;
     }
 }

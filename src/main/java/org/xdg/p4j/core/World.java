@@ -26,7 +26,6 @@ public class World {
 
     public void update() {
         Arrays.fill(updated, false);
-
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = Math.random() > Constants.RANDOM_THRESHOLD;
 
@@ -41,6 +40,7 @@ public class World {
                 switch (type) {
                     case SAND, GRAVEL -> updateSand(x, y, index);
                     case WATER, OIL -> updateFluid(x, y, index);
+                    case SODIUM -> updateSodium(x, y, index);
                     case FIRE -> updateFire(x, y, index);
                     case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> updateSmoke(x, y, index);
                     default -> velocity[index] = 0;
@@ -52,7 +52,7 @@ public class World {
     private int getDensity(byte id) {
         ElementID el = ElementID.fromId(id);
         return switch (el) {
-            case SAND, GRAVEL -> 3;
+            case SAND, GRAVEL, SODIUM -> 3;
             case WATER -> 2;
             case OIL -> 1;
             case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> -1;
@@ -61,7 +61,7 @@ public class World {
     }
 
     private boolean canDisplace(byte upperId, byte lowerId) {
-        if (lowerId == ElementID.WALL.getId()) return false;
+        if (lowerId == ElementID.STONE.getId()) return false;
         return getDensity(upperId) > getDensity(lowerId);
     }
 
@@ -205,6 +205,61 @@ public class World {
 
         if (bestTargetIdx != -1) {
             swap(idx, bestTargetIdx);
+        }
+    }
+
+    private void updateSodium(int x, int y, int idx) {
+        boolean touchedWater = false;
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    if (grid[ny * width + nx] == ElementID.WATER.getId()) {
+                        touchedWater = true;
+                        break;
+                    }
+                }
+            }
+            if (touchedWater) break;
+        }
+
+        if (touchedWater) {
+            explode(x, y);
+            return;
+        }
+
+        updateSand(x, y, idx);
+    }
+
+    private void explode(int centerX, int centerY) {
+        for (int dy = -4; dy <= 4; dy++) {
+            for (int dx = -4; dx <= 4; dx++) {
+                if (dx * dx + dy * dy > 4 * 4) continue;
+
+                int nx = centerX + dx;
+                int ny = centerY + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    byte currentId = grid[nIdx];
+
+                    if (currentId != ElementID.STONE.getId()) {
+                        ElementID resultType;
+                        if (Math.random() > 0.3) {
+                            resultType = ElementID.FIRE;
+                        } else {
+                            resultType = ElementID.SMOKE_LIGHT;
+                        }
+
+                        grid[nIdx] = resultType.getId();
+                        velocity[nIdx] = 0;
+                        updated[nIdx] = true;
+                    }
+                }
+            }
         }
     }
 
