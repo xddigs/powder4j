@@ -47,7 +47,7 @@ public class World {
                     case SODIUM -> updateSodium(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case WOOD -> updateWood(x, y, index);
-                    case WATER, OIL -> updateFluid(x, y, index);
+                    case WATER, OIL, GASOLINE -> updateFluid(x, y, index);
                     case ACID -> updateAcid(x, y, index);
                     case LAVA -> updateLava(x, y, index);
                     case FIRE -> updateFire(x, y, index);
@@ -59,21 +59,9 @@ public class World {
         }
     }
 
-    private int getDensity(byte id) {
-        ElementID el = ElementID.fromId(id);
-        return switch (el) {
-            case WOOD, STONE -> 4;
-            case SAND, GRAVEL, SODIUM, GUNPOWDER, LAVA -> 3;
-            case ACID, WATER -> 2;
-            case OIL -> 1;
-            case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> -1;
-            default -> 0;
-        };
-    }
-
     private boolean canDisplace(byte upperId, byte lowerId) {
         if (lowerId == ElementID.STONE.getId()) return false;
-        return getDensity(upperId) > getDensity(lowerId);
+        return ElementID.fromId(upperId).getDensity() > ElementID.fromId(lowerId).getDensity();
     }
 
     private void updateSand(int x, int y, int idx) {
@@ -150,9 +138,7 @@ public class World {
                         updated[idx] = true;
                         updated[nIdx] = true;
                         return;
-                    } else if (neighbor == ElementID.WOOD ||
-                            neighbor == ElementID.OIL ||
-                            neighbor == ElementID.GUNPOWDER) {
+                    } else if (neighbor.isFlammable()) {
                         grid[nIdx] = ElementID.FIRE.getId();
                         updated[nIdx] = true;
                     } else if (neighbor == ElementID.ICE) {
@@ -171,6 +157,37 @@ public class World {
     }
 
     private void updateFluid(int x, int y, int idx) {
+        ElementID currentElement = ElementID.fromId(grid[idx]);
+        boolean isFlammableFluid = currentElement.isFlammable();
+
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (isFlammableFluid && neighbor.isHot()) {
+                        if (currentElement == ElementID.GASOLINE) {
+                            explode(x, y);
+                        } else {
+                            grid[idx] = ElementID.FIRE.getId();
+                            updated[idx] = true;
+                        }
+                        return;
+                    } else if (neighbor.isFlammable()) {
+                        if (currentElement.isHot()) {
+                            grid[nIdx] = ElementID.SMOKE_GRAY.getId();
+                            updated[nIdx] = true;
+                        }
+                    }
+                }
+            }
+        }
+
         if (y >= height - 1) {
             velocity[idx] = 0;
             return;
@@ -262,7 +279,7 @@ public class World {
     }
 
     private void updateSodium(int x, int y, int idx) {
-        boolean touchedWater = false;
+        boolean hasTouchedWater = false;
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx == 0 && dy == 0) continue;
@@ -270,16 +287,16 @@ public class World {
                 int ny = y + dy;
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (grid[ny * width + nx] == ElementID.WATER.getId()) {
-                        touchedWater = true;
+                    if (ElementID.fromId(grid[ny * width + nx]).isWater()) {
+                        hasTouchedWater = true;
                         break;
                     }
                 }
             }
-            if (touchedWater) break;
+            if (hasTouchedWater) break;
         }
 
-        if (touchedWater) {
+        if (hasTouchedWater) {
             explode(x, y);
             return;
         }
@@ -298,10 +315,7 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
                     boolean isCorrosible = neighbor != ElementID.EMPTY
-                            && neighbor != ElementID.ACID
-                            && neighbor != ElementID.SMOKE_DARK
-                            && neighbor != ElementID.SMOKE_GRAY
-                            && neighbor != ElementID.SMOKE_LIGHT;
+                            && neighbor.isCorrosible();
 
                     if (isCorrosible) {
                         grid[nIdx] = ElementID.SMOKE_GRAY.getId();
@@ -326,7 +340,8 @@ public class World {
                 int ny = y + dy;
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (grid[ny * width + nx] == ElementID.FIRE.getId()) {
+                    ElementID neighbor = ElementID.fromId(grid[ny * width + nx]);
+                    if (neighbor == ElementID.FIRE) {
                         grid[idx] = ElementID.FIRE.getId();
                         velocity[idx] = 0;
                         updated[idx] = true;
@@ -346,9 +361,8 @@ public class World {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
-
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (grid[ny * width + nx] == ElementID.FIRE.getId()) {
+                    if (ElementID.fromId(grid[ny * width + nx]) == ElementID.FIRE) {
                         isNearFire = true;
                         break;
                     }
@@ -420,13 +434,12 @@ public class World {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
-                    if (neighbor == ElementID.OIL || neighbor == ElementID.WOOD ||
-                            neighbor == ElementID.GUNPOWDER) {
+                    if (neighbor.isFlammable()) {
                         nearFuel = true;
                         if (neighbor == ElementID.OIL) {
                             grid[nIdx] = ElementID.FIRE.getId();
                             updated[nIdx] = true;
-                        } else if (neighbor == ElementID.WOOD &&
+                        } else if (neighbor.isFlammable() && neighbor != ElementID.OIL &&
                                 Math.random() < Constants.WOOD_IGNITION_CHANCE) {
                             grid[nIdx] = ElementID.FIRE.getId();
                             updated[nIdx] = true;
