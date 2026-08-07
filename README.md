@@ -1,35 +1,31 @@
 # Powder4J
 
-Powder4J is a streamlined 2D physics engine designed for the simulation of diverse materials and their physical interactions within a discrete grid.
+Powder4J is a high-performance 2D cellular automata physics engine designed for simulating granular materials, liquids, gases, and their physical interactions on a discrete grid.
 
 ## Overview
 
-This application simulates the behavior of various substances—such as sand, water, and fire—in a two-dimensional environment. By using cellular automata principles, each particle interacts with its neighbors based on specific physical rules, enabling complex emergent phenomena from simple local interactions.
+Powder4J models complex emergent physics through local cell interactions. By applying custom rules for individual elements (such as gravity, displacement, ignition, and fluid dynamics), simple particle-level behaviors combine to create rich, interactive environments in real time.
 
 ## Core Features
 
-- **Material Simulation**: Distinct behaviors for different elements (Sand, Water, Fire, etc.).
-- **Interactive Environment**: Users can manipulate the simulation in real-time using a mouse-driven brush.
-- **Efficient Rendering**: A high-performance rendering pipeline ensures a smooth visual experience even with many active particles.
-- **Dynamic Physics**: Elements react to gravity, obstacles, and each other, creating a living simulation.
+- **Dynamic Material Engine**: Simulates distinct physical properties for solids, fluids, gases, and reactive elements (Sand, Water, Fire, Lava, Mercury, etc.) with custom visual shading and noise filters.
+- **Radial Selection Menus**:
+    - **Element Wheel (`TAB`)**: Quick-access radial HUD to select materials on the fly.
+    - **Shape Wheel (`ALT`)**: Radial menu to switch brush geometries (**Circle**, **Square**, **Triangle**).
+- **Customizable Brush System**: Real-time radius adjustments with visual fading HUD slider feedback and geometric shape masking.
+- **Context-Aware Input Locking**: Automatic click suppression while navigating HUD menus to prevent unintentional particle spawning.
+- **Fast Buffer Rendering**: Optimized direct pixel buffer strategy ensuring high frame rates even under heavy grid loads.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 25 or higher
-- Maven
+- **Java 25** or higher
+- **Maven**
 
-### Execution
+### Build and Run
 
-To build and run the application, execute the following command in the project root:
+To build and execute Powder4J from the project root:
 
 ```bash
 mvn clean compile exec:java -Dexec.mainClass="org.xdg.p4j.App"
-```
-
-## Controls
-
-- **Left-Click**: Place the currently selected element.
-- **Right-Click**: Erase elements (set to Air).
-- **Mouse Wheel**: Adjust the brush radius.
