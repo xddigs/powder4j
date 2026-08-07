@@ -26,7 +26,6 @@ public class KeyboardController extends KeyAdapter {
                 .filter(ElementID::isSelectable)
                 .collect(Collectors.toList());
         
-        // Find initial index of current brush element if it exists in selectable list
         for (int i = 0; i < selectableElements.size(); i++) {
             if (selectableElements.get(i) == brush.getCurrentElement()) {
                 this.selectedIndex = i;
