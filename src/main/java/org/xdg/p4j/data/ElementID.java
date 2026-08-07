@@ -22,7 +22,8 @@ public enum ElementID {
     GUNPOWDER((byte) 13, "Gunpowder", "KNO3", 0xFF53565A, true, 3, true, true, false, false),
     SODIUM((byte) 14, "Sodium", "Na", 0xFFD1D5DB, true, 3, false, true, false, false),
     ICE((byte) 15, "Ice", "H2O(s)", 0xFFA5F2F3, true, 4, false, true, false, false),
-    GASOLINE((byte) 16, "Gasoline", "C8H18", 0xFFD4A373, true, 1, true , true , false, false);
+    GASOLINE((byte) 16, "Gasoline", "C8H18", 0xFFD4A373, true, 1, true , true , false, false),
+    TNT((byte) 17, "TNT", "C2H4", 0xFFC23616, false, 1, true, true, false, false);
 
     private final byte id;
     private final String name;

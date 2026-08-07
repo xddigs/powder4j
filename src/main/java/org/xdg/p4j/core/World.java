@@ -46,6 +46,7 @@ public class World {
                     case SAND, GRAVEL -> updateSand(x, y, index);
                     case SODIUM -> updateSodium(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
+                    case TNT -> updateTNT(x, y, index);
                     case WOOD -> updateWood(x, y, index);
                     case WATER, OIL, GASOLINE -> updateFluid(x, y, index);
                     case ACID -> updateAcid(x, y, index);
@@ -118,6 +119,26 @@ public class World {
         } else if (canRight) {
             swap(idx, belowRight);
         }
+    }
+
+    private void updateTNT(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    ElementID neighbor = ElementID.fromId(grid[ny * width + nx]);
+                    if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA || neighbor.isHot()) {
+                        explodeTNT(x, y, Constants.TNT_EXPLOSION_RADIUS);
+                        return;
+                    }
+                }
+            }
+        }
+
+        updateSand(x, y, idx);
     }
 
     private void updateLava(int x, int y, int idx) {
@@ -340,7 +361,19 @@ public class World {
                 int ny = y + dy;
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    ElementID neighbor = ElementID.fromId(grid[ny * width + nx]);
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    if (neighbor == ElementID.SAND) {
+                        if (Math.random() < 0.1) {
+                            grid[idx] = ElementID.TNT.getId();
+                            grid[nIdx] = ElementID.EMPTY.getId();
+                            velocity[idx] = 0;
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return;
+                        }
+                    }
+
                     if (neighbor == ElementID.FIRE) {
                         grid[idx] = ElementID.FIRE.getId();
                         velocity[idx] = 0;
@@ -402,6 +435,38 @@ public class World {
 
                         grid[nIdx] = resultType.getId();
                         velocity[nIdx] = 0;
+                        updated[nIdx] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void explodeTNT(int centerX, int centerY, int radius) {
+        int centerIdx = centerY * width + centerX;
+        grid[centerIdx] = ElementID.EMPTY.getId();
+        updated[centerIdx] = true;
+
+        for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                if (dx * dx + dy * dy > radius * radius) continue;
+
+                int nx = centerX + dx;
+                int ny = centerY + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.TNT && !updated[nIdx]) {
+                        explodeTNT(nx, ny, radius);
+                        continue;
+                    }
+
+                    if (Math.random() < 0.8) {
+                        grid[nIdx] = (Math.random() > 0.4) ?
+                                ElementID.FIRE.getId() : ElementID.SMOKE_DARK.getId();
+                        velocity[nIdx] = -((float) Math.random() * 8f + 4f);
                         updated[nIdx] = true;
                     }
                 }

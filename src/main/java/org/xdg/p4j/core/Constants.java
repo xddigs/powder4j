@@ -23,6 +23,7 @@ public final class Constants {
     public static final int DEFAULT_BRUSH_RADIUS = 3;
     public static final int MIN_BRUSH_RADIUS = 1;
     public static final int MAX_BRUSH_RADIUS = 50;
+    public static final int TNT_EXPLOSION_RADIUS = 24;
 
     public static final int BUFFER_STRATEGY_COUNT = 3;
     public static final int DEFAULT_PALETTE_COLOR = 0xFF000000;
