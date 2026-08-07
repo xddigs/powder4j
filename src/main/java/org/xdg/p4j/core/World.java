@@ -6,6 +6,11 @@ import org.xdg.p4j.data.ElementID;
 
 import java.util.Arrays;
 
+/**
+ * Represents a 2D grid of elements. Each element is represented by a byte.
+ * The byte represents the element ID. The ID is used to determine the element
+ * type. The ID is also used to determine the element's color.
+ */
 public class World {
     private static final Logger log = LoggerFactory.getLogger(World.class);
     private final int width;
