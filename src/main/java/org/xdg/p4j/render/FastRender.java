@@ -63,7 +63,7 @@ public class FastRender extends Canvas {
             g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD,
                     Constants.PAUSE_FONT_SIZE));
             FontMetrics fm = g.getFontMetrics();
-            String pause = "| PAUSED |";
+            String pause = "PAUSED";
             int textX = getWidth() / 2 - fm.stringWidth(pause) / 2;
             int textY = getHeight() / 2 + fm.getAscent();
             g.drawString(pause, textX, textY);

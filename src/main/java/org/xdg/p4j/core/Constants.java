@@ -48,6 +48,8 @@ public final class Constants {
     public static final int WATER_DISPERSION_RATE = 16;
     public static final int MOUSE_BUTTON_RIGHT = 3;
 
+    public static final long ESCAPE_DOUBLE_PRESS_INTERVAL = 500;
+
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;

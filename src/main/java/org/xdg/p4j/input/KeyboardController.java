@@ -19,6 +19,7 @@ public class KeyboardController extends KeyAdapter {
     private final List<ElementID> selectableElements;
     private boolean tabPressed = false;
     private int selectedIndex = 0;
+    private long lastEscapeTime = 0;
 
     public KeyboardController(Brush brush) {
         this.brush = brush;
@@ -41,7 +42,7 @@ public class KeyboardController extends KeyAdapter {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            wasEscapePressed();
+            toggleEscape();
         }
     }
 
@@ -69,7 +70,12 @@ public class KeyboardController extends KeyAdapter {
         return selectableElements;
     }
 
-    private void wasEscapePressed() {
+    private void toggleEscape() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastEscapeTime < Constants.ESCAPE_DOUBLE_PRESS_INTERVAL) {
+            System.exit(0);
+        }
+        lastEscapeTime = currentTime;
         Constants.IS_RUNNING ^= true;
     }
 }

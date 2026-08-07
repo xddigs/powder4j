@@ -17,7 +17,7 @@ public class SimulationLoop implements Runnable {
     private final World world;
     private final FastRender render;
     private final Palette palette;
-    private boolean running;
+    private boolean isRunning;
     private Thread thread;
     private final KeyboardController keyController;
     private final MouseController mouseController;
@@ -32,9 +32,9 @@ public class SimulationLoop implements Runnable {
     }
 
     public synchronized void start() {
-        if (running) return;
+        if (isRunning) return;
         log.debug("Starting simulation loop thread.");
-        running = true;
+        isRunning = true;
         thread = new Thread(this, "SimulationLoop");
         thread.start();
     }
@@ -45,7 +45,7 @@ public class SimulationLoop implements Runnable {
         double amountOfTicks = Constants.TICKS_PER_SECOND;
         double ns = Constants.NANOSECONDS_IN_SECOND / amountOfTicks;
         double delta = 0;
-        while (running) {
+        while (isRunning) {
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
