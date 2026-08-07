@@ -64,4 +64,6 @@ public final class Constants {
     public static final int HUD_SLIDER_VISIBLE_MS = 2500;
     public static final Color HUD_SLIDER_COLOR = Color.WHITE;
     public static final int HUD_SLIDER_SYMBOL_OFFSET = 15;
+
+    public static final int WINDOW_SHAKING_THRESHOLD = 5;
 }

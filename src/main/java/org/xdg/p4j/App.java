@@ -13,6 +13,8 @@ import org.xdg.p4j.render.FastRender;
 import org.xdg.p4j.render.Palette;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * The primary entry point for the Powder4J application.
@@ -28,6 +30,8 @@ public class App extends JFrame {
     private final Brush brush;
     private final MouseController mouseController;
     private final KeyboardController keyController;
+    private int lastWindowX = Integer.MIN_VALUE;
+    private int lastWindowY = Integer.MIN_VALUE;
 
     public App(String title, int simulationWidth, int simulationHeight, int scale) {
         log.info("Initializing Powder4J: {}x{} (scale: {})", simulationWidth, simulationHeight, scale);
@@ -56,6 +60,29 @@ public class App extends JFrame {
         render.addKeyListener(keyController);
         render.setFocusTraversalKeysEnabled(false);
         addKeyListener(keyController);
+        addComponentListener(new ComponentAdapter() {
+            public void componentMoved(ComponentEvent e) {
+                int currentX = getLocationOnScreen().x;
+                int currentY = getLocationOnScreen().y;
+
+                if (lastWindowX == Integer.MIN_VALUE) {
+                    lastWindowX = currentX;
+                    lastWindowY = currentY;
+                    return;
+                }
+
+                int deltaX = currentX - lastWindowX;
+                int deltaY = currentY - lastWindowY;
+
+                if (Math.abs(deltaX) > Constants.WINDOW_SHAKING_THRESHOLD ||
+                        Math.abs(deltaY) > Constants.WINDOW_SHAKING_THRESHOLD) {
+                    world.applyInertia(-deltaX, -deltaY);
+                }
+
+                lastWindowX = currentX;
+                lastWindowY = currentY;
+            }
+        });
 
         loop.start();
         log.info("Application started successfully.");

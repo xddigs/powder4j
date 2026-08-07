@@ -689,6 +689,85 @@ public class World {
         }
     }
 
+    public void applyInertia(float forceX, float forceY) {
+        float sensitivity = 0.35f;
+        int stepsX = Math.round(forceX * sensitivity);
+        int stepsY = Math.round(forceY * sensitivity);
+
+        if (stepsX == 0 && stepsY == 0) return;
+
+        stepsX = Math.clamp(stepsX, -20, 20);
+        stepsY = Math.clamp(stepsY, -20, 20);
+
+        if (stepsY != 0) {
+            boolean moveUp = stepsY < 0;
+            int absStepsY = Math.abs(stepsY);
+
+            int startY = moveUp ? 0 : height - 1;
+            int endY = moveUp ? height : -1;
+            int dirY = moveUp ? 1 : -1;
+
+            for (int y = startY; y != endY; y += dirY) {
+                for (int x = 0; x < width; x++) {
+                    int idx = y * width + x;
+                    byte typeId = grid[idx];
+
+                    if (typeId == ElementID.EMPTY.getId() ||
+                            typeId == ElementID.STONE.getId()) continue;
+
+                    int currentY = y;
+                    for (int s = 0; s < absStepsY; s++) {
+                        int targetY = currentY + (moveUp ? -1 : 1);
+                        if (targetY < 0 || targetY >= height) break;
+
+                        int targetIdx = targetY * width + x;
+                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
+                                canDisplace(grid[idx], grid[targetIdx])) {
+                            swap(currentY * width + x, targetIdx);
+                            currentY = targetY;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (stepsX != 0) {
+            boolean moveLeft = stepsX < 0;
+            int absStepsX = Math.abs(stepsX);
+
+            int startX = moveLeft ? 0 : width - 1;
+            int endX = moveLeft ? width : -1;
+            int dirX = moveLeft ? 1 : -1;
+
+            for (int y = 0; y < height; y++) {
+                for (int x = startX; x != endX; x += dirX) {
+                    int idx = y * width + x;
+                    byte typeId = grid[idx];
+
+                    if (typeId == ElementID.EMPTY.getId() ||
+                            typeId == ElementID.STONE.getId()) continue;
+
+                    int currentX = x;
+                    for (int s = 0; s < absStepsX; s++) {
+                        int targetX = currentX + (moveLeft ? -1 : 1);
+                        if (targetX < 0 || targetX >= width) break;
+
+                        int targetIdx = y * width + targetX;
+                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
+                                canDisplace(grid[idx], grid[targetIdx])) {
+                            swap(y * width + currentX, targetIdx);
+                            currentX = targetX;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public int getWidth() {
         return width;
     }
