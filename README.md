@@ -12,6 +12,7 @@ Powder4J models complex emergent physics through local cell interactions. By app
 - **Radial Selection Menus**:
     - **Element Wheel (`TAB`)**: Quick-access radial HUD to select materials on the fly.
     - **Shape Wheel (`ALT`)**: Radial menu to switch brush geometries (**Circle**, **Square**, **Triangle**).
+    - **Clear Everything (`E`)**: Just a tiny bit more convinient than clearing by hand.
 - **Customizable Brush System**: Real-time radius adjustments with visual fading HUD slider feedback and geometric shape masking.
 - **Context-Aware Input Locking**: Automatic click suppression while navigating HUD menus to prevent unintentional particle spawning.
 - **Fast Buffer Rendering**: Optimized direct pixel buffer strategy ensuring high frame rates even under heavy grid loads.
