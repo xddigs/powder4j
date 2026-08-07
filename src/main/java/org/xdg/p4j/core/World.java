@@ -49,6 +49,7 @@ public class World {
                     case TNT -> updateTNT(x, y, index);
                     case WOOD -> updateWood(x, y, index);
                     case WATER, OIL, GASOLINE, MERCURY -> updateFluid(x, y, index);
+                    case CHLORINE -> updateChlorine(x, y, index);
                     case ACID -> updateAcid(x, y, index);
                     case LAVA -> updateLava(x, y, index);
                     case FIRE -> updateFire(x, y, index);
@@ -309,7 +310,17 @@ public class World {
                 int ny = y + dy;
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    if (ElementID.fromId(grid[ny * width + nx]).isWater()) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.ACID) {
+                        grid[idx] = ElementID.CHLORINE.getId();
+                        grid[nIdx] = ElementID.SAND.getId();
+                        explode(x, y);
+                        return;
+                    }
+
+                    if (neighbor.isWater()) {
                         hasTouchedWater = true;
                         break;
                     }
@@ -326,6 +337,36 @@ public class World {
         updateSand(x, y, idx);
     }
 
+    private void updateChlorine(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.WATER) {
+                        grid[idx] = ElementID.ACID.getId();
+                        updated[idx] = true;
+                        return;
+                    }
+                    if (neighbor == ElementID.WOOD) {
+                        grid[nIdx] = ElementID.SMOKE_DARK.getId();
+                        grid[idx] = ElementID.EMPTY.getId();
+                        updated[nIdx] = true;
+                        updated[idx] = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        updateFluid(x, y, idx);
+    }
+
     private void updateAcid(int x, int y, int idx) {
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -338,6 +379,13 @@ public class World {
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
                     boolean isCorrosible = neighbor != ElementID.EMPTY
                             && neighbor.isCorrosible();
+
+                    if (neighbor == ElementID.SODIUM) {
+                        grid[idx] = ElementID.SAND.getId();
+                        grid[nIdx] = ElementID.CHLORINE.getId();
+                        explodeChlorine(x, y);
+                        return;
+                    }
 
                     if (isCorrosible) {
                         grid[nIdx] = ElementID.SMOKE_GRAY.getId();
@@ -469,6 +517,31 @@ public class World {
                                 ElementID.FIRE.getId() : ElementID.SMOKE_DARK.getId();
                         velocity[nIdx] = -((float) Math.random() * 8f + 4f);
                         updated[nIdx] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void explodeChlorine(int centerX, int centerY) {
+        for (int dy = -3; dy <= 3; dy++) {
+            for (int dx = -3; dx <= 3; dx++) {
+                if (dx * dx + dy * dy > 3 * 3) continue;
+
+                int nx = centerX + dx;
+                int ny = centerY + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    byte currentId = grid[nIdx];
+
+                    if (currentId == ElementID.EMPTY.getId() ||
+                            currentId == ElementID.SMOKE_GRAY.getId()) {
+                        if (Math.random() < 0.7) {
+                            grid[nIdx] = ElementID.CHLORINE.getId();
+                            velocity[nIdx] = -((float) Math.random() * 2f);
+                            updated[nIdx] = true;
+                        }
                     }
                 }
             }
