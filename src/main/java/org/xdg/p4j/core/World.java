@@ -55,6 +55,7 @@ public class World {
             case SAND, GRAVEL -> 3;
             case WATER -> 2;
             case OIL -> 1;
+            case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> -1;
             default -> 0;
         };
     }
@@ -227,20 +228,24 @@ public class World {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
+
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
-                    if ((neighbor == ElementID.WATER || neighbor == ElementID.OIL)
-                            && Math.random() < Constants.FIRE_EVAPORATION_CHANCE) {
-
+                    if (neighbor == ElementID.OIL) {
+                        grid[nIdx] = ElementID.FIRE.getId();
+                        updated[nIdx] = true;
+                    }
+                    else if (neighbor == ElementID.WATER && Math.random() < Constants.FIRE_EVAPORATION_CHANCE) {
                         double rand = Math.random();
-                        ElementID smokeType = ElementID.SMOKE_DARK;
-                        if (rand > 0.66) smokeType = ElementID.SMOKE_LIGHT;
-                        else if (rand > 0.33) smokeType = ElementID.SMOKE_GRAY;
+                        ElementID smokeType = ElementID.SMOKE_LIGHT;
+                        if (rand > 0.66) smokeType = ElementID.SMOKE_GRAY;
 
                         grid[nIdx] = smokeType.getId();
-                        velocity[nIdx] = 0;
                         updated[nIdx] = true;
+                        grid[idx] = ElementID.EMPTY.getId();
+                        velocity[idx] = 0;
+                        return;
                     }
                 }
             }
@@ -265,8 +270,7 @@ public class World {
             boolean canRight = (x < width - 1 && grid[aboveRight] == emptyId);
 
             if (canLeft && canRight) {
-                int target = (Math.random() > Constants.RANDOM_THRESHOLD) ?
-                        aboveLeft : aboveRight;
+                int target = (Math.random() > Constants.RANDOM_THRESHOLD) ? aboveLeft : aboveRight;
                 swap(idx, target);
             } else if (canLeft) {
                 swap(idx, aboveLeft);
