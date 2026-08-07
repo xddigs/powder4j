@@ -21,6 +21,7 @@ public class KeyboardController extends KeyAdapter {
     private final List<BrushShape> selectableShapes;
     private boolean wasTabPressed = false;
     private boolean wasAltPressed = false;
+    private boolean wasEPressed = false;
     private int selectedIndex = 0;
     private int selectedShapeIndex = 0;
     private long lastEscapeTime = 0;
@@ -57,6 +58,10 @@ public class KeyboardController extends KeyAdapter {
             wasAltPressed = true;
         }
 
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            wasEPressed = true;
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             toggleEscape();
         }
@@ -73,6 +78,10 @@ public class KeyboardController extends KeyAdapter {
             wasAltPressed = false;
             brush.setShape(selectableShapes.get(selectedShapeIndex));
         }
+
+        if (e.getKeyCode() == KeyEvent.VK_E) {
+            wasEPressed = false;
+        }
     }
 
     public boolean wasTabPressed() {
@@ -81,6 +90,10 @@ public class KeyboardController extends KeyAdapter {
 
     public boolean wasAltPressed() {
         return wasAltPressed;
+    }
+
+    public boolean wasEPressed() {
+        return wasEPressed;
     }
 
     public int getSelectedIndex() {

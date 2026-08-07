@@ -58,7 +58,7 @@ public class SimulationLoop implements Runnable {
                 delta--;
             }
             render.updatePixels(world.getGrid(), world.getWidth());
-            render.render(keyController, mouseController, brush);
+            render.render(world, keyController, mouseController, brush);
         }
     }
 }

@@ -95,4 +95,9 @@ public final class Constants {
     public static final float FLUID_MOMENTUM_DISPERSION_MULTIPLIER = 0.8f;
 
     public static final int FLUID_HYDROSTATIC_PRESSURE_BONUS = 2;
+    public static final int SHOCKWAVE_RADIUS_MAX = 10;
+
+    public static final float SHOCKWAVE_ALPHA = 1.0f;
+    public static final float SHOCKWAVE_INCREMENT = 2.0f;
+    public static final float SHOCKWAVE_WIDTH = 4f;
 }

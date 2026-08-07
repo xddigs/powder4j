@@ -3,6 +3,7 @@ package org.xdg.p4j.render;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.Constants;
+import org.xdg.p4j.core.World;
 import org.xdg.p4j.data.BrushShape;
 import org.xdg.p4j.data.ElementID;
 import org.xdg.p4j.input.Brush;
@@ -27,9 +28,18 @@ public class FastRender extends Canvas {
     private static final Logger log = LoggerFactory.getLogger(FastRender.class);
     private final BufferedImage canvasImage;
     private final int[] pixelBuffer;
+    private final int scale;
+
+    private boolean shockwaveActive = false;
+    private float shockwaveRadius = 0f;
+    private float maxShockwaveRadius = 0f;
+    private float shockwaveAlpha = 1.0f;
+    private int shockwaveCenterX;
+    private int shockwaveCenterY;
 
     public FastRender(int simWidth, int simHeight, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}", simWidth, simHeight, scale);
+        this.scale = scale;
         Dimension size = new Dimension(simWidth * scale, simHeight * scale);
         setPreferredSize(size);
         setMinimumSize(size);
@@ -48,7 +58,8 @@ public class FastRender extends Canvas {
         }
     }
 
-    public void render(KeyboardController keyController, MouseController mouseController, Brush brush) {
+    public void render(World world, KeyboardController keyController,
+                       MouseController mouseController, Brush brush) {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(Constants.BUFFER_STRATEGY_COUNT);
@@ -66,6 +77,15 @@ public class FastRender extends Canvas {
             shaper(g, keyController, mouseController);
         }
 
+        if (keyController.wasEPressed()) {
+            shockwaveActive = true;
+            shockwaveRadius = Constants.SHOCKWAVE_RADIUS_MAX;
+            maxShockwaveRadius = (float) Math.hypot(getWidth(), getHeight());
+            shockwaveAlpha = Constants.SHOCKWAVE_ALPHA;
+            shockwaveCenterX = mouseController.getMouseX();
+            shockwaveCenterY = mouseController.getMouseY();
+        }
+
         slider(g, brush);
 
         if (!Constants.IS_RUNNING) {
@@ -77,6 +97,58 @@ public class FastRender extends Canvas {
             int textX = getWidth() / 2 - fm.stringWidth(pause) / 2;
             int textY = getHeight() / 2 + fm.getAscent();
             g.drawString(pause, textX, textY);
+        }
+
+        if (shockwaveActive) {
+            shockwaveRadius += Constants.SHOCKWAVE_INCREMENT;
+
+            float progress = shockwaveRadius / maxShockwaveRadius;
+            shockwaveAlpha = Constants.SHOCKWAVE_ALPHA - (progress * progress);
+
+            byte[] grid = world.getGrid();
+            int simWidth = world.getWidth();
+            int simHeight = world.getHeight();
+
+            int centerSimX = shockwaveCenterX / scale;
+            int centerSimY = shockwaveCenterY / scale;
+            float currentSimRadius = shockwaveRadius / scale;
+            float ringThicknessSim = Constants.SHOCKWAVE_WIDTH / scale + 2f;
+
+            int minX = Math.max(0, (int)(centerSimX - currentSimRadius - ringThicknessSim));
+            int maxX = Math.min(simWidth - 1, (int)(centerSimX + currentSimRadius + ringThicknessSim));
+            int minY = Math.max(0, (int)(centerSimY - currentSimRadius - ringThicknessSim));
+            int maxY = Math.min(simHeight - 1, (int)(centerSimY + currentSimRadius + ringThicknessSim));
+
+            for (int sy = minY; sy <= maxY; sy++) {
+                for (int sx = minX; sx <= maxX; sx++) {
+                    float dist = (float) Math.hypot(sx - centerSimX, sy - centerSimY);
+                    if (dist >= currentSimRadius - ringThicknessSim && dist <= currentSimRadius) {
+                        int idx = sy * simWidth + sx;
+                        grid[idx] = ElementID.EMPTY.getId();
+                    }
+                }
+            }
+
+            if (shockwaveAlpha <= 0f || shockwaveRadius >= maxShockwaveRadius) {
+                shockwaveActive = false;
+            } else {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2d.setComposite(AlphaComposite.getInstance(
+                        AlphaComposite.SRC_OVER,
+                        Math.clamp(shockwaveAlpha, 0f, 1f)));
+
+                g2d.setColor(Color.WHITE);
+                g2d.setStroke(new BasicStroke(Constants.SHOCKWAVE_WIDTH,
+                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int diameter = (int) (shockwaveRadius * 2);
+                g2d.drawOval(shockwaveCenterX - (int)shockwaveRadius,
+                        shockwaveCenterY - (int)shockwaveRadius, diameter, diameter);
+                g2d.dispose();
+            }
         }
 
         g.dispose();
@@ -307,7 +379,7 @@ public class FastRender extends Canvas {
         int minR = Constants.MIN_BRUSH_RADIUS;
         int maxR = Constants.MAX_BRUSH_RADIUS;
         int currentR = brush.getRadius();
-        
+
         float ratio = (float)(currentR - minR) / (maxR - minR);
         int knobHeight = (int)(ratio * sliderHeight);
         int knobY = sliderY + sliderHeight - knobHeight;
@@ -317,14 +389,14 @@ public class FastRender extends Canvas {
 
         g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, 20));
         FontMetrics fm = g.getFontMetrics();
-        
+
         String plus = "+";
-        g.drawString(plus, sliderX + (sliderWidth / 2) - (fm.stringWidth(plus) / 2), 
-                     sliderY - Constants.HUD_SLIDER_SYMBOL_OFFSET);
-        
+        g.drawString(plus, sliderX + (sliderWidth / 2) - (fm.stringWidth(plus) / 2),
+                sliderY - Constants.HUD_SLIDER_SYMBOL_OFFSET);
+
         String minus = "-";
-        g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2), 
-                     sliderY + sliderHeight + fm.getAscent());
+        g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2),
+                sliderY + sliderHeight + fm.getAscent());
 
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
