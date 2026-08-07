@@ -144,11 +144,13 @@ public class World {
                         updated[idx] = true;
                         updated[nIdx] = true;
                         return;
-                    }
-                    else if (neighbor == ElementID.WOOD ||
+                    } else if (neighbor == ElementID.WOOD ||
                             neighbor == ElementID.OIL ||
                             neighbor == ElementID.GUNPOWDER) {
                         grid[nIdx] = ElementID.FIRE.getId();
+                        updated[nIdx] = true;
+                    } else if (neighbor == ElementID.ICE) {
+                        grid[nIdx] = ElementID.WATER.getId();
                         updated[nIdx] = true;
                     }
                 }
@@ -434,6 +436,9 @@ public class World {
                         grid[idx] = ElementID.EMPTY.getId();
                         velocity[idx] = 0;
                         return;
+                    } else if (neighbor == ElementID.ICE) {
+                        grid[nIdx] = ElementID.WATER.getId();
+                        updated[nIdx] = true;
                     }
                 }
             }
