@@ -430,7 +430,6 @@ public class World {
                         double rand = Math.random();
                         ElementID smokeType = ElementID.SMOKE_LIGHT;
                         if (rand > 0.66) smokeType = ElementID.SMOKE_GRAY;
-
                         grid[nIdx] = smokeType.getId();
                         updated[nIdx] = true;
                         grid[idx] = ElementID.EMPTY.getId();
