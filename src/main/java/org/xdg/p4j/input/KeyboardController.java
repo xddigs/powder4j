@@ -5,6 +5,11 @@ import org.xdg.p4j.data.ElementID;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/*
+ * Handles keyboard input events for the simulation.
+ * This class allows for element selection.
+ * Hold TAB to select the brush, use the mouse to select elements.
+ */
 public class KeyboardController extends KeyAdapter {
 
     private final Brush brush;
