@@ -40,20 +40,8 @@ public class KeyboardController extends KeyAdapter {
             tabPressed = true;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && tabPressed) {
-            selectedIndex = (selectedIndex - 1 + selectableElements.size()) % selectableElements.size();
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && tabPressed) {
-            selectedIndex = (selectedIndex + 1) % selectableElements.size();
-        }
-
-        if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
-            int index = e.getKeyCode() - KeyEvent.VK_1;
-            if (index < selectableElements.size()) {
-                brush.setCurrentElement(selectableElements.get(index));
-                selectedIndex = index;
-            }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
         }
     }
 
