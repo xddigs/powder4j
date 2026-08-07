@@ -1,11 +1,20 @@
 package org.xdg.p4j.input;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xdg.p4j.core.World;
 import org.xdg.p4j.data.ElementID;
 
 import java.awt.event.*;
 
-public class MouseController extends MouseAdapter implements MouseMotionListener, MouseWheelListener {
+/**
+ * Facilitates user interaction with the simulation through mouse input.
+ * This controller translates mouse gestures and clicks into world
+ * modifications, enabling the placement or removal of elements.
+ */
+public class MouseController extends MouseAdapter implements 
+        MouseMotionListener, MouseWheelListener {
+    private static final Logger log = LoggerFactory.getLogger(MouseController.class);
     private final World world;
     private final Brush brush;
     private final int scale;
@@ -24,6 +33,7 @@ public class MouseController extends MouseAdapter implements MouseMotionListener
 
     @Override
     public void mousePressed(MouseEvent e) {
+        log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
         isRightClick = (e.getButton() == MouseEvent.BUTTON3);
 
@@ -37,6 +47,7 @@ public class MouseController extends MouseAdapter implements MouseMotionListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        log.trace("Mouse released");
         isPressed = false;
         lastGridX = -1;
         lastGridY = -1;

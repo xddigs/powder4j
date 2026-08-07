@@ -1,15 +1,24 @@
 package org.xdg.p4j.core;
-
+    
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xdg.p4j.data.ElementID;
 import java.util.Arrays;
 
+/**
+ * Represents the simulation grid where physical interactions occur.
+ * The world maintains the state of each cell and implements the cellular
+ * automata rules that govern material behavior and movement.
+ */
 public class World {
+    private static final Logger log = LoggerFactory.getLogger(World.class);
     private final int width;
     private final int height;
     private final byte[] grid;
     private final boolean[] updated;
 
     public World(int width, int height) {
+        log.debug("Constructing simulation world: {}x{}", width, height);
         this.width = width;
         this.height = height;
         this.grid = new byte[width * height];
@@ -73,6 +82,7 @@ public class World {
     }
 
     private void spawnTest() {
+        log.debug("Spawning initial test particles.");
         int centerX = width / 2;
         for (int y = 10; y < 40; y++) {
             for (int x = centerX - 15; x < centerX + 15; x++) {

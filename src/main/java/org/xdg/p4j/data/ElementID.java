@@ -1,5 +1,10 @@
 package org.xdg.p4j.data;
 
+/**
+ * Defines the distinct types of elements available within the simulation.
+ * Each element possesses unique properties, such as its identifier,
+ * descriptive name, and visual color representation.
+ */
 public enum ElementID {
     EMPTY((byte) 0, "Air", 0xFF0B0E14),
     WALL ((byte) 1, "Stone", 0xFF808080),

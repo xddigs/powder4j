@@ -5,6 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.xdg.p4j.render.FastRenderer;
 import org.xdg.p4j.render.Palette;
 
+/**
+ * Manages the execution of the simulation and rendering at a fixed frequency.
+ * This class ensures that the world state updates and frame rendering occur
+ * consistently to provide a fluid visual experience.
+ */
 public class SimulationLoop implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SimulationLoop.class);
     private final World world;
@@ -21,12 +26,14 @@ public class SimulationLoop implements Runnable {
 
     public synchronized void start() {
         if (running) return;
+        log.debug("Starting simulation loop thread.");
         running = true;
         thread = new Thread(this, "SimulationLoop");
         thread.start();
     }
 
     public synchronized void stop() {
+        log.debug("Stopping simulation loop thread.");
         running = false;
         try {
             thread.join();

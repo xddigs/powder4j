@@ -1,5 +1,8 @@
 package org.xdg.p4j.render;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -7,14 +10,20 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+/**
+ * Responsible for visual representation of the simulation state.
+ * Utilizing a buffered approach, this class efficiently renders the grid
+ * to the screen by mapping element identifiers to their respective colors.
+ */
 public class FastRenderer extends Canvas {
-    
+    private static final Logger log = LoggerFactory.getLogger(FastRenderer.class);
     private final int simWidth;
     private final int simHeight;
     private final BufferedImage canvasImage;
     private final int[] pixelBuffer;
 
     public FastRenderer(int simWidth, int simHeight, int scale) {
+        log.debug("Initializing renderer: {}x{} at scale {}", simWidth, simHeight, scale);
         this.simWidth = simWidth;
         this.simHeight = simHeight;
 
