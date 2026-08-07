@@ -112,22 +112,22 @@ public class FastRender extends Canvas {
             g.setColor(Constants.HUD_BORDER_COLOR);
             g.drawArc(centerX - outerRadius, centerY - outerRadius, outerRadius * 2, outerRadius * 2,
                     (int) -startAngle, (int) -angleStep);
-
-            double textAngle = Math.toRadians(startAngle + angleStep / 2);
-            int textRadius = (outerRadius + innerRadius) / 2;
-            int tx = (int) (centerX + Math.cos(textAngle) * textRadius);
-            int ty = (int) (centerY + Math.sin(textAngle) * textRadius);
-
-            g.setColor(i == selectedIdx ? Constants.HUD_TEXT_SELECTED : Constants.HUD_TEXT_UNSELECTED);
-            FontMetrics fm = g.getFontMetrics();
-            int textWidth = fm.stringWidth(el.getName());
-            g.drawString(el.getName(), tx - textWidth / 2, ty + fm.getAscent() / 2);
         }
 
         g.setColor(Constants.HUD_CENTER_COLOR);
         g.fillOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
         g.setColor(Constants.HUD_TEXT_UNSELECTED);
         g.drawOval(centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+
+        ElementID selectedElement = elements[selectedIdx];
+        String elementName = selectedElement.getName();
+        g.setFont(new Font(Constants.HUD_FONT_FAMILY, Font.BOLD, Constants.HUD_FONT_SIZE));
+        FontMetrics fm = g.getFontMetrics();
+        int textX = centerX - fm.stringWidth(elementName) / 2;
+        int textY = centerY + outerRadius + Constants.HUD_TEXT_Y_OFFSET + fm.getAscent();
+        
+        g.setColor(Constants.HUD_TEXT_UNSELECTED);
+        g.drawString(elementName, textX, textY);
     }
 
     public int getSimWidth() { return simWidth; }
