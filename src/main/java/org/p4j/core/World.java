@@ -33,9 +33,7 @@ public class World {
             for (int i = 0; i < width; i++) {
                 int x = leftToRight ? i : (width - 1 - i);
                 int index = y * width + x;
-
                 if (updated[index]) continue;
-
                 ElementID type = ElementID.fromId(grid[index]);
 
                 switch (type) {
@@ -46,16 +44,14 @@ public class World {
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case TNT -> updateTNT(x, y, index);
                     case WOOD -> updateWood(x, y, index);
-                    case WATER, OIL, GASOLINE, MERCURY ->
-                            updateFluid(x, y, index);
+                    case WATER, OIL, GASOLINE, MERCURY -> updateFluid(x, y, index);
                     case CHLORINE -> updateChlorine(x, y, index);
                     case ACID -> updateAcid(x, y, index);
                     case LAVA -> updateLava(x, y, index);
                     case FIRE -> updateFire(x, y, index);
                     case STEAM -> updateSteam(x, y, index);
                     case METHANE -> updateMethane(x, y, index);
-                    case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT ->
-                            updateSmoke(x, y, index);
+                    case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> updateSmoke(x, y, index);
                     default -> velocity[index] = 0;
                 }
             }
@@ -484,47 +480,86 @@ public class World {
     }
 
     private void growTree(int startX, int startY) {
-        int treeHeight = ThreadLocalRandom.current().nextInt(6, 12);
+        int waterAbsorbed = absorb(startX, startY, Constants.TREE_WATER_ABSORB_RADIUS, Constants.TREE_WATER_ABSORB_MAX);
+        int baseHeight = ThreadLocalRandom.current().nextInt(Constants.TREE_BASE_HEIGHT_MIN, Constants.TREE_BASE_HEIGHT_MAX);
+        int treeHeight = baseHeight + (waterAbsorbed * Constants.TREE_HEIGHT_PER_WATER);
+        int trunkWidth = Constants.TREE_TRUNK_BASE_WIDTH + (waterAbsorbed / Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
+        int maxLeafRadius = Constants.TREE_LEAF_BASE_RADIUS + (waterAbsorbed / Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
+
         int currentY = startY;
         int currentX = startX;
 
         for (int i = 0; i < treeHeight; i++) {
             if (currentY < 0) break;
-            int idx = currentY * width + currentX;
 
-            ElementID current = ElementID.fromId(grid[idx]);
-            if (current == ElementID.EMPTY || current == ElementID.SEED ||
-                    current.isLiquid() || current == ElementID.SMOKE_LIGHT) {
-                grid[idx] = ElementID.WOOD.getId();
-                updated[idx] = true;
-            } else if (i > 0 && current != ElementID.WOOD) {
-                break;
+            int halfWidth = trunkWidth / 2;
+            for (int wx = -halfWidth; wx <= halfWidth; wx++) {
+                int tx = currentX + wx;
+                if (tx >= 0 && tx < width) {
+                    int idx = currentY * width + tx;
+                    ElementID current = ElementID.fromId(grid[idx]);
+                    if (current == ElementID.EMPTY || current == ElementID.SEED ||
+                            current.isLiquid() || current == ElementID.SMOKE_LIGHT || current == ElementID.GRASS) {
+                        grid[idx] = ElementID.WOOD.getId();
+                        updated[idx] = true;
+                    }
+                }
             }
 
-            if (i >= treeHeight - 4) {
-                int leafRadius = (i == treeHeight - 1) ? 2 : 1;
-                for (int ly = -leafRadius; ly <= leafRadius; ly++) {
-                    for (int lx = -leafRadius; lx <= leafRadius; lx++) {
-                        int leafX = currentX + lx;
-                        int leafY = currentY + ly;
-                        if (leafX >= 0 && leafX < width && leafY >= 0 && leafY < height) {
-                            int leafIdx = leafY * width + leafX;
-                            if (grid[leafIdx] == ElementID.EMPTY.getId()) {
-                                grid[leafIdx] = ElementID.GRASS.getId();
-                                updated[leafIdx] = true;
+            int canopyStartHeight = treeHeight - (Constants.TREE_LEAF_CANOPY_OFFSET_BASE + waterAbsorbed / Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
+            if (i >= canopyStartHeight) {
+                int currentLeafRadius = Math.min(maxLeafRadius, (treeHeight - i) + Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
+
+                for (int ly = -currentLeafRadius; ly <= currentLeafRadius; ly++) {
+                    for (int lx = -currentLeafRadius; lx <= currentLeafRadius; lx++) {
+                        if (lx * lx + ly * ly <= currentLeafRadius * currentLeafRadius + Constants.TREE_LEAF_CIRCLE_TOLERANCE) {
+                            int leafX = currentX + lx;
+                            int leafY = currentY + ly;
+
+                            if (leafX >= 0 && leafX < width && leafY >= 0 && leafY < height) {
+                                int leafIdx = leafY * width + leafX;
+                                if (grid[leafIdx] == ElementID.EMPTY.getId()) {
+                                    grid[leafIdx] = ElementID.GRASS.getId();
+                                    updated[leafIdx] = true;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if (i > 2 && ThreadLocalRandom.current().nextFloat() < 0.35f) {
+            float curveChance = trunkWidth > Constants.TREE_TRUNK_BASE_WIDTH ? Constants.TREE_CURVE_CHANCE_THICK : Constants.TREE_CURVE_CHANCE_THIN;
+            if (i > Constants.TREE_CURVE_MIN_HEIGHT_STEP && ThreadLocalRandom.current().nextFloat() < curveChance) {
                 currentX += ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
-                currentX = Math.clamp(currentX, 0, width - 1);
+                currentX = Math.clamp(currentX, Constants.TREE_MIN_X_MARGIN, width - Constants.TREE_MAX_X_MARGIN_OFFSET);
             }
 
             currentY--;
         }
+    }
+
+    private int absorb(int startX, int startY, int radius, int maxWater) {
+        int count = 0;
+        for (int dy = -radius; dy <= radius; dy++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                if (count >= maxWater) return count;
+
+                int nx = startX + dx;
+                int ny = startY + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID element = ElementID.fromId(grid[nIdx]);
+
+                    if (element.isWater()) {
+                        grid[nIdx] = ElementID.EMPTY.getId();
+                        updated[nIdx] = true;
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
     }
 
     private void updateSteam(int x, int y, int idx) {

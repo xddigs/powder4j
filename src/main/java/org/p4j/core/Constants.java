@@ -76,6 +76,27 @@ public final class Constants {
     public static final double GROW_TREE_CHANCE = 0.005;
     public static final double GROW_GRASS_CHANCE = 0.960;
 
+    public static final int TREE_WATER_ABSORB_RADIUS = 3;
+    public static final int TREE_WATER_ABSORB_MAX = 12;
+    public static final int TREE_BASE_HEIGHT_MIN = 6;
+    public static final int TREE_BASE_HEIGHT_MAX = 12;
+    public static final int TREE_HEIGHT_PER_WATER = 2;
+    public static final int TREE_TRUNK_BASE_WIDTH = 1;
+    public static final int TREE_WATER_DIVISOR_TRUNK_WIDTH = 4;
+    public static final int TREE_LEAF_BASE_RADIUS = 4;
+    public static final int TREE_WATER_DIVISOR_LEAF_RADIUS = 1;
+    public static final int TREE_LEAF_CANOPY_OFFSET_BASE = 7;
+    public static final int TREE_WATER_DIVISOR_CANOPY_OFFSET = 1;
+    public static final int TREE_LEAF_RADIUS_HEIGHT_OFFSET = 1;
+    public static final int TREE_LEAF_CIRCLE_TOLERANCE = 3;
+    public static final int TREE_CURVE_MIN_HEIGHT_STEP = 3;
+
+    public static final float TREE_CURVE_CHANCE_THICK = 0.15f;
+    public static final float TREE_CURVE_CHANCE_THIN = 0.30f;
+
+    public static final int TREE_MIN_X_MARGIN = 1;
+    public static final int TREE_MAX_X_MARGIN_OFFSET = 2;
+
     public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
     public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;
 
