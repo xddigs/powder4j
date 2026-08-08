@@ -85,6 +85,7 @@ public final class Constants {
     public static final double METHANE_CREATION_CHANCE = 0.1;
     public static final double MERCURY_CREATION_CHANCE = 0.2;
     public static final double GUNPOWDER_CREATION_CHANCE = 0.1;
+    public static final double THERMITE_CREATION_CHANCE = 0.1;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;

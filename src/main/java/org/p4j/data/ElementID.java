@@ -8,7 +8,7 @@ package org.p4j.data;
 public enum ElementID {
     EMPTY((byte) 0, "Air", "O2", 0xFF0B0E14, false, 0, false, false, false, false, false, 0),
     SMOKE_DARK((byte) 1, "Dark Smoke", "C", 0xFF3E4451, false, -1, false, false, false, false, false, 0),
-    SODIUM((byte) 2, "Sodium", "Na", 0xFFD1D5DB, false, 3, false, true, false, false, false, 0),
+    SODIUM((byte) 2, "Sodium", "Na", 0xFFD1D5DB, true, 3, false, true, false, false, false, 0),
     CHLORINE((byte) 3, "Chlorine", "Cl2", 0xFF88FF00, false, 1, false, false, false, false, false, 0),
     MERCURY((byte) 4, "Mercury", "Hg", 0xFFCFD8DC, false, 5, false, false, false, false, true, 1),
     WATER((byte) 5, "Water", "H2O", 0xFF4FA6ED, true, 2, false, false, true, false, true, 5),
@@ -38,7 +38,8 @@ public enum ElementID {
     WET_SAND((byte) 29, "Wet Sand", "SiO2", 0xFF9E753B, false, 4, false, true, false, false, false, 0),
     FIRE((byte) 30, "Fire", "Q", 0xFFE06C75, true, 0, false, false, false, true, false, 0),
     GRASS((byte) 31, "Grass", "G", 0xFF4CAF50, false, 4, true, true, false, false, false, 0),
-    SILICON((byte) 32, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0);
+    SILICON((byte) 32, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0),
+    CARBON((byte) 33, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, 0);
 
     private final byte id;
     private final String name;
