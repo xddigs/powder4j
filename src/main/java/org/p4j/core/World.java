@@ -487,7 +487,6 @@ public class World {
 
     private void updatePowder(int x, int y, int idx) {
         ElementID currentType = ElementID.fromId(grid[idx]);
-        boolean hasTouchedWater = false;
 
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -499,29 +498,10 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
-                    if (currentType == ElementID.SILICON && (
-                            neighbor == ElementID.GRAVEL ||
-                                    neighbor == ElementID.STONE)) {
-                        if (Math.random() < Constants.THERMITE_CREATION_CHANCE) {
-                            grid[idx] = ElementID.THERMITE.getId();
-                            grid[nIdx] = ElementID.EMPTY.getId();
-                            updated[idx] = true;
-                            updated[nIdx] = true;
-                            return;
-                        }
-                    }
-
                     if (currentType == ElementID.SILICON) {
-                        if (neighbor == ElementID.FIRE ||
-                                neighbor == ElementID.LAVA) {
+                        if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA) {
                             grid[idx] = ElementID.GLASS.getId();
                             updated[idx] = true;
-                            return;
-                        } else if (neighbor == ElementID.SALT) {
-                            grid[idx] = ElementID.SODIUM.getId();
-                            grid[nIdx] = ElementID.SAND.getId();
-                            updated[idx] = true;
-                            updated[nIdx] = true;
                             return;
                         }
                     }
@@ -531,16 +511,6 @@ public class World {
                                 Constants.MUD_SPREAD_CHANCE) {
                             grid[idx] = ElementID.MUD.getId();
                             grid[nIdx] = ElementID.MUD.getId();
-                            updated[idx] = true;
-                            updated[nIdx] = true;
-                            return;
-                        }
-                    }
-
-                    if (currentType == ElementID.SALT && neighbor == ElementID.DIRT) {
-                        if (Math.random() < Constants.GUNPOWDER_CREATION_CHANCE) {
-                            grid[idx] = ElementID.GUNPOWDER.getId();
-                            grid[nIdx] = ElementID.EMPTY.getId();
                             updated[idx] = true;
                             updated[nIdx] = true;
                             return;
@@ -562,13 +532,6 @@ public class World {
                         }
                     }
 
-                    if (neighbor == ElementID.ACID) {
-                        grid[idx] = ElementID.CHLORINE.getId();
-                        grid[nIdx] = ElementID.SAND.getId();
-                        explode(x, y);
-                        return;
-                    }
-
                     if (currentType == ElementID.SALT && (neighbor == ElementID.FIRE ||
                             neighbor == ElementID.LAVA)) {
                         grid[idx] = ElementID.SODIUM.getId();
@@ -579,14 +542,14 @@ public class World {
                     }
 
                     if (currentType == ElementID.SALT && neighbor.isWater()) {
-                        grid[idx] = ElementID.SMOKE_GRAY.getId();
-                        grid[nIdx] = ElementID.SMOKE_LIGHT.getId();
+                        grid[idx] = ElementID.WATER.getId();
+                        updated[idx] = true;
                         return;
                     }
 
                     if (currentType == ElementID.SODIUM && neighbor.isWater()) {
                         grid[idx] = ElementID.FIRE.getId();
-                        grid[nIdx] = ElementID.SMOKE_DARK.getId();
+                        grid[nIdx] = ElementID.HYDROGEN.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
                         explode(x, y);
@@ -891,9 +854,11 @@ public class World {
                     boolean isCorrosible = neighbor != ElementID.EMPTY && neighbor.isCorrosible();
 
                     if (neighbor == ElementID.SODIUM) {
-                        grid[idx] = ElementID.SAND.getId();
-                        grid[nIdx] = ElementID.CHLORINE.getId();
-                        explodeChlorine(x, y);
+                        grid[idx] = ElementID.SALT.getId();
+                        grid[nIdx] = ElementID.HYDROGEN.getId();
+                        updated[idx] = true;
+                        updated[nIdx] = true;
+                        explode(x, y);
                         return;
                     }
 
@@ -922,21 +887,13 @@ public class World {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
-                    if (neighbor == ElementID.SAND) {
-                        if (Math.random() < Constants.TNT_CRAFTING_CHANCE) {
-                            grid[idx] = ElementID.TNT.getId();
-                            grid[nIdx] = ElementID.EMPTY.getId();
-                            velocity[idx] = 0;
-                            updated[idx] = true;
-                            updated[nIdx] = true;
-                            return;
-                        }
-                    }
 
-                    if (neighbor == ElementID.FIRE) {
+                    if (neighbor == ElementID.FIRE || neighbor ==
+                            ElementID.LAVA || neighbor.isHot()) {
                         grid[idx] = ElementID.FIRE.getId();
                         velocity[idx] = 0;
                         updated[idx] = true;
+                        explode(x, y);
                         return;
                     }
                 }
@@ -948,8 +905,6 @@ public class World {
 
     private void updateWood(int x, int y, int idx) {
         boolean isNearFire = false;
-        int fireX = x;
-        int fireY = y;
 
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -1126,22 +1081,16 @@ public class World {
 
                     if (neighbor == ElementID.MUD && Math.random() <
                             Constants.METHANE_CREATION_CHANCE) {
-                        grid[nIdx] = ElementID.METHANE.getId();
-                        grid[idx] = ElementID.DIRT.getId();
+                        grid[nIdx] = ElementID.DIRT.getId();
+                        grid[idx] = ElementID.STEAM.getId();
                         updated[nIdx] = true;
                         updated[idx] = true;
                         return;
                     }
 
-                    if (neighbor == ElementID.OIL && Math.random() <
-                            Constants.MERCURY_CREATION_CHANCE) {
-                        grid[nIdx] = ElementID.MERCURY.getId();
-                        updated[nIdx] = true;
-                    }
-
                     if (neighbor == ElementID.SILICON && Math.random() <
-                            Constants.GUNPOWDER_CREATION_CHANCE) {
-                        grid[nIdx] = ElementID.GUNPOWDER.getId();
+                            Constants.GLASS_FUSION_CHANCE) {
+                        grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
                     }
 
@@ -1149,7 +1098,10 @@ public class World {
                         nearFuel = true;
                         if (neighbor == ElementID.OIL) {
                             grid[nIdx] = ElementID.FIRE.getId();
+                            grid[idx] = ElementID.SMOKE_DARK.getId();
                             updated[nIdx] = true;
+                            updated[idx] = true;
+                            return;
 
                         } else if (neighbor.isFlammable() && neighbor != ElementID.OIL &&
                                 Math.random() < Constants.WOOD_IGNITION_CHANCE) {
