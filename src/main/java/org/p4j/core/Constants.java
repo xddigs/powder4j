@@ -62,6 +62,7 @@ public final class Constants {
 
     public static final long ESCAPE_DOUBLE_PRESS_INTERVAL = 500;
 
+    public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
@@ -76,6 +77,14 @@ public final class Constants {
     public static final double GROW_TREE_CHANCE = 0.005;
     public static final double GROW_GRASS_CHANCE = 0.960;
     public static final double WOOD_ABSORPTION_CHANCE = 0.2;
+    public static final double GASOLINE_CREATION_CHANCE = 0.15;
+    public static final double ICE_CREATION_CHANCE = 0.2;
+    public static final double GRAVEL_CREATION_CHANCE = 0.002;
+    public static final double LAVA_CREATION_CHANCE = 0.001;
+    public static final double CEMENT_CREATION_CHANCE = 0.005;
+    public static final double METHANE_CREATION_CHANCE = 0.01;
+    public static final double MERCURY_CREATION_CHANCE = 0.008;
+    public static final double GUNPOWDER_CREATION_CHANCE = 0.01;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;
