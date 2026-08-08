@@ -75,6 +75,7 @@ public final class Constants {
     public static final double MUD_SPREAD_CHANCE = 0.15;
     public static final double GROW_TREE_CHANCE = 0.005;
     public static final double GROW_GRASS_CHANCE = 0.960;
+    public static final double WOOD_ABSORPTION_CHANCE = 0.2;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;
@@ -119,6 +120,8 @@ public final class Constants {
     public static final float FLUID_DIAGONAL_VELOCITY_RETENTION = 0.5f;
     public static final float FLUID_MOMENTUM_THRESHOLD = 2.0f;
     public static final float FLUID_MOMENTUM_DISPERSION_MULTIPLIER = 0.8f;
+
+    public static final int MUD_MAX_DEPTH = 15;
 
     public static final int FLUID_HYDROSTATIC_PRESSURE_BONUS = 2;
     public static final int SHOCKWAVE_RADIUS_MAX = 10;

@@ -252,11 +252,11 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
-                    if (currentElement.isWater() && neighbor == ElementID.MUD) {
-                        grid[idx] = ElementID.EMPTY.getId();
-                        grid[nIdx] = ElementID.MUD.getId();
-                        updated[nIdx] = true;
-                        return;
+                    if (currentElement.isWater() && (neighbor == ElementID.MUD
+                            || neighbor == ElementID.DIRT)) {
+                        if (soak(x, y, idx)) {
+                            return;
+                        }
                     }
 
                     if (isFlammableFluid && neighbor.isHot()) {
@@ -360,6 +360,40 @@ public class World {
         if (!flow(x, y, idx, primaryDir, dispersion, currentId)) {
             flow(x, y, idx, -primaryDir, dispersion, currentId);
         }
+    }
+
+    private boolean soak(int waterX, int waterY, int waterIdx) {
+        int maxDepth = Constants.MUD_MAX_DEPTH;
+        int[] xOffsets = {0, -1, 1};
+
+        for (int dx : xOffsets) {
+            int checkX = waterX + dx;
+            if (checkX < 0 || checkX >= width) continue;
+
+            for (int dy = 1; dy <= maxDepth; dy++) {
+                int checkY = waterY + dy;
+                if (checkY >= height) break;
+
+                int targetIdx = checkY * width + checkX;
+                ElementID element = ElementID.fromId(grid[targetIdx]);
+
+                if (element == ElementID.DIRT) {
+                    grid[waterIdx] = ElementID.EMPTY.getId();
+                    velocity[waterIdx] = 0;
+                    updated[waterIdx] = true;
+
+                    grid[targetIdx] = ElementID.MUD.getId();
+                    updated[targetIdx] = true;
+                    return true;
+                }
+
+                if (element != ElementID.MUD) {
+                    break;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean flow(int x, int y, int idx, int dir, int maxDistance, byte currentId) {
@@ -801,7 +835,12 @@ public class World {
                 grid[idx] = ElementID.FIRE.getId();
                 velocity[idx] = 0;
                 updated[idx] = true;
+                return;
             }
+        }
+
+        if (Math.random() < Constants.WOOD_ABSORPTION_CHANCE) {
+            absorb(x, y, 1, 1);
         }
     }
 
