@@ -13,26 +13,13 @@ import java.util.List;
 
 public class ElementMenu {
     private int selectedTabIndex = 0;
-    private final String[] tabs = {
-            "All", "Solids", "Liquids", "Gases", "Powders"
-    };
     private List<ElementID> currentElements;
 
     public ElementMenu() {
-        loadTab(0);
+        load(0);
     }
 
-    public void selectNextTab() {
-        loadTab((selectedTabIndex + 1) % tabs.length);
-    }
-
-    public void selectPreviousTab() {
-        int next = selectedTabIndex - 1;
-        if (next < 0) next = tabs.length - 1;
-        loadTab(next);
-    }
-
-    private void loadTab(int index) {
+    private void load(int index) {
         currentElements = new ArrayList<>();
         this.selectedTabIndex = index;
 
@@ -89,11 +76,9 @@ public class ElementMenu {
     public void render(Graphics2D g, int width, int height,
                        MouseController mouse) {
         if (currentElements == null || currentElements.isEmpty()) return;
-
         g.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         int centerX = width / 2;
         int centerY = height / 2;
@@ -101,14 +86,12 @@ public class ElementMenu {
         int innerRadius = K.WHEEL_INNER_RADIUS;
 
         ElementID hoveredElement = getHoveredElement(width, height, mouse);
-
         g.setColor(K.WHEEL_BG_COLOR);
         g.fillOval(
                 centerX - outerRadius - 4,
                 centerY - outerRadius - 4,
                 (outerRadius + 4) * 2,
-                (outerRadius + 4) * 2
-        );
+                (outerRadius + 4) * 2);
 
         int count = currentElements.size();
         double anglePerSlice = K.HUD_FULL_CIRCLE / count;
@@ -132,7 +115,6 @@ public class ElementMenu {
             sliceArea.subtract(new Area(innerCircle));
 
             boolean isHovered = (element == hoveredElement);
-
             Color eColor = new Color(element.getColorArgb(), true);
             if (isHovered) {
                 g.setColor(eColor.brighter());
@@ -163,31 +145,18 @@ public class ElementMenu {
                 innerRadius * 2
         );
 
-        String textToDisplay;
-        Color textColor;
-
         if (hoveredElement != null) {
-            textToDisplay = hoveredElement.getName();
-            textColor = new Color(hoveredElement.getColorArgb(), true);
-            g.setFont(new Font(
-                    K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_SYMBOL_FONT_SIZE + 2
-            ));
-        } else {
-            textToDisplay = tabs[selectedTabIndex];
-            textColor = Color.WHITE;
-            g.setFont(new Font(
-                    K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_TAB_FONT_SIZE
-            ));
+            String eName = hoveredElement.getName();
+            g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD,
+                    K.MENU_SYMBOL_FONT_SIZE + 2));
+            FontMetrics fmElem = g.getFontMetrics();
+
+            int elemX = centerX - fmElem.stringWidth(eName) / 2;
+            int elemY = centerY + outerRadius + 20 + fmElem.getAscent();
+
+            Color eColor = new Color(hoveredElement.getColorArgb(), true);
+            g.setColor(eColor);
+            g.drawString(eName, elemX, elemY);
         }
-
-        FontMetrics fm = g.getFontMetrics();
-        int textWidth = fm.stringWidth(textToDisplay);
-        int textX = centerX - textWidth / 2;
-        int textY = centerY + (fm.getAscent() - fm.getDescent()) / 2;
-
-        g.setColor(new Color(0, 0, 0, 180));
-        g.drawString(textToDisplay, textX + 1, textY + 1);
-        g.setColor(textColor);
-        g.drawString(textToDisplay, textX, textY);
     }
 }

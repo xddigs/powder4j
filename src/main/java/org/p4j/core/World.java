@@ -14,8 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * to the ReactionEngine.
  */
 public class World {
-    private static final Logger log =
-            LoggerFactory.getLogger(World.class);
+    private static final Logger log = LoggerFactory.getLogger(World.class);
     private final ReactionEngine reaction;
     private final MovementEngine movement;
     private final int width;
@@ -38,8 +37,7 @@ public class World {
 
     public void update() {
         for (int y = height - 1; y >= 0; y--) {
-            boolean leftToRight =
-                    ThreadLocalRandom.current().nextBoolean();
+            boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
 
             for (int i = 0; i < width; i++) {
                 int x = leftToRight ? i : (width - 1 - i);

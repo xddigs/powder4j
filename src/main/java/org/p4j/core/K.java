@@ -88,7 +88,7 @@ public final class K {
     public static final float SHOCKWAVE_MIN_ALPHA = 0.0f;
     public static final float SHOCKWAVE_MAX_ALPHA = 1.0f;
     public static final float SHOCKWAVE_RADIUS_MAX = 0.0f;
-    public static final float SHOCKWAVE_INCREMENT = 8.0f;
+    public static final float SHOCKWAVE_INCREMENT = 2.0f;
     public static final float SHOCKWAVE_WIDTH = 3.0f;
     public static final float SHOCKWAVE_RING_EXTRA_THICKNESS = 1.0f;
 

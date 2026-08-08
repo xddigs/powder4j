@@ -81,6 +81,16 @@ public class FastRender extends Canvas {
                 getWidth(), getHeight(), null);
 
         if (keyController.wasTabPressed()) {
+            ElementID hovered = elementMenu.getHoveredElement(
+                    getWidth(), getHeight(), mouseController);
+            if (hovered != null) {
+                List<ElementID> selectable = keyController.getSelectableElements();
+                int newIndex = selectable.indexOf(hovered);
+                if (newIndex != -1) {
+                    keyController.setSelectedIndex(newIndex);
+                }
+            }
+
             elementMenu.render(g, getWidth(), getHeight(), mouseController);
         }
 
