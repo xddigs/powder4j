@@ -7,6 +7,10 @@ import org.p4j.data.ElementID;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * The entire simulated world and its rulesets. How it behaves, what it does,
+ * and how it is updated.
+ */
 public class World {
     private static final Logger log = LoggerFactory.getLogger(World.class);
     private final int width;
