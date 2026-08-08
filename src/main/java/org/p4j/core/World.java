@@ -41,7 +41,8 @@ public class World {
                 ElementID type = ElementID.fromId(grid[index]);
 
                 switch (type) {
-                    case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
+                    case SAND, GRAVEL -> updateSand(x, y, index);
+                    case CEMENT -> updateCement(x, y, index);
                     case HYDROGEN -> updateHydrogen(x, y, index);
                     case CARBON -> updateCarbon(x, y, index);
                     case WET_SAND, GRASS -> updateSolid(x, y, index);
@@ -548,11 +549,11 @@ public class World {
                     }
 
                     if (currentType == ElementID.SODIUM && neighbor.isWater()) {
+                        explode(x, y);
                         grid[idx] = ElementID.FIRE.getId();
                         grid[nIdx] = ElementID.HYDROGEN.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
-                        explode(x, y);
                         return;
                     }
                 }
@@ -780,6 +781,12 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
+                    if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA ||
+                            neighbor.isHot() || neighbor == ElementID.HYDROGEN) {
+                        explodeChlorine(x, y);
+                        return;
+                    }
+
                     if (neighbor == ElementID.WATER) {
                         grid[idx] = ElementID.ACID.getId();
                         updated[idx] = true;
@@ -854,11 +861,11 @@ public class World {
                     boolean isCorrosible = neighbor != ElementID.EMPTY && neighbor.isCorrosible();
 
                     if (neighbor == ElementID.SODIUM) {
+                        explode(x, y);
                         grid[idx] = ElementID.SALT.getId();
                         grid[nIdx] = ElementID.HYDROGEN.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
-                        explode(x, y);
                         return;
                     }
 
@@ -1037,20 +1044,6 @@ public class World {
         }
     }
 
-    private boolean isPathClearHorizontal(int startX, int endX, int y) {
-        int step = (endX > startX) ? 1 : -1;
-        int currentX = startX + step;
-        byte emptyId = ElementID.EMPTY.getId();
-
-        while (currentX != endX) {
-            if (grid[y * width + currentX] != emptyId) {
-                return false;
-            }
-            currentX += step;
-        }
-        return true;
-    }
-
     private void updateFire(int x, int y, int idx) {
         boolean nearFuel = false;
         for (int dy = -1; dy <= 1; dy++) {
@@ -1066,9 +1059,6 @@ public class World {
                     if (neighbor == ElementID.STONE) {
                         if (Math.random() < Constants.GRAVEL_CREATION_CHANCE) {
                             grid[nIdx] = ElementID.GRAVEL.getId();
-                            updated[nIdx] = true;
-                        } else if (Math.random() < Constants.LAVA_CREATION_CHANCE) {
-                            grid[nIdx] = ElementID.LAVA.getId();
                             updated[nIdx] = true;
                         }
                     }

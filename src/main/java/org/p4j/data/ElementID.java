@@ -10,7 +10,7 @@ public enum ElementID {
     HYDROGEN((byte) 1, "Hydrogen", "H2", 0x88E0F2FE, true, -3, true, false, false, false, false, 0),
     SMOKE_DARK((byte) 2, "Dark Smoke", "C", 0xFF3E4451, false, -1, false, false, false, false, false, 0),
     SODIUM((byte) 3, "Sodium", "Na", 0xFFD1D5DB, true, 3, false, true, false, false, false, 0),
-    CHLORINE((byte) 4, "Chlorine", "Cl2", 0xFF88FF00, false, 1, false, false, false, false, false, 0),
+    CHLORINE((byte) 4, "Chlorine", "Cl2", 0xFF88FF00, true, 1, false, false, false, false, false, 0),
     MERCURY((byte) 5, "Mercury", "Hg", 0xFFCFD8DC, false, 5, false, false, false, false, true, 1),
     WATER((byte) 6, "Water", "H2O", 0xFF4FA6ED, true, 2, false, false, true, false, true, 5),
     ICE((byte) 7, "Ice", "H2O(s)", 0xFFA5F2F3, false, 4, false, true, false, false, false, 0),
@@ -25,21 +25,21 @@ public enum ElementID {
     OBSIDIAN((byte) 16, "Obsidian", "SiO2+", 0xFF1C1326, false, 5, false, false, false, false, false, 0),
     CEMENT((byte) 17, "Cement", "CaCO3", 0xFF9E9E9E, false, 4, false, false, false, false, false, 0),
     METHANE((byte) 18, "Methane", "CH4", 0x8800FFAA, false, -2, true, false, false, false, false, 0),
-    TNT((byte) 19, "TNT", "C2H4", 0xFFC23616, false, 1, true, true, false, false, false, 0),
+    TNT((byte) 19, "TNT", "C7H5N3O6", 0xFFC23616, false, 1, true, true, false, false, false, 0),
     GASOLINE((byte) 20, "Gasoline", "C8H18", 0xFFD4A373, false, 1, true, true, false, false, true, 5),
     OIL((byte) 21, "Oil", "CnHm", 0xFF8A9A20, true, 1, true, true, false, false, true, 4),
-    WOOD((byte) 22, "Wood", "C6H10O5", 0xFF8B5A2B, false, 4, true, true, false, false, false, 0),
+    WOOD((byte) 22, "Wood", "C6H10O5", 0xFF8B5A2B, true, 4, true, true, false, false, false, 0),
     MUD((byte) 23, "Mud", "SiO2+H2O", 0xFF3E2723, false, 4, true, true, false, false, true, 1),
-    SEED((byte) 24, "Seed", "Sd", 0xFF8BC34A, true, 3, true, true, false, false, false, 0),
+    SEED((byte) 24, "Seed", "Sd", 0xFF8BC34A, false, 3, true, true, false, false, false, 0),
     THERMITE((byte) 25, "Thermite", "Fe+Al", 0xFFB71C1C, false, 4, true, false, false, false, false, 0),
     GUNPOWDER((byte) 26, "Gunpowder", "KNO3", 0xFF53565A, false, 3, true, true, false, false, false, 0),
     STONE((byte) 27, "Stone", "ST", 0xFF808080, true, 4, false, false, false, false, false, 0),
     GRAVEL((byte) 28, "Gravel", "Gr", 0xFF9B8773, false, 3, false, true, false, false, false, 0),
-    DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, true, 3, false, true, false, false, false, 0),
+    DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, false, 3, false, true, false, false, false, 0),
     WET_SAND((byte) 30, "Wet Sand", "SiO2", 0xFF9E753B, false, 4, false, true, false, false, false, 0),
     FIRE((byte) 31, "Fire", "Q", 0xFFE06C75, true, 0, false, false, false, true, false, 0),
     GRASS((byte) 32, "Grass", "G", 0xFF4CAF50, false, 4, true, true, false, false, false, 0),
-    SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0),
+    SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, false, 4, false, true, false, false, false, 0),
     CARBON((byte) 34, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, 0);
 
     private final byte id;
@@ -55,11 +55,26 @@ public enum ElementID {
     private final boolean isLiquid;
     private final int dispersionRate;
 
-    private static final ElementID[] BY_ID = values();
+    private static final ElementID[] BY_ID;
+
+    static {
+        int maxId = 0;
+        for (ElementID element : values()) {
+            if ((element.id & 0xFF) > maxId) {
+                maxId = element.id & 0xFF;
+            }
+        }
+
+        BY_ID = new ElementID[maxId + 1];
+
+        for (ElementID element : values()) {
+            BY_ID[element.id & 0xFF] = element;
+        }
+    }
 
     ElementID(byte id, String name, String symbol, int colorArgb, boolean isSelectable,
-              int density, boolean isFlammable, boolean isCorrosible, boolean isWater, boolean isHot,
-              boolean isLiquid, int dispersionRate) {
+              int density, boolean isFlammable, boolean isCorrosible, boolean isWater,
+              boolean isHot, boolean isLiquid, int dispersionRate) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
@@ -118,12 +133,23 @@ public enum ElementID {
         return isLiquid;
     }
 
+    public boolean isGas() {
+        return density < 0;
+    }
+
+    public boolean isSolid() {
+        return !isLiquid && !isGas() && id != EMPTY.id && id != FIRE.id;
+    }
+
     public int getDispersionRate() {
         return dispersionRate;
     }
 
     public static ElementID fromId(byte id) {
-        if (id < 0 || id >= BY_ID.length) return EMPTY;
-        return BY_ID[id];
+        int index = id & 0xFF;
+        if (index >= BY_ID.length || BY_ID[index] == null) {
+            return EMPTY;
+        }
+        return BY_ID[index];
     }
 }
