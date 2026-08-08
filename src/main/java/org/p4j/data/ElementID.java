@@ -1,4 +1,4 @@
-package org.xdg.p4j.data;
+package org.p4j.data;
 
 /**
  * Defines the distinct types of elements available within the simulation.

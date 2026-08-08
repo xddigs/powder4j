@@ -1,9 +1,9 @@
-package org.xdg.p4j.render;
+package org.p4j.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xdg.p4j.core.Constants;
-import org.xdg.p4j.data.ElementID;
+import org.p4j.core.Constants;
+import org.p4j.data.ElementID;
 
 import java.util.HashMap;
 import java.util.Map;

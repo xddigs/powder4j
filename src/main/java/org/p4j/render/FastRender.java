@@ -1,14 +1,14 @@
-package org.xdg.p4j.render;
+package org.p4j.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xdg.p4j.core.Constants;
-import org.xdg.p4j.core.World;
-import org.xdg.p4j.data.BrushShape;
-import org.xdg.p4j.data.ElementID;
-import org.xdg.p4j.input.Brush;
-import org.xdg.p4j.input.KeyboardController;
-import org.xdg.p4j.input.MouseController;
+import org.p4j.core.Constants;
+import org.p4j.core.World;
+import org.p4j.data.BrushShape;
+import org.p4j.data.ElementID;
+import org.p4j.input.Brush;
+import org.p4j.input.KeyboardController;
+import org.p4j.input.MouseController;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;

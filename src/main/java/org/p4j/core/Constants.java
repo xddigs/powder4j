@@ -1,4 +1,4 @@
-package org.xdg.p4j.core;
+package org.p4j.core;
 
 import java.awt.Color;
 

@@ -1,8 +1,8 @@
-package org.xdg.p4j.input;
+package org.p4j.input;
 
-import org.xdg.p4j.core.Constants;
-import org.xdg.p4j.data.BrushShape;
-import org.xdg.p4j.data.ElementID;
+import org.p4j.core.Constants;
+import org.p4j.data.BrushShape;
+import org.p4j.data.ElementID;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,10 +1,10 @@
-package org.xdg.p4j.input;
+package org.p4j.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xdg.p4j.core.Constants;
-import org.xdg.p4j.data.BrushShape;
-import org.xdg.p4j.data.ElementID;
+import org.p4j.core.Constants;
+import org.p4j.data.BrushShape;
+import org.p4j.data.ElementID;
 
 /**
  * Handles the configuration of the drawing tool used by the user.

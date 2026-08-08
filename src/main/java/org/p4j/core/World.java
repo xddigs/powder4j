@@ -1,8 +1,8 @@
-package org.xdg.p4j.core;
+package org.p4j.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xdg.p4j.data.ElementID;
+import org.p4j.data.ElementID;
 
 import java.util.Arrays;
 

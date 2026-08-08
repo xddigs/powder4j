@@ -1,12 +1,12 @@
-package org.xdg.p4j.core;
+package org.p4j.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xdg.p4j.input.Brush;
-import org.xdg.p4j.input.KeyboardController;
-import org.xdg.p4j.input.MouseController;
-import org.xdg.p4j.render.FastRender;
-import org.xdg.p4j.render.Palette;
+import org.p4j.input.Brush;
+import org.p4j.input.KeyboardController;
+import org.p4j.input.MouseController;
+import org.p4j.render.FastRender;
+import org.p4j.render.Palette;
 
 /**
  * Manages the execution of the simulation and rendering at a fixed frequency.

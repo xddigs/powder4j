@@ -29,4 +29,4 @@ Powder4J models complex emergent physics through local cell interactions. By app
 To build and execute Powder4J from the project root:
 
 ```bash
-mvn clean compile exec:java -Dexec.mainClass="org.xdg.p4j.App"
+mvn clean compile exec:java -Dexec.mainClass="org.p4j.App"

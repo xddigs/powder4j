@@ -1,4 +1,4 @@
-package org.xdg.p4j.data;
+package org.p4j.data;
 
 public enum BrushShape {
     CIRCLE("Circle", "●"),
