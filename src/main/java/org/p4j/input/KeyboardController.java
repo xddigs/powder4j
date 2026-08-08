@@ -122,7 +122,8 @@ public class KeyboardController extends KeyAdapter {
 
     private void toggleEscape() {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - lastEscapeTime < K.ESCAPE_DOUBLE_PRESS_INTERVAL) {
+        if (currentTime - lastEscapeTime <
+                K.ESCAPE_DOUBLE_PRESS_INTERVAL) {
             System.exit(0);
         }
         lastEscapeTime = currentTime;

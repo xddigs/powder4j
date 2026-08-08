@@ -1,10 +1,10 @@
 package org.p4j.input;
 
 import org.p4j.core.K;
-import org.p4j.core.World;
-import org.p4j.data.ElementID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.p4j.core.World;
+import org.p4j.data.ElementID;
 
 import java.awt.event.*;
 
@@ -13,7 +13,7 @@ import java.awt.event.*;
  * This controller translates mouse gestures and clicks into world
  * modifications, enabling the placement or removal of elements.
  */
-public class MouseController extends MouseAdapter implements
+public class MouseController extends MouseAdapter implements 
         MouseMotionListener, MouseWheelListener {
     private static final Logger log = LoggerFactory.getLogger(MouseController.class);
     private final KeyboardController keyboardController;
@@ -23,15 +23,14 @@ public class MouseController extends MouseAdapter implements
 
     private boolean isPressed;
     private boolean isRightClick;
-
+    
     private int lastGridX = -1;
     private int lastGridY = -1;
 
     private int mouseX;
     private int mouseY;
 
-    public MouseController(World world, Brush brush,
-                           KeyboardController keyboardController, int scale) {
+    public MouseController(World world, Brush brush, KeyboardController keyboardController, int scale) {
         this.world = world;
         this.brush = brush;
         this.keyboardController = keyboardController;
@@ -44,7 +43,7 @@ public class MouseController extends MouseAdapter implements
         if (keyboardController.wasAltPressed()) return;
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
-        isRightClick = (e.getButton() == K.MOUSE_RIGHT_CLICK);
+        isRightClick = (e.getButton() == K.MOUSE_BUTTON_RIGHT);
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;

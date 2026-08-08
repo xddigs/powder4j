@@ -35,7 +35,7 @@ public class MovementEngine {
     }
 
     private boolean updatePowder(int x, int y, int idx, ElementID type) {
-        short currentId = world.getGrid()[idx];
+        byte currentId = world.getGrid()[idx];
 
         float currentVel = world.getVelocity(idx) + K.GRAVITY;
         float maxSpeed = K.MAX_FALL_SPEED;
@@ -115,7 +115,7 @@ public class MovementEngine {
         int currentIdx = idx;
         boolean moved = false;
 
-        short currentId = world.getGrid()[idx];
+        byte currentId = world.getGrid()[idx];
 
         for (int i = 0; i < steps; i++) {
             int aboveY = currentY - 1;

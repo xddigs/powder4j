@@ -1,8 +1,8 @@
 package org.p4j;
 
+import org.p4j.core.K;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.K;
 import org.p4j.core.SimulationLoop;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
@@ -94,7 +94,7 @@ public class App extends JFrame {
     static void main() {
         log.info("Starting main entry point...");
         SwingUtilities.invokeLater(() -> new App(
-                K.TITLE + K.VERSION,
+                K.APP_TITLE + K.VERSION,
                 K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
                 K.DEFAULT_SCALE));
     }

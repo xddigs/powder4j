@@ -1,8 +1,8 @@
 package org.p4j.render;
 
+import org.p4j.core.K;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.K;
 import org.p4j.data.ElementID;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class Palette {
     private static final Logger log = LoggerFactory.getLogger(Palette.class);
-    private final Map<Short, Integer> colorMap = new HashMap<>();
+    private final Map<Byte, Integer> colorMap = new HashMap<>();
     private final int defaultColor = K.DEFAULT_PALETTE_COLOR;
 
     public Palette() {
@@ -25,11 +25,11 @@ public class Palette {
         }
     }
 
-    public void setColor(short elementId, int argb) {
+    public void setColor(byte elementId, int argb) {
         colorMap.put(elementId, argb);
     }
 
-    public int getColor(short elementId) {
+    public int getColor(byte elementId) {
         return colorMap.getOrDefault(elementId, defaultColor);
     }
 }

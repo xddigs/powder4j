@@ -1,8 +1,8 @@
 package org.p4j.input;
 
+import org.p4j.core.K;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.K;
 import org.p4j.data.BrushShape;
 import org.p4j.data.ElementID;
 
