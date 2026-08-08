@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.p4j.data.ElementID;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Represents a 2D grid of elements. A byte represents each element.
@@ -45,7 +46,7 @@ public class World {
                 switch (type) {
                     case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
                     case WET_SAND -> updateSolid(x, y, index);
-                    case SODIUM, SALT -> updatePowder(x, y, index);
+                    case SODIUM, SALT, DIRT -> updatePowder(x, y, index);
                     case THERMITE -> updateThermite(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case TNT -> updateTNT(x, y, index);
@@ -370,7 +371,9 @@ public class World {
     }
 
     private void updatePowder(int x, int y, int idx) {
+        ElementID currentType = ElementID.fromId(grid[idx]);
         boolean hasTouchedWater = false;
+
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx == 0 && dy == 0) continue;
@@ -381,6 +384,17 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
+                    if (currentType == ElementID.DIRT && neighbor.isWater()) {
+                        if (ThreadLocalRandom.current().nextFloat() <
+                                Constants.MUD_SPREAD_CHANCE) {
+                            grid[idx] = ElementID.MUD.getId();
+                            grid[nIdx] = ElementID.MUD.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return;
+                        }
+                    }
+
                     if (neighbor == ElementID.ACID) {
                         grid[idx] = ElementID.CHLORINE.getId();
                         grid[nIdx] = ElementID.SAND.getId();
@@ -388,13 +402,13 @@ public class World {
                         return;
                     }
 
-                    if (neighbor.isWater() && grid[idx] == ElementID.SALT.getId()) {
+                    if (currentType == ElementID.SALT && neighbor.isWater()) {
                         grid[idx] = ElementID.SMOKE_GRAY.getId();
                         grid[nIdx] = ElementID.SMOKE_LIGHT.getId();
                         return;
                     }
 
-                    if (neighbor.isWater()) {
+                    if (currentType == ElementID.SODIUM && neighbor.isWater()) {
                         hasTouchedWater = true;
                         break;
                     }
