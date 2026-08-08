@@ -70,6 +70,8 @@ public final class Constants {
     public static final double FIRE_IGNITION_CHANCE = 0.3;
     public static final double TNT_CRAFTING_CHANCE = 0.1;
     public static final double LAVA_FLOW_SKIP_CHANCE = 0.65;
+    public static final double STEAM_CONDENSE_CHANCE = 0.005;
+    public static final double GLASS_FUSION_CHANCE = 0.05;
 
     public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
     public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;

@@ -26,7 +26,14 @@ public enum ElementID {
     TNT((byte) 17, "TNT", "C2H4", 0xFFC23616, false, 1, true, true, false, false, false, 0),
     MERCURY((byte) 18, "Mercury", "Hg", 0xFFCFD8DC, true, 5, false, false, false, false, true, 1),
     CHLORINE((byte) 19, "Chlorine", "Cl2", 0xFF88FF00, false, 1, false, false, false, false, false, 0),
-    SALT((byte) 20, "Salt", "NaCl", 0xFFF5F5F5, true, 3, false, false, false, false, false, 0);
+    SALT((byte) 20, "Salt", "NaCl", 0xFFF5F5F5, true, 3, false, false, false, false, false, 0),
+    METHANE((byte) 21, "Methane", "CH4", 0x8800FFaa, true, -2, true, false, false, false, false, 0),
+    STEAM((byte) 22, "Steam", "H2O(g)", 0xCCFFFFFF, true, -1, false, false, false, false, false, 0),
+    GLASS((byte) 23, "Glass", "SiO2", 0x80E0F7FA, false, 5, false, false, false, false, false, 0),
+    CEMENT((byte) 24, "Cement", "CaCO3", 0xFF9E9E9E, true, 4, false, false, false, false, false, 0),
+    PLANT((byte) 25, "Plant", "C6H10O5", 0xFF2E7D32, true, 4, true, true, false, false, false, 0),
+    THERMITE((byte) 26, "Thermite", "Fe+Al", 0xFFB71C1C, true, 4, true, false, false, false, false, 0),
+    OBSIDIAN((byte) 27, "Obsidian", "SiO2+", 0xFF1C1326, false, 5, false, false, false, false, false, 0);
 
     private final byte id;
     private final String name;
