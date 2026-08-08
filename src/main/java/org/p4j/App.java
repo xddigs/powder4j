@@ -94,7 +94,7 @@ public class App extends JFrame {
     static void main() {
         log.info("Starting main entry point...");
         SwingUtilities.invokeLater(() -> new App(
-                K.APP_TITLE + K.VERSION,
+                K.TITLE + K.VERSION,
                 K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
                 K.DEFAULT_SCALE));
     }

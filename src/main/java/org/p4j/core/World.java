@@ -173,21 +173,17 @@ public class World {
         int waterAbsorbed = absorb(startX, startY,
                 K.TREE_WATER_ABSORB_RADIUS,
                 K.TREE_WATER_ABSORB_MAX);
-        int baseHeight = ThreadLocalRandom.current()
-                .nextInt(
-                        K.TREE_BASE_HEIGHT_MIN,
-                        K.TREE_BASE_HEIGHT_MAX);
+        int baseHeight = ThreadLocalRandom.current().nextInt(
+                K.TREE_BASE_HEIGHT_MIN, K.TREE_BASE_HEIGHT_MAX);
 
         int treeHeight = baseHeight + (
                 waterAbsorbed * K.TREE_HEIGHT_PER_WATER);
 
         int trunkWidth = K.TREE_TRUNK_BASE_WIDTH + (
-                waterAbsorbed /
-                        K.TREE_WATER_DIVISOR_TRUNK_WIDTH);
+                waterAbsorbed / K.TREE_WATER_DIVISOR_TRUNK_WIDTH);
 
         int maxLeafRadius = K.TREE_LEAF_BASE_RADIUS + (
-                waterAbsorbed /
-                        K.TREE_WATER_DIVISOR_LEAF_RADIUS);
+                waterAbsorbed / K.TREE_WATER_DIVISOR_LEAF_RADIUS);
 
         int currentY = startY;
         int currentX = startX;
@@ -215,8 +211,7 @@ public class World {
 
             int canopyStartHeight = treeHeight - (
                     K.TREE_LEAF_CANOPY_OFFSET_BASE +
-                            waterAbsorbed /
-                                    K.TREE_WATER_DIVISOR_CANOPY_OFFSET);
+                            waterAbsorbed / K.TREE_WATER_DIVISOR_CANOPY_OFFSET);
             if (i >= canopyStartHeight) {
                 int currentLeafRadius = Math.min(
                         maxLeafRadius, (treeHeight - i) +
@@ -227,10 +222,8 @@ public class World {
                     for (int lx = -currentLeafRadius;
                          lx <= currentLeafRadius; lx++) {
                         if (lx * lx + ly * ly <=
-                                currentLeafRadius *
-                                        currentLeafRadius +
-                                        K.
-                                                TREE_LEAF_CIRCLE_TOLERANCE) {
+                                currentLeafRadius * currentLeafRadius +
+                                        K.TREE_LEAF_CIRCLE_TOLERANCE) {
                             int leafX = currentX + lx;
                             int leafY = currentY + ly;
 
@@ -261,8 +254,7 @@ public class World {
                         .nextBoolean() ? 1 : -1;
                 currentX = Math.clamp(currentX,
                         K.TREE_MIN_X_MARGIN,
-                        width - K.
-                                TREE_MAX_X_MARGIN_OFFSET);
+                        width - K.TREE_MAX_X_MARGIN_OFFSET);
             }
 
             currentY--;

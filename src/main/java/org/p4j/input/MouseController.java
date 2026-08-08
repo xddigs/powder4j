@@ -43,7 +43,7 @@ public class MouseController extends MouseAdapter implements
         if (keyboardController.wasAltPressed()) return;
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
-        isRightClick = (e.getButton() == K.MOUSE_BUTTON_RIGHT);
+        isRightClick = (e.getButton() == K.MOUSE_RIGHT_CLICK);
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
