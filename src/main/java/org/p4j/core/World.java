@@ -9,42 +9,47 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * The entire simulated world and its rulesets. Holds the state of the simulation
- * grid and delegates element processing to the ReactionEngine.
+ * The entire simulated world and its rulesets. Holds the state
+ * of the simulation grid and delegates element processing
+ * to the ReactionEngine.
  */
 public class World {
-    private static final Logger log = LoggerFactory.getLogger(World.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(World.class);
     private final ReactionEngine reaction;
     private final MovementEngine movement;
     private final int width;
     private final int height;
-    private final byte[] grid;
+    private final short[] grid;
     private final boolean[] updated;
     private final float[] velocity;
 
     public World(int width, int height) {
-        log.debug("Constructing simulation world: {}x{}", width, height);
+        log.debug("Constructing simulation world: {}x{}",
+                width, height);
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
         this.width = width;
         this.height = height;
-        this.grid = new byte[width * height];
+        this.grid = new short[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
     }
 
     public void update() {
         for (int y = height - 1; y >= 0; y--) {
-            boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
+            boolean leftToRight =
+                    ThreadLocalRandom.current().nextBoolean();
 
             for (int i = 0; i < width; i++) {
                 int x = leftToRight ? i : (width - 1 - i);
                 int idx = getIndex(x, y);
-                byte id = grid[idx];
+                short id = grid[idx];
                 if (id == 0) continue;
 
                 ElementID type = ElementID.fromId(id);
-                boolean hasMoved = movement.update(x, y, idx, type);
+                boolean hasMoved = movement.update(
+                        x, y, idx, type);
                 if (hasMoved) {
                     continue;
                 }
@@ -54,14 +59,19 @@ public class World {
         }
     }
 
-    public boolean canDisplace(byte upperId, byte lowerId) {
-        if (lowerId == ElementID.STONE.getId()) return false;
+    public boolean canDisplace(short upperId, short lowerId) {
+        if (lowerId == ElementID.STONE.getId() ||
+                lowerId == ElementID.BEDROCK.getId()) return false;
+        if (upperId == ElementID.BEDROCK.getId()) return false;
         return ElementID.fromId(upperId).getDensity() >
                 ElementID.fromId(lowerId).getDensity();
     }
 
     public void swap(int i, int j) {
-        byte tempGrid = grid[i];
+        if (grid[i] == ElementID.BEDROCK.getId() ||
+                grid[j] == ElementID.BEDROCK.getId()) return;
+
+        short tempGrid = grid[i];
         grid[i] = grid[j];
         grid[j] = tempGrid;
 
@@ -73,14 +83,15 @@ public class World {
         updated[j] = true;
     }
 
-    public boolean flow(int x, int y, int idx, int dir, int maxDistance, byte currentId) {
+    public boolean flow(int x, int y, int idx, int dir,
+                        int maxDistance, short currentId) {
         int bestX = x;
         for (int i = 1; i <= maxDistance; i++) {
             int nextX = x + (dir * i);
             if (nextX < 0 || nextX >= width) break;
 
             int targetIdx = y * width + nextX;
-            byte targetId = grid[targetIdx];
+            short targetId = grid[targetIdx];
 
             if (canDisplace(currentId, targetId)) {
                 bestX = nextX;
@@ -112,7 +123,8 @@ public class World {
                 if (checkY >= height) break;
 
                 int targetIdx = checkY * width + checkX;
-                ElementID element = ElementID.fromId(grid[targetIdx]);
+                ElementID element =
+                        ElementID.fromId(grid[targetIdx]);
 
                 if (element == ElementID.DIRT) {
                     grid[waterIdx] = ElementID.EMPTY.getId();
@@ -138,14 +150,16 @@ public class World {
         grid[idx] = ElementID.GRASS.getId();
         updated[idx] = true;
 
-        int patchSize = ThreadLocalRandom.current().nextInt(1, 3);
+        int patchSize = ThreadLocalRandom.current()
+                .nextInt(1, 3);
         for (int i = 0; i < patchSize; i++) {
             int dx = ThreadLocalRandom.current().nextInt(-1, 2);
             int dy = ThreadLocalRandom.current().nextInt(-1, 1);
             int nx = startX + dx;
             int ny = startY + dy;
 
-            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+            if (nx >= 0 && nx < width &&
+                    ny >= 0 && ny < height) {
                 int nIdx = ny * width + nx;
                 if (grid[nIdx] == ElementID.EMPTY.getId()) {
                     grid[nIdx] = ElementID.GRASS.getId();
@@ -159,18 +173,21 @@ public class World {
         int waterAbsorbed = absorb(startX, startY,
                 Constants.TREE_WATER_ABSORB_RADIUS,
                 Constants.TREE_WATER_ABSORB_MAX);
-        int baseHeight = ThreadLocalRandom.current().nextInt(
-                Constants.TREE_BASE_HEIGHT_MIN,
-                Constants.TREE_BASE_HEIGHT_MAX);
+        int baseHeight = ThreadLocalRandom.current()
+                .nextInt(
+                        Constants.TREE_BASE_HEIGHT_MIN,
+                        Constants.TREE_BASE_HEIGHT_MAX);
 
         int treeHeight = baseHeight + (
                 waterAbsorbed * Constants.TREE_HEIGHT_PER_WATER);
 
         int trunkWidth = Constants.TREE_TRUNK_BASE_WIDTH + (
-                waterAbsorbed / Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
+                waterAbsorbed /
+                        Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
 
         int maxLeafRadius = Constants.TREE_LEAF_BASE_RADIUS + (
-                waterAbsorbed / Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
+                waterAbsorbed /
+                        Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
 
         int currentY = startY;
         int currentX = startX;
@@ -183,9 +200,12 @@ public class World {
                 int tx = currentX + wx;
                 if (tx >= 0 && tx < width) {
                     int idx = currentY * width + tx;
-                    ElementID current = ElementID.fromId(grid[idx]);
-                    if (current == ElementID.EMPTY || current == ElementID.SEED ||
-                            current.isLiquid() || current == ElementID.SMOKE_LIGHT ||
+                    ElementID current =
+                            ElementID.fromId(grid[idx]);
+                    if (current == ElementID.EMPTY ||
+                            current == ElementID.SEED ||
+                            current.isLiquid() ||
+                            current == ElementID.SMOKE_LIGHT ||
                             current == ElementID.GRASS) {
                         grid[idx] = ElementID.WOOD.getId();
                         updated[idx] = true;
@@ -193,23 +213,34 @@ public class World {
                 }
             }
 
-            int canopyStartHeight = treeHeight - (Constants.TREE_LEAF_CANOPY_OFFSET_BASE +
-                    waterAbsorbed / Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
+            int canopyStartHeight = treeHeight - (
+                    Constants.TREE_LEAF_CANOPY_OFFSET_BASE +
+                            waterAbsorbed /
+                                    Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
             if (i >= canopyStartHeight) {
-                int currentLeafRadius = Math.min(maxLeafRadius, (treeHeight - i) +
-                        Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
+                int currentLeafRadius = Math.min(
+                        maxLeafRadius, (treeHeight - i) +
+                                Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
 
-                for (int ly = -currentLeafRadius; ly <= currentLeafRadius; ly++) {
-                    for (int lx = -currentLeafRadius; lx <= currentLeafRadius; lx++) {
-                        if (lx * lx + ly * ly <= currentLeafRadius * currentLeafRadius +
-                                Constants.TREE_LEAF_CIRCLE_TOLERANCE) {
+                for (int ly = -currentLeafRadius;
+                     ly <= currentLeafRadius; ly++) {
+                    for (int lx = -currentLeafRadius;
+                         lx <= currentLeafRadius; lx++) {
+                        if (lx * lx + ly * ly <=
+                                currentLeafRadius *
+                                        currentLeafRadius +
+                                        Constants.
+                                                TREE_LEAF_CIRCLE_TOLERANCE) {
                             int leafX = currentX + lx;
                             int leafY = currentY + ly;
 
-                            if (leafX >= 0 && leafX < width && leafY >= 0 && leafY < height) {
+                            if (leafX >= 0 && leafX < width &&
+                                    leafY >= 0 && leafY < height) {
                                 int leafIdx = leafY * width + leafX;
-                                if (grid[leafIdx] == ElementID.EMPTY.getId()) {
-                                    grid[leafIdx] = ElementID.GRASS.getId();
+                                if (grid[leafIdx] ==
+                                        ElementID.EMPTY.getId()) {
+                                    grid[leafIdx] =
+                                            ElementID.GRASS.getId();
                                     updated[leafIdx] = true;
                                 }
                             }
@@ -218,21 +249,28 @@ public class World {
                 }
             }
 
-            float curveChance = trunkWidth > Constants.TREE_TRUNK_BASE_WIDTH ?
-                    Constants.TREE_CURVE_CHANCE_THICK : Constants.TREE_CURVE_CHANCE_THIN;
+            float curveChance = trunkWidth >
+                    Constants.TREE_TRUNK_BASE_WIDTH ?
+                    Constants.TREE_CURVE_CHANCE_THICK :
+                    Constants.TREE_CURVE_CHANCE_THIN;
 
             if (i > Constants.TREE_CURVE_MIN_HEIGHT_STEP &&
-                    ThreadLocalRandom.current().nextFloat() < curveChance) {
-                currentX += ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
-                currentX = Math.clamp(currentX, Constants.TREE_MIN_X_MARGIN,
-                        width - Constants.TREE_MAX_X_MARGIN_OFFSET);
+                    ThreadLocalRandom.current().nextFloat() <
+                            curveChance) {
+                currentX += ThreadLocalRandom.current()
+                        .nextBoolean() ? 1 : -1;
+                currentX = Math.clamp(currentX,
+                        Constants.TREE_MIN_X_MARGIN,
+                        width - Constants.
+                                TREE_MAX_X_MARGIN_OFFSET);
             }
 
             currentY--;
         }
     }
 
-    public int absorb(int startX, int startY, int radius, int maxWater) {
+    public int absorb(int startX, int startY,
+                      int radius, int maxWater) {
         int count = 0;
         for (int dy = -radius; dy <= radius; dy++) {
             for (int dx = -radius; dx <= radius; dx++) {
@@ -241,11 +279,14 @@ public class World {
                 int nx = startX + dx;
                 int ny = startY + dy;
 
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                if (nx >= 0 && nx < width &&
+                        ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
-                    ElementID element = ElementID.fromId(grid[nIdx]);
+                    ElementID element =
+                            ElementID.fromId(grid[nIdx]);
 
-                    if (isInBounds(nx, ny) && element.isWater()) {
+                    if (isInBounds(nx, ny) &&
+                            element.isWater()) {
                         grid[nIdx] = ElementID.EMPTY.getId();
                         updated[nIdx] = true;
                         count++;
@@ -262,7 +303,8 @@ public class World {
             for (int dx = -radius; dx <= radius; dx++) {
                 int nx = centerX + dx;
                 int ny = centerY + dy;
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                if (nx >= 0 && nx < width &&
+                        ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     if (grid[nIdx] == ElementID.STONE.getId()) {
                         grid[nIdx] = ElementID.LAVA.getId();
@@ -282,15 +324,19 @@ public class World {
     }
 
     public void applyInertia(float forceX, float forceY) {
-        int stepsX = Math.round(forceX * Constants.INERTIA_SENSITIVITY);
-        int stepsY = Math.round(forceY * Constants.INERTIA_SENSITIVITY);
+        int stepsX = Math.round(forceX *
+                Constants.INERTIA_SENSITIVITY);
+        int stepsY = Math.round(forceY *
+                Constants.INERTIA_SENSITIVITY);
 
         if (stepsX == 0 && stepsY == 0) return;
 
-        stepsX = Math.clamp(stepsX, -Constants.INERTIA_MAX_STEP_LIMIT,
+        stepsX = Math.clamp(stepsX,
+                -Constants.INERTIA_MAX_STEP_LIMIT,
                 Constants.INERTIA_MAX_STEP_LIMIT);
 
-        stepsY = Math.clamp(stepsY, -Constants.INERTIA_MAX_STEP_LIMIT,
+        stepsY = Math.clamp(stepsY,
+                -Constants.INERTIA_MAX_STEP_LIMIT,
                 Constants.INERTIA_MAX_STEP_LIMIT);
 
         if (stepsY != 0) {
@@ -304,21 +350,27 @@ public class World {
             for (int y = startY; y != endY; y += dirY) {
                 for (int x = 0; x < width; x++) {
                     int idx = y * width + x;
-                    byte typeId = grid[idx];
+                    short typeId = grid[idx];
 
                     if (typeId == ElementID.EMPTY.getId() ||
-                            typeId == ElementID.STONE.getId())
+                            typeId == ElementID.STONE.getId() ||
+                            typeId == ElementID.BEDROCK.getId())
                         continue;
 
                     int currentY = y;
                     for (int s = 0; s < absStepsY; s++) {
-                        int targetY = currentY + (moveUp ? -1 : 1);
-                        if (targetY < 0 || targetY >= height) break;
+                        int targetY = currentY +
+                                (moveUp ? -1 : 1);
+                        if (targetY < 0 ||
+                                targetY >= height) break;
 
                         int targetIdx = targetY * width + x;
-                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
-                                canDisplace(grid[idx], grid[targetIdx])) {
-                            swap(currentY * width + x, targetIdx);
+                        if (grid[targetIdx] ==
+                                ElementID.EMPTY.getId() ||
+                                canDisplace(grid[idx],
+                                        grid[targetIdx])) {
+                            swap(currentY * width + x,
+                                    targetIdx);
                             currentY = targetY;
                         } else {
                             break;
@@ -339,21 +391,27 @@ public class World {
             for (int y = 0; y < height; y++) {
                 for (int x = startX; x != endX; x += dirX) {
                     int idx = y * width + x;
-                    byte typeId = grid[idx];
+                    short typeId = grid[idx];
 
-                    if (typeId == ElementID.EMPTY.getId() || typeId ==
-                            ElementID.STONE.getId())
+                    if (typeId == ElementID.EMPTY.getId() ||
+                            typeId == ElementID.STONE.getId() ||
+                            typeId == ElementID.BEDROCK.getId())
                         continue;
 
                     int currentX = x;
                     for (int s = 0; s < absStepsX; s++) {
-                        int targetX = currentX + (moveLeft ? -1 : 1);
-                        if (targetX < 0 || targetX >= width) break;
+                        int targetX = currentX +
+                                (moveLeft ? -1 : 1);
+                        if (targetX < 0 ||
+                                targetX >= width) break;
 
                         int targetIdx = y * width + targetX;
-                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
-                                canDisplace(grid[idx], grid[targetIdx])) {
-                            swap(y * width + currentX, targetIdx);
+                        if (grid[targetIdx] ==
+                                ElementID.EMPTY.getId() ||
+                                canDisplace(grid[idx],
+                                        grid[targetIdx])) {
+                            swap(y * width + currentX,
+                                    targetIdx);
                             currentX = targetX;
                         } else {
                             break;
@@ -365,7 +423,8 @@ public class World {
     }
 
     public boolean isInBounds(int x, int y) {
-        return x >= 0 && x < width && y >= 0 && y < height;
+        return x >= 0 && x < width &&
+                y >= 0 && y < height;
     }
 
     public int getIndex(int x, int y) {
@@ -380,7 +439,7 @@ public class World {
         return height;
     }
 
-    public byte[] getGrid() {
+    public short[] getGrid() {
         return grid;
     }
 

@@ -25,8 +25,12 @@ public class SimulationLoop implements Runnable {
 
     private final Brush brush;
 
-    public SimulationLoop(World world, FastRender render, Palette palette,
-                          KeyboardController keyController, MouseController mouseController, Brush brush) {
+    public SimulationLoop(World world,
+                          FastRender render,
+                          Palette palette,
+                          KeyboardController keyController,
+                          MouseController mouseController,
+                          Brush brush) {
         this.world = world;
         this.render = render;
         this.palette = palette;

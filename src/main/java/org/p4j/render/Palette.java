@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class Palette {
     private static final Logger log = LoggerFactory.getLogger(Palette.class);
-    private final Map<Byte, Integer> colorMap = new HashMap<>();
+    private final Map<Short, Integer> colorMap = new HashMap<>();
     private final int defaultColor = Constants.DEFAULT_PALETTE_COLOR;
 
     public Palette() {
@@ -25,11 +25,11 @@ public class Palette {
         }
     }
 
-    public void setColor(byte elementId, int argb) {
+    public void setColor(short elementId, int argb) {
         colorMap.put(elementId, argb);
     }
 
-    public int getColor(byte elementId) {
+    public int getColor(short elementId) {
         return colorMap.getOrDefault(elementId, defaultColor);
     }
 }

@@ -41,11 +41,13 @@ public final class Constants {
 
     public static final double HUD_FULL_CIRCLE = 360.0;
     public static final double HUD_START_OFFSET_DEG = -90.0;
-    
+
     public static final Color HUD_BACKGROUND_COLOR = new Color(30, 35, 45, 200);
     public static final Color HUD_BORDER_COLOR = new Color(255, 255, 255, 50);
     public static final Color HUD_CENTER_COLOR = new Color(15, 18, 25);
     public static final Color HUD_TEXT_UNSELECTED = Color.WHITE;
+    public static final Color HUD_SELECTED_SLICE_COLOR = new Color(60, 120, 210, 200);
+
     public static final String HUD_FONT_FAMILY = "Arial";
     public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
@@ -175,4 +177,51 @@ public final class Constants {
     public static final int PARTICLE_GRAIN_OFFSET = 10;
 
     public static final int COLOR_CHANNEL_MAX = 255;
+
+    public static final int MENU_PANEL_WIDTH = 700;
+    public static final int MENU_PANEL_HEIGHT = 460;
+    public static final int MENU_CORNER_RADIUS = 20;
+    public static final float MENU_BORDER_STROKE = 1.5f;
+    public static final Color MENU_BORDER_COLOR = new Color(50, 60, 80);
+    public static final Color MENU_BACKGROUND_COLOR = new Color(15, 18, 25, 240);
+
+    public static final int MENU_TAB_START_X_OFFSET = 25;
+    public static final int MENU_TAB_START_Y_OFFSET = 25;
+    public static final int MENU_TAB_HEIGHT = 32;
+    public static final int MENU_TAB_SPACING = 8;
+    public static final int MENU_TAB_FONT_SIZE = 12;
+    public static final int MENU_TAB_PADDING_X = 24;
+    public static final int MENU_TAB_CORNER_RADIUS = 10;
+    public static final int MENU_TAB_TEXT_Y_OFFSET = 21;
+
+    public static final Color MENU_TAB_SELECTED_COLOR = new Color(41, 128, 185);
+    public static final Color MENU_TAB_HOVER_COLOR = new Color(45, 55, 72);
+    public static final Color MENU_TAB_HOVER_TEXT_COLOR = new Color(220, 224, 230);
+    public static final Color MENU_TAB_INACTIVE_COLOR = new Color(25, 30, 40);
+    public static final Color MENU_TAB_INACTIVE_TEXT_COLOR = new Color(140, 150, 165);
+
+    public static final int MENU_GRID_START_X_OFFSET = 25;
+    public static final int MENU_GRID_START_Y_OFFSET = 80;
+    public static final int MENU_CELL_SIZE = 48;
+    public static final int MENU_CELL_PADDING = 10;
+    public static final int MENU_GRID_COLS = 11;
+    public static final int MENU_GRID_BOTTOM_MARGIN = 55;
+
+    public static final Color MENU_CELL_HOVER_COLOR = new Color(52, 152, 219, 180);
+    public static final Color MENU_CELL_DEFAULT_COLOR = new Color(25, 32, 44);
+    public static final int MENU_CELL_INNER_OFFSET = 5;
+    public static final int MENU_CELL_INNER_CORNER_RADIUS = 8;
+    public static final int MENU_SYMBOL_FONT_SIZE = 11;
+    public static final int MENU_SYMBOL_SHADOW_ALPHA = 180;
+    public static final int MENU_SYMBOL_SHADOW_X_OFFSET = 1;
+    public static final int MENU_SYMBOL_SHADOW_Y_OFFSET = 5;
+    public static final int MENU_SYMBOL_Y_OFFSET = 4;
+
+    public static final Color MENU_FOOTER_BG_COLOR = new Color(10, 13, 18, 150);
+    public static final int MENU_FOOTER_BOTTOM_OFFSET = 45;
+    public static final int MENU_FOOTER_HEIGHT = 35;
+    public static final int MENU_FOOTER_CORNER_RADIUS = 8;
+    public static final int MENU_FOOTER_TEXT_Y_OFFSET = 23;
+    public static final Color MENU_FOOTER_TEXT_COLOR = new Color(230, 235, 245);
+    public static final int MENU_FOOTER_FONT_SIZE = 13;
 }
