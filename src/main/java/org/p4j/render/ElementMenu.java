@@ -101,6 +101,7 @@ public class ElementMenu {
         int innerRadius = K.WHEEL_INNER_RADIUS;
 
         ElementID hoveredElement = getHoveredElement(width, height, mouse);
+
         g.setColor(K.WHEEL_BG_COLOR);
         g.fillOval(
                 centerX - outerRadius - 4,
@@ -132,36 +133,17 @@ public class ElementMenu {
 
             boolean isHovered = (element == hoveredElement);
 
-            Color elemColor = new Color(element.getColorArgb(), true);
+            Color eColor = new Color(element.getColorArgb(), true);
             if (isHovered) {
-                g.setColor(elemColor.brighter());
+                g.setColor(eColor.brighter());
             } else {
-                g.setColor(elemColor);
+                g.setColor(eColor);
             }
             g.fill(sliceArea);
 
             g.setColor(K.WHEEL_BORDER_COLOR);
-            g.setStroke(new BasicStroke(1.5f));
+            g.setStroke(new BasicStroke(K.MENU_BORDER_STROKE));
             g.draw(sliceArea);
-
-            double midAngleRad = Math.toRadians(-startAngle - anglePerSlice / 2.0);
-            double labelRadius = (outerRadius + innerRadius) / 2.0;
-            int lblX = (int) (centerX + labelRadius * Math.cos(midAngleRad));
-            int lblY = (int) (centerY + labelRadius * Math.sin(midAngleRad));
-
-            g.setFont(new Font(
-                    K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_SYMBOL_FONT_SIZE
-            ));
-            FontMetrics fm = g.getFontMetrics();
-            String symbol = element.getSymbol();
-            int symW = fm.stringWidth(symbol);
-            int symX = lblX - symW / 2;
-            int symY = lblY + fm.getAscent() / 2 - 2;
-
-            g.setColor(new Color(0, 0, 0, 180));
-            g.drawString(symbol, symX + 1, symY + 1);
-            g.setColor(Color.WHITE);
-            g.drawString(symbol, symX, symY);
         }
 
         g.setColor(K.MENU_BACKGROUND_COLOR);
@@ -181,24 +163,31 @@ public class ElementMenu {
                 innerRadius * 2
         );
 
-        g.setColor(Color.WHITE);
-        g.setFont(new Font(
-                K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_TAB_FONT_SIZE
-        ));
-        FontMetrics fmTab = g.getFontMetrics();
-        String categoryText = "[" + tabs[selectedTabIndex] + "]";
-        int catX = centerX - fmTab.stringWidth(categoryText) / 2;
-        g.drawString(categoryText, catX, centerY - 10);
+        String textToDisplay;
+        Color textColor;
 
         if (hoveredElement != null) {
-            g.setColor(new Color(hoveredElement.getColorArgb(), true));
+            textToDisplay = hoveredElement.getName();
+            textColor = new Color(hoveredElement.getColorArgb(), true);
             g.setFont(new Font(
                     K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_SYMBOL_FONT_SIZE + 2
             ));
-            FontMetrics fmHover = g.getFontMetrics();
-            String hoverText = hoveredElement.getSymbol();
-            int hX = centerX - fmHover.stringWidth(hoverText) / 2;
-            g.drawString(hoverText, hX, centerY + 20);
+        } else {
+            textToDisplay = tabs[selectedTabIndex];
+            textColor = Color.WHITE;
+            g.setFont(new Font(
+                    K.HUD_FONT_FAMILY, Font.BOLD, K.MENU_TAB_FONT_SIZE
+            ));
         }
+
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(textToDisplay);
+        int textX = centerX - textWidth / 2;
+        int textY = centerY + (fm.getAscent() - fm.getDescent()) / 2;
+
+        g.setColor(new Color(0, 0, 0, 180));
+        g.drawString(textToDisplay, textX + 1, textY + 1);
+        g.setColor(textColor);
+        g.drawString(textToDisplay, textX, textY);
     }
 }
