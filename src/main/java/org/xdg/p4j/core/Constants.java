@@ -20,6 +20,11 @@ public final class Constants {
     public static final double TICKS_PER_SECOND = 60.0;
     public static final long NANOSECONDS_IN_SECOND = 1_000_000_000L;
 
+    public static final float BODY_VELOCITY_X = 0.99f;
+    public static final float BODY_VELOCITY_Y = 0.99f;
+    public static final float BODY_ANGULAR_VELOCITY = 0.98f;
+    public static final float BODY_ANGULAR_VEL_OFFSET = 0.01f;
+
     public static final int DEFAULT_BRUSH_RADIUS = 3;
     public static final int MIN_BRUSH_RADIUS = 1;
     public static final int MAX_BRUSH_RADIUS = 50;

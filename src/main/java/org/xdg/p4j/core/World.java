@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xdg.p4j.data.ElementID;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Represents a 2D grid of elements. A byte represents each element.
@@ -18,6 +18,7 @@ public class World {
     private final byte[] grid;
     private final boolean[] updated;
     private final float[] velocity;
+    private final List<Body> bodies;
 
     public World(int width, int height) {
         log.debug("Constructing simulation world: {}x{}", width, height);
@@ -26,10 +27,23 @@ public class World {
         this.grid = new byte[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
+        this.bodies = new ArrayList<>();
     }
 
     public void update() {
         if (!Constants.IS_RUNNING) return;
+
+        float dt = (float) (1.0f / Constants.TICKS_PER_SECOND);
+        for (int i = bodies.size() - 1; i >= 0; i--) {
+            Body body = bodies.get(i);
+            PhysicsEngine.updateBody(body, this, dt);
+
+            if (body.isSettled) {
+                updateObject(body);
+                bodies.remove(i);
+            }
+        }
+
         Arrays.fill(updated, false);
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = Math.random() > Constants.RANDOM_THRESHOLD;
@@ -45,6 +59,7 @@ public class World {
                 switch (type) {
                     case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
                     case WET_SAND -> updateSolid(x, y, index);
+                    case STONE, GLASS, ICE -> updateRigidSolid(x, y, index);
                     case SODIUM, SALT -> updatePowder(x, y, index);
                     case THERMITE -> updateThermite(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
@@ -123,6 +138,30 @@ public class World {
             swap(idx, belowLeft);
         } else if (canRight) {
             swap(idx, belowRight);
+        }
+    }
+
+    public void updateObject(Body body) {
+        float cos = (float) Math.cos(body.angle);
+        float sin = (float) Math.sin(body.angle);
+        int centerX = body.maskWidth / 2;
+        int centerY = body.maskHeight / 2;
+
+        for (int ly = 0; ly < body.maskHeight; ly++) {
+            for (int lx = 0; lx < body.maskWidth; lx++) {
+                byte localPixel = body.pixels[ly * body.maskWidth + lx];
+                if (localPixel == ElementID.EMPTY.getId()) continue;
+
+                int relX = lx - centerX;
+                int relY = ly - centerY;
+
+                int wx = Math.round(body.x + (relX * cos - relY * sin));
+                int wy = Math.round(body.y + (relX * sin + relY * cos));
+
+                if (wx >= 0 && wx < getWidth() && wy >= 0 && wy < getHeight()) {
+                    setCell(wx, wy, ElementID.fromId(localPixel));
+                }
+            }
         }
     }
 
@@ -876,6 +915,86 @@ public class World {
         }
     }
 
+
+    private void updateRigidSolid(int x, int y, int idx) {
+        if (y >= height - 1) return;
+        int belowIdx = (y + 1) * width + x;
+        byte belowId = grid[belowIdx];
+
+        if (belowId == ElementID.EMPTY.getId() || canDisplace(grid[idx], belowId)) {
+            detachAsBody(x, y);
+        }
+    }
+
+
+    public void detachAsBody(int startX, int startY) {
+        byte initialType = grid[startY * width + startX];
+        if (initialType == ElementID.EMPTY.getId()) return;
+
+        List<Integer> connectedIndices = new ArrayList<>();
+        boolean[] visited = new boolean[width * height];
+        Queue<Integer> queue = new LinkedList<>();
+
+        int startIdx = startY * width + startX;
+        queue.add(startIdx);
+        visited[startIdx] = true;
+
+        int minX = startX, maxX = startX;
+        int minY = startY, maxY = startY;
+
+        while (!queue.isEmpty()) {
+            int idx = queue.poll();
+            connectedIndices.add(idx);
+
+            int cx = idx % width;
+            int cy = idx / width;
+
+            minX = Math.min(minX, cx);
+            maxX = Math.max(maxX, cx);
+            minY = Math.min(minY, cy);
+            maxY = Math.max(maxY, cy);
+
+            int[] dx = {0, 0, -1, 1};
+            int[] dy = {-1, 1, 0, 0};
+
+            for (int i = 0; i < 4; i++) {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    if (!visited[nIdx] && grid[nIdx] == initialType) {
+                        visited[nIdx] = true;
+                        queue.add(nIdx);
+                    }
+                }
+            }
+        }
+
+        int maskW = maxX - minX + 1;
+        int maskH = maxY - minY + 1;
+        byte[] maskPixels = new byte[maskW * maskH];
+        Arrays.fill(maskPixels, ElementID.EMPTY.getId());
+
+        for (int idx : connectedIndices) {
+            int cx = idx % width;
+            int cy = idx / width;
+
+            int localX = cx - minX;
+            int localY = cy - minY;
+
+            maskPixels[localY * maskW + localX] = grid[idx];
+            grid[idx] = ElementID.EMPTY.getId();
+            velocity[idx] = 0;
+        }
+
+        float centerX = minX + maskW / 2.0f;
+        float centerY = minY + maskH / 2.0f;
+
+        Body newBody = new Body(centerX, centerY, maskW, maskH, maskPixels);
+        this.bodies.add(newBody);
+    }
+
     private void swap(int i, int j) {
         byte tempGrid = grid[i];
         grid[i] = grid[j];
@@ -973,6 +1092,10 @@ public class World {
                 }
             }
         }
+    }
+
+    public List<Body> getBodies() {
+        return bodies;
     }
 
     public int getWidth() {

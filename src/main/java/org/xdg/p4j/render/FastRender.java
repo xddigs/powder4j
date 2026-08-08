@@ -2,6 +2,7 @@ package org.xdg.p4j.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xdg.p4j.core.Body;
 import org.xdg.p4j.core.Constants;
 import org.xdg.p4j.core.World;
 import org.xdg.p4j.data.BrushShape;
@@ -153,6 +154,38 @@ public class FastRender extends Canvas {
 
         g.dispose();
         bs.show();
+    }
+
+    public void drawBodies(World world) {
+        List<Body> bodies = world.getBodies();
+        int simWidth = world.getWidth();
+        int simHeight = world.getHeight();
+
+        for (Body body : bodies) {
+            float cos = (float) Math.cos(body.angle);
+            float sin = (float) Math.sin(body.angle);
+            int centerX = body.maskWidth / 2;
+            int centerY = body.maskHeight / 2;
+
+            for (int ly = 0; ly < body.maskHeight; ly++) {
+                for (int lx = 0; lx < body.maskWidth; lx++) {
+                    byte localPixel = body.pixels[ly * body.maskWidth + lx];
+                    if (localPixel == ElementID.EMPTY.getId()) continue;
+
+                    int relX = lx - centerX;
+                    int relY = ly - centerY;
+
+                    int wx = Math.round(body.x + (relX * cos - relY * sin));
+                    int wy = Math.round(body.y + (relX * sin + relY * cos));
+
+                    if (wx >= 0 && wx < simWidth && wy >= 0 && wy < simHeight) {
+                        int index = wy * simWidth + wx;
+                        pixelBuffer[index] = getParticleColor(wx, wy,
+                                ElementID.fromId(localPixel));
+                    }
+                }
+            }
+        }
     }
 
     private void wheel(Graphics2D g, KeyboardController keyController,
