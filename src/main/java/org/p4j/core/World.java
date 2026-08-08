@@ -1,8 +1,8 @@
 package org.p4j.core;
 
+import org.p4j.data.ElementID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.data.ElementID;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,7 +42,9 @@ public class World {
 
                 switch (type) {
                     case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
-                    case WET_SAND, GRASS, CARBON -> updateSolid(x, y, index);
+                    case HYDROGEN -> updateHydrogen(x, y, index);
+                    case CARBON -> updateCarbon(x, y, index);
+                    case WET_SAND, GRASS -> updateSolid(x, y, index);
                     case SODIUM, SALT, DIRT, SEED, SILICON -> updatePowder(x, y, index);
                     case THERMITE -> updateThermite(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
@@ -142,6 +144,31 @@ public class World {
         } else if (canRight) {
             swap(idx, belowRight);
         }
+    }
+
+    private void updateCarbon(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (isInBounds(nx, ny)) {
+                    int nIdx = getIndex(nx, ny);
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.FIRE) {
+                        if (Math.random() < Constants.FIRE_IGNITION_CHANCE) {
+                            grid[idx] = ElementID.FIRE.getId();
+                            updated[idx] = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        updateSolid(x, y, idx);
     }
 
     private void updateSolid(int x, int y, int idx) {
@@ -1193,6 +1220,69 @@ public class World {
                 swap(idx, aboveRight);
             }
         }
+    }
+
+    private void updateHydrogen(int x, int y, int idx) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (isInBounds(nx, ny)) {
+                    ElementID neighbor = ElementID.fromId(grid[getIndex(nx, ny)]);
+                    if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA
+                            || neighbor.isHot()) {
+                        explode(x, y);
+                        grid[idx] = ElementID.STEAM.getId();
+                        updated[idx] = true;
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (Math.random() < Constants.HYDROGEN_DISSIPATION_CHANCE) {
+            grid[idx] = ElementID.EMPTY.getId();
+            velocity[idx] = 0;
+            return;
+        }
+
+        if (y <= 0) return;
+
+        int aboveIdx = getIndex(x, y - 1);
+        ElementID aboveElement = ElementID.fromId(grid[aboveIdx]);
+
+        boolean canRiseAbove = aboveElement == ElementID.EMPTY ||
+                (aboveElement.getDensity() > ElementID.HYDROGEN.getDensity()
+                        && aboveElement.getDensity() < 0);
+
+        if (canRiseAbove) {
+            swap(idx, aboveIdx);
+            return;
+        }
+
+        int aboveLeft = (y - 1) * width + (x - 1);
+        int aboveRight = (y - 1) * width + (x + 1);
+
+        boolean canLeft = (x > 0 && isGasReplaceable(grid[aboveLeft]));
+        boolean canRight = (x < width - 1 && isGasReplaceable(grid[aboveRight]));
+
+        if (canLeft && canRight) {
+            int target = (Math.random() > Constants.RANDOM_THRESHOLD) ?
+                    aboveLeft : aboveRight;
+            swap(idx, target);
+        } else if (canLeft) {
+            swap(idx, aboveLeft);
+        } else if (canRight) {
+            swap(idx, aboveRight);
+        }
+    }
+
+    private boolean isGasReplaceable(byte targetId) {
+        ElementID target = ElementID.fromId(targetId);
+        return target == ElementID.EMPTY || (target.getDensity() >
+                ElementID.HYDROGEN.getDensity() && target.getDensity() < 0);
     }
 
     private void updateSmoke(int x, int y, int idx) {

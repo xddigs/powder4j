@@ -64,6 +64,7 @@ public final class Constants {
 
     public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
+    public static final double HYDROGEN_DISSIPATION_CHANCE = 0.05;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
