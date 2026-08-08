@@ -33,7 +33,8 @@ public enum ElementID {
     CEMENT((byte) 24, "Cement", "CaCO3", 0xFF9E9E9E, true, 4, false, false, false, false, false, 0),
     PLANT((byte) 25, "Plant", "C6H10O5", 0xFF2E7D32, true, 4, true, true, false, false, false, 0),
     THERMITE((byte) 26, "Thermite", "Fe+Al", 0xFFB71C1C, true, 4, true, false, false, false, false, 0),
-    OBSIDIAN((byte) 27, "Obsidian", "SiO2+", 0xFF1C1326, false, 5, false, false, false, false, false, 0);
+    OBSIDIAN((byte) 27, "Obsidian", "SiO2+", 0xFF1C1326, false, 5, false, false, false, false, false, 0),
+    WET_SAND((byte) 28, "Wet Sand", "SiO2", 0xFF9E753B, true, 4, false, true, false, false, false, 0);
 
     private final byte id;
     private final String name;

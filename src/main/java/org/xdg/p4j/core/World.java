@@ -44,6 +44,7 @@ public class World {
 
                 switch (type) {
                     case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
+                    case WET_SAND -> updateSolid(x, y, index);
                     case SODIUM, SALT -> updatePowder(x, y, index);
                     case THERMITE -> updateThermite(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
@@ -123,6 +124,43 @@ public class World {
         } else if (canRight) {
             swap(idx, belowRight);
         }
+    }
+
+    private void updateSolid(int x, int y, int idx) {
+        if (y >= height - 1) {
+            velocity[idx] = 0;
+            return;
+        }
+
+        byte currentId = grid[idx];
+        float currentVel = velocity[idx] + Constants.GRAVITY;
+        if (currentVel > Constants.MAX_FALL_SPEED) {
+            currentVel = Constants.MAX_FALL_SPEED;
+        }
+        int maxPossibleSteps = (int) currentVel;
+        if (maxPossibleSteps < 1) maxPossibleSteps = 1;
+        int actualSteps = 0;
+        int currentY = y;
+
+        while (actualSteps < maxPossibleSteps) {
+            int nextY = currentY + 1;
+            if (nextY >= height) break;
+
+            int targetIdx = nextY * width + x;
+            if (canDisplace(currentId, grid[targetIdx])) {
+                currentY = nextY;
+                actualSteps++;
+            } else {
+                break;
+            }
+        }
+
+        if (actualSteps > 0) {
+            int targetIdx = currentY * width + x;
+            velocity[idx] = currentVel;
+            swap(idx, targetIdx);
+        }
+
     }
 
     private void updateTNT(int x, int y, int idx) {
