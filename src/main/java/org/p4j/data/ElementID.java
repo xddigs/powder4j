@@ -36,7 +36,8 @@ public enum ElementID {
     GRAVEL((byte) 27, "Gravel", "Gr", 0xFF9B8773, true, 3, false, true, false, false, false, 0),
     DIRT((byte) 28, "Dirt", "Soil", 0xFF5D4037, true, 3, false, true, false, false, false, 0),
     WET_SAND((byte) 29, "Wet Sand", "SiO2", 0xFF9E753B, true, 4, false, true, false, false, false, 0),
-    FIRE((byte) 30, "Fire", "Q", 0xFFE06C75, true, 0, false, false, false, true, false, 0);
+    FIRE((byte) 30, "Fire", "Q", 0xFFE06C75, true, 0, false, false, false, true, false, 0),
+    GRASS((byte) 31, "Grass", "G", 0xFF4CAF50, false, 4, true, true, false, false, false, 0);
 
     private final byte id;
     private final String name;

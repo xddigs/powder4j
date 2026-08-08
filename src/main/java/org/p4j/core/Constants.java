@@ -73,6 +73,8 @@ public final class Constants {
     public static final double STEAM_CONDENSE_CHANCE = 0.005;
     public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
+    public static final double GROW_TREE_CHANCE = 0.005;
+    public static final double GROW_GRASS_CHANCE = 0.960;
 
     public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
     public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;
