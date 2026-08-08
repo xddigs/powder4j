@@ -71,7 +71,7 @@ public final class Constants {
     public static final double FIRE_IGNITION_CHANCE = 0.3;
     public static final double TNT_CRAFTING_CHANCE = 0.1;
     public static final double LAVA_FLOW_SKIP_CHANCE = 0.65;
-    public static final double STEAM_CONDENSE_CHANCE = 0.005;
+    public static final double STEAM_CONDENSE_CHANCE = 0.05;
     public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
     public static final double GROW_TREE_CHANCE = 0.005;
@@ -79,12 +79,12 @@ public final class Constants {
     public static final double WOOD_ABSORPTION_CHANCE = 0.2;
     public static final double GASOLINE_CREATION_CHANCE = 0.15;
     public static final double ICE_CREATION_CHANCE = 0.2;
-    public static final double GRAVEL_CREATION_CHANCE = 0.002;
-    public static final double LAVA_CREATION_CHANCE = 0.001;
-    public static final double CEMENT_CREATION_CHANCE = 0.005;
-    public static final double METHANE_CREATION_CHANCE = 0.01;
-    public static final double MERCURY_CREATION_CHANCE = 0.008;
-    public static final double GUNPOWDER_CREATION_CHANCE = 0.01;
+    public static final double GRAVEL_CREATION_CHANCE = 0.2;
+    public static final double LAVA_CREATION_CHANCE = 0.1;
+    public static final double CEMENT_CREATION_CHANCE = 0.15;
+    public static final double METHANE_CREATION_CHANCE = 0.1;
+    public static final double MERCURY_CREATION_CHANCE = 0.2;
+    public static final double GUNPOWDER_CREATION_CHANCE = 0.1;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;
