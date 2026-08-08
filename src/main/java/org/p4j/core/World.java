@@ -43,7 +43,7 @@ public class World {
                 switch (type) {
                     case SAND, GRAVEL, CEMENT -> updateSand(x, y, index);
                     case WET_SAND, GRASS -> updateSolid(x, y, index);
-                    case SODIUM, SALT, DIRT, SEED -> updatePowder(x, y, index);
+                    case SODIUM, SALT, DIRT, SEED, SILICON -> updatePowder(x, y, index);
                     case THERMITE -> updateThermite(x, y, index);
                     case GUNPOWDER -> updateGunpowder(x, y, index);
                     case TNT -> updateTNT(x, y, index);
@@ -69,6 +69,27 @@ public class World {
     }
 
     private void updateSand(int x, int y, int idx) {
+        ElementID currentType = ElementID.fromId(grid[idx]);
+
+        if (currentType == ElementID.SAND) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        int nIdx = ny * width + nx;
+                        if (ElementID.fromId(grid[nIdx]).isWater()) {
+                            grid[idx] = ElementID.WET_SAND.getId();
+                            grid[nIdx] = ElementID.EMPTY.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         if (y >= height - 1) {
             velocity[idx] = 0;
             return;
@@ -219,7 +240,8 @@ public class World {
                         updated[nIdx] = true;
                         return;
 
-                    } else if (neighbor == ElementID.SAND) {
+                    } else if (neighbor == ElementID.SAND ||
+                            neighbor == ElementID.SILICON) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
 
@@ -255,6 +277,16 @@ public class World {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (currentElement == ElementID.OIL && neighbor == ElementID.STEAM) {
+                        if (Math.random() < Constants.GASOLINE_CREATION_CHANCE) {
+                            grid[idx] = ElementID.GASOLINE.getId();
+                            grid[nIdx] = ElementID.SMOKE_DARK.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return;
+                        }
+                    }
 
                     if (currentElement.isWater() && (neighbor == ElementID.MUD
                             || neighbor == ElementID.DIRT)) {
@@ -440,8 +472,24 @@ public class World {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
+                    if (currentType == ElementID.SILICON) {
+                        if (neighbor == ElementID.FIRE ||
+                                neighbor == ElementID.LAVA) {
+                            grid[idx] = ElementID.GLASS.getId();
+                            updated[idx] = true;
+                            return;
+                        } else if (neighbor == ElementID.SALT) {
+                            grid[idx] = ElementID.SODIUM.getId();
+                            grid[nIdx] = ElementID.SAND.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return;
+                        }
+                    }
+
                     if (currentType == ElementID.DIRT && neighbor.isWater()) {
-                        if (ThreadLocalRandom.current().nextFloat() < Constants.MUD_SPREAD_CHANCE) {
+                        if (ThreadLocalRandom.current().nextFloat() <
+                                Constants.MUD_SPREAD_CHANCE) {
                             grid[idx] = ElementID.MUD.getId();
                             grid[nIdx] = ElementID.MUD.getId();
                             updated[idx] = true;
@@ -469,6 +517,15 @@ public class World {
                         grid[idx] = ElementID.CHLORINE.getId();
                         grid[nIdx] = ElementID.SAND.getId();
                         explode(x, y);
+                        return;
+                    }
+
+                    if (currentType == ElementID.SALT && (neighbor == ElementID.FIRE ||
+                            neighbor == ElementID.LAVA)) {
+                        grid[idx] = ElementID.SODIUM.getId();
+                        grid[nIdx] = ElementID.CHLORINE.getId();
+                        updated[idx] = true;
+                        updated[nIdx] = true;
                         return;
                     }
 
@@ -518,11 +575,21 @@ public class World {
     }
 
     private void growTree(int startX, int startY) {
-        int waterAbsorbed = absorb(startX, startY, Constants.TREE_WATER_ABSORB_RADIUS, Constants.TREE_WATER_ABSORB_MAX);
-        int baseHeight = ThreadLocalRandom.current().nextInt(Constants.TREE_BASE_HEIGHT_MIN, Constants.TREE_BASE_HEIGHT_MAX);
-        int treeHeight = baseHeight + (waterAbsorbed * Constants.TREE_HEIGHT_PER_WATER);
-        int trunkWidth = Constants.TREE_TRUNK_BASE_WIDTH + (waterAbsorbed / Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
-        int maxLeafRadius = Constants.TREE_LEAF_BASE_RADIUS + (waterAbsorbed / Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
+        int waterAbsorbed = absorb(startX, startY,
+                Constants.TREE_WATER_ABSORB_RADIUS,
+                Constants.TREE_WATER_ABSORB_MAX);
+        int baseHeight = ThreadLocalRandom.current().nextInt(
+                Constants.TREE_BASE_HEIGHT_MIN,
+                Constants.TREE_BASE_HEIGHT_MAX);
+
+        int treeHeight = baseHeight + (
+                waterAbsorbed * Constants.TREE_HEIGHT_PER_WATER);
+
+        int trunkWidth = Constants.TREE_TRUNK_BASE_WIDTH + (
+                waterAbsorbed / Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
+
+        int maxLeafRadius = Constants.TREE_LEAF_BASE_RADIUS + (
+                waterAbsorbed / Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
 
         int currentY = startY;
         int currentX = startX;
@@ -537,20 +604,24 @@ public class World {
                     int idx = currentY * width + tx;
                     ElementID current = ElementID.fromId(grid[idx]);
                     if (current == ElementID.EMPTY || current == ElementID.SEED ||
-                            current.isLiquid() || current == ElementID.SMOKE_LIGHT || current == ElementID.GRASS) {
+                            current.isLiquid() || current == ElementID.SMOKE_LIGHT ||
+                            current == ElementID.GRASS) {
                         grid[idx] = ElementID.WOOD.getId();
                         updated[idx] = true;
                     }
                 }
             }
 
-            int canopyStartHeight = treeHeight - (Constants.TREE_LEAF_CANOPY_OFFSET_BASE + waterAbsorbed / Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
+            int canopyStartHeight = treeHeight - (Constants.TREE_LEAF_CANOPY_OFFSET_BASE +
+                    waterAbsorbed / Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
             if (i >= canopyStartHeight) {
-                int currentLeafRadius = Math.min(maxLeafRadius, (treeHeight - i) + Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
+                int currentLeafRadius = Math.min(maxLeafRadius, (treeHeight - i) +
+                        Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
 
                 for (int ly = -currentLeafRadius; ly <= currentLeafRadius; ly++) {
                     for (int lx = -currentLeafRadius; lx <= currentLeafRadius; lx++) {
-                        if (lx * lx + ly * ly <= currentLeafRadius * currentLeafRadius + Constants.TREE_LEAF_CIRCLE_TOLERANCE) {
+                        if (lx * lx + ly * ly <= currentLeafRadius * currentLeafRadius +
+                                Constants.TREE_LEAF_CIRCLE_TOLERANCE) {
                             int leafX = currentX + lx;
                             int leafY = currentY + ly;
 
@@ -566,10 +637,14 @@ public class World {
                 }
             }
 
-            float curveChance = trunkWidth > Constants.TREE_TRUNK_BASE_WIDTH ? Constants.TREE_CURVE_CHANCE_THICK : Constants.TREE_CURVE_CHANCE_THIN;
-            if (i > Constants.TREE_CURVE_MIN_HEIGHT_STEP && ThreadLocalRandom.current().nextFloat() < curveChance) {
+            float curveChance = trunkWidth > Constants.TREE_TRUNK_BASE_WIDTH ?
+                    Constants.TREE_CURVE_CHANCE_THICK : Constants.TREE_CURVE_CHANCE_THIN;
+
+            if (i > Constants.TREE_CURVE_MIN_HEIGHT_STEP &&
+                    ThreadLocalRandom.current().nextFloat() < curveChance) {
                 currentX += ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
-                currentX = Math.clamp(currentX, Constants.TREE_MIN_X_MARGIN, width - Constants.TREE_MAX_X_MARGIN_OFFSET);
+                currentX = Math.clamp(currentX, Constants.TREE_MIN_X_MARGIN,
+                        width - Constants.TREE_MAX_X_MARGIN_OFFSET);
             }
 
             currentY--;
@@ -601,6 +676,13 @@ public class World {
     }
 
     private void updateSteam(int x, int y, int idx) {
+        if (y < 5 && Math.random() < Constants.ICE_CREATION_CHANCE) {
+            grid[idx] = ElementID.ICE.getId();
+            velocity[idx] = 0;
+            updated[idx] = true;
+            return;
+        }
+
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx == 0 && dy == 0) continue;
@@ -964,6 +1046,44 @@ public class World {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.STONE) {
+                        if (Math.random() < Constants.GRAVEL_CREATION_CHANCE) {
+                            grid[nIdx] = ElementID.GRAVEL.getId();
+                            updated[nIdx] = true;
+                        } else if (Math.random() < Constants.LAVA_CREATION_CHANCE) {
+                            grid[nIdx] = ElementID.LAVA.getId();
+                            updated[nIdx] = true;
+                        }
+                    }
+
+                    if (neighbor == ElementID.DIRT && Math.random() <
+                            Constants.CEMENT_CREATION_CHANCE) {
+                        grid[nIdx] = ElementID.CEMENT.getId();
+                        updated[nIdx] = true;
+                    }
+
+                    if (neighbor == ElementID.MUD && Math.random() <
+                            Constants.METHANE_CREATION_CHANCE) {
+                        grid[nIdx] = ElementID.METHANE.getId();
+                        grid[idx] = ElementID.DIRT.getId();
+                        updated[nIdx] = true;
+                        updated[idx] = true;
+                        return;
+                    }
+
+                    if (neighbor == ElementID.OIL && Math.random() <
+                            Constants.MERCURY_CREATION_CHANCE) {
+                        grid[nIdx] = ElementID.MERCURY.getId();
+                        updated[nIdx] = true;
+                    }
+
+                    if (neighbor == ElementID.SILICON && Math.random() <
+                            Constants.GUNPOWDER_CREATION_CHANCE) {
+                        grid[nIdx] = ElementID.GUNPOWDER.getId();
+                        updated[nIdx] = true;
+                    }
+
                     if (neighbor.isFlammable()) {
                         nearFuel = true;
                         if (neighbor == ElementID.OIL) {
@@ -984,7 +1104,11 @@ public class World {
                             smokeType = ElementID.SMOKE_GRAY;
                         }
 
-                        grid[nIdx] = smokeType.getId();
+                        if (Math.random() < Constants.SALT_CHANCE) {
+                            grid[nIdx] = ElementID.SALT.getId();
+                        } else {
+                            grid[nIdx] = smokeType.getId();
+                        }
                         updated[nIdx] = true;
                         grid[idx] = ElementID.EMPTY.getId();
                         velocity[idx] = 0;
@@ -1096,8 +1220,11 @@ public class World {
 
         if (stepsX == 0 && stepsY == 0) return;
 
-        stepsX = Math.clamp(stepsX, -Constants.INERTIA_MAX_STEP_LIMIT, Constants.INERTIA_MAX_STEP_LIMIT);
-        stepsY = Math.clamp(stepsY, -Constants.INERTIA_MAX_STEP_LIMIT, Constants.INERTIA_MAX_STEP_LIMIT);
+        stepsX = Math.clamp(stepsX, -Constants.INERTIA_MAX_STEP_LIMIT,
+                Constants.INERTIA_MAX_STEP_LIMIT);
+
+        stepsY = Math.clamp(stepsY, -Constants.INERTIA_MAX_STEP_LIMIT,
+                Constants.INERTIA_MAX_STEP_LIMIT);
 
         if (stepsY != 0) {
             boolean moveUp = stepsY < 0;
@@ -1112,7 +1239,8 @@ public class World {
                     int idx = y * width + x;
                     byte typeId = grid[idx];
 
-                    if (typeId == ElementID.EMPTY.getId() || typeId == ElementID.STONE.getId())
+                    if (typeId == ElementID.EMPTY.getId() ||
+                            typeId == ElementID.STONE.getId())
                         continue;
 
                     int currentY = y;
@@ -1121,7 +1249,8 @@ public class World {
                         if (targetY < 0 || targetY >= height) break;
 
                         int targetIdx = targetY * width + x;
-                        if (grid[targetIdx] == ElementID.EMPTY.getId() || canDisplace(grid[idx], grid[targetIdx])) {
+                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
+                                canDisplace(grid[idx], grid[targetIdx])) {
                             swap(currentY * width + x, targetIdx);
                             currentY = targetY;
                         } else {
