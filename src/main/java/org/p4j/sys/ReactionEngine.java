@@ -27,13 +27,13 @@ public class ReactionEngine {
             case SAND -> reactSand(x, y, idx);
             case WET_SAND -> reactWetSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
-            case SILICON_ELEM, DIRT, SEED, SALT, SODIUM, GRAVEL -> reactPowder(x, y, idx, type);
+            case SILICON, DIRT, SEED, SALT, SODIUM, GRAVEL -> reactPowder(x, y, idx, type);
             case TNT -> reactTNT(x, y, idx);
             case LAVA -> reactLava(x, y, idx);
             case STEAM -> reactSteam(x, y, idx);
             case METHANE -> reactMethane(x, y, idx);
             case CEMENT -> reactCement(x, y, idx);
-            case CHLORINE_ELEM -> reactChlorine(x, y, idx);
+            case CHLORINE -> reactChlorine(x, y, idx);
             case THERMITE -> reactThermite(x, y, idx);
             case ACID -> reactAcid(x, y, idx);
             case GUNPOWDER -> reactGunpowder(x, y, idx);
@@ -309,7 +309,7 @@ public class ReactionEngine {
                         updated[nIdx] = true;
                         return true;
 
-                    } else if (neighbor == ElementID.SAND || neighbor == ElementID.SILICON_ELEM) {
+                    } else if (neighbor == ElementID.SAND || neighbor == ElementID.SILICON) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
 
@@ -343,7 +343,7 @@ public class ReactionEngine {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
-                    if (currentType == ElementID.SILICON_ELEM) {
+                    if (currentType == ElementID.SILICON) {
                         if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA) {
                             grid[idx] = ElementID.GLASS.getId();
                             updated[idx] = true;
@@ -380,7 +380,7 @@ public class ReactionEngine {
                     if (currentType == ElementID.SALT && (neighbor == ElementID.FIRE ||
                             neighbor == ElementID.LAVA)) {
                         grid[idx] = ElementID.SODIUM.getId();
-                        grid[nIdx] = ElementID.CHLORINE_ELEM.getId();
+                        grid[nIdx] = ElementID.CHLORINE.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
                         return true;
@@ -742,7 +742,7 @@ public class ReactionEngine {
                         return true;
                     }
 
-                    if (neighbor == ElementID.SILICON_ELEM && Math.random() <
+                    if (neighbor == ElementID.SILICON && Math.random() <
                             K.GLASS_FUSION_CHANCE) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
