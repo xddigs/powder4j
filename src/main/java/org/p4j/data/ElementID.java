@@ -149,7 +149,7 @@ public enum ElementID {
     THERMITE((short) 139, "Thermite", "Fe+Al", 0xFFB71C1C, false, 4, true, false, false, false, false, 0),
     GUNPOWDER((short) 140, "Gunpowder", "KNO3", 0xFF53565A, false, 3, true, true, false, false, false, 0),
     STONE((short) 141, "Stone", "ST", 0xFF808080, false, 4, false, false, false, false, false, 0),
-    BEDROCK((short) 142, "Bedrock", "BR", 0xFF111111, false, 100, false, false, false, false, false, 0),
+    BEDROCK((short) 142, "Bedrock", "BR", 0xFF111111, true, 100, false, false, false, false, false, 0),
     GRAVEL((short) 143, "Gravel", "Gr", 0xFF9B8773, false, 3, false, true, false, false, false, 0),
     DIRT((short) 144, "Dirt", "Soil", 0xFF5D4037, true, 3, false, true, false, false, false, 0),
     WET_SAND((short) 145, "Wet Sand", "SiO2", 0xFF9E753B, false, 4, false, true, false, false, false, 0),

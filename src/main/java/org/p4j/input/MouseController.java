@@ -2,7 +2,7 @@ package org.p4j.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
 
@@ -43,7 +43,7 @@ public class MouseController extends MouseAdapter implements
         if (keyboardController.wasAltPressed()) return;
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
-        isRightClick = (e.getButton() == Constants.MOUSE_BUTTON_RIGHT);
+        isRightClick = (e.getButton() == K.MOUSE_BUTTON_RIGHT);
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;

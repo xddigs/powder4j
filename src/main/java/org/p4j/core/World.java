@@ -111,7 +111,7 @@ public class World {
     }
 
     public boolean soak(int waterX, int waterY, int waterIdx) {
-        int maxDepth = Constants.MUD_MAX_DEPTH;
+        int maxDepth = K.MUD_MAX_DEPTH;
         int[] xOffsets = {0, -1, 1};
 
         for (int dx : xOffsets) {
@@ -171,23 +171,23 @@ public class World {
 
     public void growTree(int startX, int startY) {
         int waterAbsorbed = absorb(startX, startY,
-                Constants.TREE_WATER_ABSORB_RADIUS,
-                Constants.TREE_WATER_ABSORB_MAX);
+                K.TREE_WATER_ABSORB_RADIUS,
+                K.TREE_WATER_ABSORB_MAX);
         int baseHeight = ThreadLocalRandom.current()
                 .nextInt(
-                        Constants.TREE_BASE_HEIGHT_MIN,
-                        Constants.TREE_BASE_HEIGHT_MAX);
+                        K.TREE_BASE_HEIGHT_MIN,
+                        K.TREE_BASE_HEIGHT_MAX);
 
         int treeHeight = baseHeight + (
-                waterAbsorbed * Constants.TREE_HEIGHT_PER_WATER);
+                waterAbsorbed * K.TREE_HEIGHT_PER_WATER);
 
-        int trunkWidth = Constants.TREE_TRUNK_BASE_WIDTH + (
+        int trunkWidth = K.TREE_TRUNK_BASE_WIDTH + (
                 waterAbsorbed /
-                        Constants.TREE_WATER_DIVISOR_TRUNK_WIDTH);
+                        K.TREE_WATER_DIVISOR_TRUNK_WIDTH);
 
-        int maxLeafRadius = Constants.TREE_LEAF_BASE_RADIUS + (
+        int maxLeafRadius = K.TREE_LEAF_BASE_RADIUS + (
                 waterAbsorbed /
-                        Constants.TREE_WATER_DIVISOR_LEAF_RADIUS);
+                        K.TREE_WATER_DIVISOR_LEAF_RADIUS);
 
         int currentY = startY;
         int currentX = startX;
@@ -214,13 +214,13 @@ public class World {
             }
 
             int canopyStartHeight = treeHeight - (
-                    Constants.TREE_LEAF_CANOPY_OFFSET_BASE +
+                    K.TREE_LEAF_CANOPY_OFFSET_BASE +
                             waterAbsorbed /
-                                    Constants.TREE_WATER_DIVISOR_CANOPY_OFFSET);
+                                    K.TREE_WATER_DIVISOR_CANOPY_OFFSET);
             if (i >= canopyStartHeight) {
                 int currentLeafRadius = Math.min(
                         maxLeafRadius, (treeHeight - i) +
-                                Constants.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
+                                K.TREE_LEAF_RADIUS_HEIGHT_OFFSET);
 
                 for (int ly = -currentLeafRadius;
                      ly <= currentLeafRadius; ly++) {
@@ -229,7 +229,7 @@ public class World {
                         if (lx * lx + ly * ly <=
                                 currentLeafRadius *
                                         currentLeafRadius +
-                                        Constants.
+                                        K.
                                                 TREE_LEAF_CIRCLE_TOLERANCE) {
                             int leafX = currentX + lx;
                             int leafY = currentY + ly;
@@ -250,18 +250,18 @@ public class World {
             }
 
             float curveChance = trunkWidth >
-                    Constants.TREE_TRUNK_BASE_WIDTH ?
-                    Constants.TREE_CURVE_CHANCE_THICK :
-                    Constants.TREE_CURVE_CHANCE_THIN;
+                    K.TREE_TRUNK_BASE_WIDTH ?
+                    K.TREE_CURVE_CHANCE_THICK :
+                    K.TREE_CURVE_CHANCE_THIN;
 
-            if (i > Constants.TREE_CURVE_MIN_HEIGHT_STEP &&
+            if (i > K.TREE_CURVE_MIN_HEIGHT_STEP &&
                     ThreadLocalRandom.current().nextFloat() <
                             curveChance) {
                 currentX += ThreadLocalRandom.current()
                         .nextBoolean() ? 1 : -1;
                 currentX = Math.clamp(currentX,
-                        Constants.TREE_MIN_X_MARGIN,
-                        width - Constants.
+                        K.TREE_MIN_X_MARGIN,
+                        width - K.
                                 TREE_MAX_X_MARGIN_OFFSET);
             }
 
@@ -325,19 +325,19 @@ public class World {
 
     public void applyInertia(float forceX, float forceY) {
         int stepsX = Math.round(forceX *
-                Constants.INERTIA_SENSITIVITY);
+                K.INERTIA_SENSITIVITY);
         int stepsY = Math.round(forceY *
-                Constants.INERTIA_SENSITIVITY);
+                K.INERTIA_SENSITIVITY);
 
         if (stepsX == 0 && stepsY == 0) return;
 
         stepsX = Math.clamp(stepsX,
-                -Constants.INERTIA_MAX_STEP_LIMIT,
-                Constants.INERTIA_MAX_STEP_LIMIT);
+                -K.INERTIA_MAX_STEP_LIMIT,
+                K.INERTIA_MAX_STEP_LIMIT);
 
         stepsY = Math.clamp(stepsY,
-                -Constants.INERTIA_MAX_STEP_LIMIT,
-                Constants.INERTIA_MAX_STEP_LIMIT);
+                -K.INERTIA_MAX_STEP_LIMIT,
+                K.INERTIA_MAX_STEP_LIMIT);
 
         if (stepsY != 0) {
             boolean moveUp = stepsY < 0;

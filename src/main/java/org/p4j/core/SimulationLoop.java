@@ -50,8 +50,8 @@ public class SimulationLoop implements Runnable {
     @Override
     public void run() {
         long lastTime = System.nanoTime();
-        double amountOfTicks = Constants.TICKS_PER_SECOND;
-        double ns = Constants.NANOSECONDS_IN_SECOND / amountOfTicks;
+        double amountOfTicks = K.TICKS_PER_SECOND;
+        double ns = K.NANOSECONDS_IN_SECOND / amountOfTicks;
         double delta = 0;
         while (isRunning) {
             long now = System.nanoTime();

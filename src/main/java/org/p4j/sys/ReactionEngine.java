@@ -1,6 +1,6 @@
 package org.p4j.sys;
 
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
 
@@ -153,7 +153,7 @@ public class ReactionEngine {
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
                     if (currentElement == ElementID.OIL && neighbor == ElementID.STEAM) {
-                        if (Math.random() < Constants.GASOLINE_CREATION_CHANCE) {
+                        if (Math.random() < K.GASOLINE_CREATION_CHANCE) {
                             grid[idx] = ElementID.GASOLINE.getId();
                             grid[nIdx] = ElementID.SMOKE_DARK.getId();
                             updated[idx] = true;
@@ -173,7 +173,7 @@ public class ReactionEngine {
 
                     if (isFlammableFluid && neighbor.isHot()) {
                         if (currentElement == ElementID.GASOLINE) {
-                            ExplosionSystem.createExplosion(world, x, y, Constants.GENERAL_EXPLOSION_RADIUS);
+                            ExplosionSystem.createExplosion(world, x, y, K.GENERAL_EXPLOSION_RADIUS);
                         } else {
                             grid[idx] = ElementID.FIRE.getId();
                             updated[idx] = true;
@@ -201,7 +201,7 @@ public class ReactionEngine {
         int width = world.getWidth();
         int height = world.getHeight();
 
-        int maxDepth = Constants.MUD_MAX_DEPTH;
+        int maxDepth = K.MUD_MAX_DEPTH;
         int[] xOffsets = {0, -1, 1};
 
         for (int dx : xOffsets) {
@@ -248,7 +248,7 @@ public class ReactionEngine {
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
                     if (neighbor == ElementID.FIRE) {
-                        if (Math.random() < Constants.FIRE_IGNITION_CHANCE) {
+                        if (Math.random() < K.FIRE_IGNITION_CHANCE) {
                             grid[idx] = ElementID.FIRE.getId();
                             updated[idx] = true;
                             return true;
@@ -352,7 +352,7 @@ public class ReactionEngine {
                     }
 
                     if (currentType == ElementID.DIRT && neighbor.isWater()) {
-                        if (ThreadLocalRandom.current().nextFloat() < Constants.MUD_SPREAD_CHANCE) {
+                        if (ThreadLocalRandom.current().nextFloat() < K.MUD_SPREAD_CHANCE) {
                             grid[idx] = ElementID.MUD.getId();
                             grid[nIdx] = ElementID.MUD.getId();
                             updated[idx] = true;
@@ -367,10 +367,10 @@ public class ReactionEngine {
                                 neighbor.isWater());
                         if (isOnFertileGround) {
                             float rand = ThreadLocalRandom.current().nextFloat();
-                            if (rand < Constants.GROW_TREE_CHANCE) {
+                            if (rand < K.GROW_TREE_CHANCE) {
                                 world.growTree(x, y);
                                 return true;
-                            } else if (rand < Constants.GROW_GRASS_CHANCE) {
+                            } else if (rand < K.GROW_GRASS_CHANCE) {
                                 world.growGrass(x, y);
                                 return true;
                             }
@@ -394,7 +394,7 @@ public class ReactionEngine {
 
                     if (currentType == ElementID.SODIUM && neighbor.isWater()) {
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.GENERAL_EXPLOSION_RADIUS);
+                                K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.FIRE.getId();
                         grid[nIdx] = ElementID.HYDROGEN.getId();
                         updated[idx] = true;
@@ -414,7 +414,7 @@ public class ReactionEngine {
         int width = world.getWidth();
         int height = world.getHeight();
 
-        if (y < 5 && Math.random() < Constants.ICE_CREATION_CHANCE) {
+        if (y < 5 && Math.random() < K.ICE_CREATION_CHANCE) {
             grid[idx] = ElementID.ICE.getId();
             velocity[idx] = 0;
             updated[idx] = true;
@@ -442,7 +442,7 @@ public class ReactionEngine {
             }
         }
 
-        if (Math.random() < Constants.STEAM_CONDENSE_CHANCE) {
+        if (Math.random() < K.STEAM_CONDENSE_CHANCE) {
             grid[idx] = ElementID.WATER.getId();
             velocity[idx] = 0;
             updated[idx] = true;
@@ -470,7 +470,7 @@ public class ReactionEngine {
                             neighbor.isHot()) {
                         grid[idx] = ElementID.FIRE.getId();
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.GENERAL_EXPLOSION_RADIUS);
+                                K.GENERAL_EXPLOSION_RADIUS);
                         return true;
                     }
                 }
@@ -527,7 +527,7 @@ public class ReactionEngine {
                             neighbor.isHot() ||
                             neighbor == ElementID.HYDROGEN) {
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.CHLORINE_EXPLOSION_RADIUS);
+                                K.CHLORINE_EXPLOSION_RADIUS);
                         return true;
                     }
 
@@ -600,7 +600,7 @@ public class ReactionEngine {
 
                     if (neighbor == ElementID.SODIUM) {
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.GENERAL_EXPLOSION_RADIUS);
+                                K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.SALT.getId();
                         grid[nIdx] = ElementID.HYDROGEN.getId();
                         updated[idx] = true;
@@ -646,7 +646,7 @@ public class ReactionEngine {
                         velocity[idx] = 0;
                         updated[idx] = true;
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.GENERAL_EXPLOSION_RADIUS);
+                                K.GENERAL_EXPLOSION_RADIUS);
                         return true;
                     }
                 }
@@ -680,7 +680,7 @@ public class ReactionEngine {
         }
 
         if (isNearFire) {
-            if (Math.random() < Constants.WOOD_IGNITION_CHANCE) {
+            if (Math.random() < K.WOOD_IGNITION_CHANCE) {
                 grid[idx] = ElementID.CARBON.getId();
                 updated[idx] = true;
 
@@ -696,7 +696,7 @@ public class ReactionEngine {
             }
         }
 
-        if (Math.random() < Constants.WOOD_ABSORPTION_CHANCE) {
+        if (Math.random() < K.WOOD_ABSORPTION_CHANCE) {
             absorb(x, y, 1, 1);
         }
         return false;
@@ -721,20 +721,20 @@ public class ReactionEngine {
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
                     if (neighbor == ElementID.STONE) {
-                        if (Math.random() < Constants.GRAVEL_CREATION_CHANCE) {
+                        if (Math.random() < K.GRAVEL_CREATION_CHANCE) {
                             grid[nIdx] = ElementID.GRAVEL.getId();
                             updated[nIdx] = true;
                         }
                     }
 
                     if (neighbor == ElementID.DIRT && Math.random() <
-                            Constants.CEMENT_CREATION_CHANCE) {
+                            K.CEMENT_CREATION_CHANCE) {
                         grid[nIdx] = ElementID.CEMENT.getId();
                         updated[nIdx] = true;
                     }
 
                     if (neighbor == ElementID.MUD && Math.random() <
-                            Constants.METHANE_CREATION_CHANCE) {
+                            K.METHANE_CREATION_CHANCE) {
                         grid[nIdx] = ElementID.DIRT.getId();
                         grid[idx] = ElementID.STEAM.getId();
                         updated[nIdx] = true;
@@ -743,7 +743,7 @@ public class ReactionEngine {
                     }
 
                     if (neighbor == ElementID.SILICON_ELEM && Math.random() <
-                            Constants.GLASS_FUSION_CHANCE) {
+                            K.GLASS_FUSION_CHANCE) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
                     }
@@ -758,20 +758,20 @@ public class ReactionEngine {
                             return true;
 
                         } else if (neighbor.isFlammable() && neighbor != ElementID.OIL &&
-                                Math.random() < Constants.WOOD_IGNITION_CHANCE) {
+                                Math.random() < K.WOOD_IGNITION_CHANCE) {
                             grid[nIdx] = ElementID.FIRE.getId();
                             updated[nIdx] = true;
                         }
 
                     } else if (neighbor == ElementID.WATER && Math.random() <
-                            Constants.FIRE_EVAPORATION_CHANCE) {
+                            K.FIRE_EVAPORATION_CHANCE) {
                         double rand = Math.random();
                         ElementID smokeType = ElementID.SMOKE_LIGHT;
-                        if (rand > Constants.FIRE_SMOKE_GRAY_THRESHOLD) {
+                        if (rand > K.FIRE_SMOKE_GRAY_THRESHOLD) {
                             smokeType = ElementID.SMOKE_GRAY;
                         }
 
-                        if (Math.random() < Constants.SALT_CHANCE) {
+                        if (Math.random() < K.SALT_CHANCE) {
                             grid[nIdx] = ElementID.SALT.getId();
                         } else {
                             grid[nIdx] = smokeType.getId();
@@ -786,7 +786,7 @@ public class ReactionEngine {
                         updated[nIdx] = true;
 
                     } else if (neighbor == ElementID.SAND && Math.random() <
-                            Constants.GLASS_FUSION_CHANCE) {
+                            K.GLASS_FUSION_CHANCE) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
                     }
@@ -794,14 +794,14 @@ public class ReactionEngine {
             }
         }
 
-        if (Math.random() < Constants.FIRE_DISSIPATION_CHANCE) {
+        if (Math.random() < K.FIRE_DISSIPATION_CHANCE) {
             grid[idx] = ElementID.EMPTY.getId();
             velocity[idx] = 0;
             return true;
         }
 
         return nearFuel && Math.random() <
-                Constants.FIRE_NEAR_FUEL_PAUSE_CHANCE;
+                K.FIRE_NEAR_FUEL_PAUSE_CHANCE;
     }
 
     private boolean reactHydrogen(int x, int y, int idx) {
@@ -821,7 +821,7 @@ public class ReactionEngine {
                             neighbor == ElementID.LAVA ||
                             neighbor.isHot()) {
                         ExplosionSystem.createExplosion(world, x, y,
-                                Constants.GENERAL_EXPLOSION_RADIUS);
+                                K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.STEAM.getId();
                         updated[idx] = true;
                         return true;
@@ -830,7 +830,7 @@ public class ReactionEngine {
             }
         }
 
-        if (Math.random() < Constants.HYDROGEN_DISSIPATION_CHANCE) {
+        if (Math.random() < K.HYDROGEN_DISSIPATION_CHANCE) {
             grid[idx] = ElementID.EMPTY.getId();
             velocity[idx] = 0;
             return true;
@@ -842,7 +842,7 @@ public class ReactionEngine {
         short[] grid = world.getGrid();
         float[] velocity = world.getVelocity();
 
-        if (Math.random() < Constants.SMOKE_DISSIPATION_CHANCE) {
+        if (Math.random() < K.SMOKE_DISSIPATION_CHANCE) {
             grid[idx] = ElementID.EMPTY.getId();
             velocity[idx] = 0;
             return true;

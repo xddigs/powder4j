@@ -2,7 +2,7 @@ package org.p4j.input;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.data.BrushShape;
 import org.p4j.data.ElementID;
 
@@ -49,7 +49,7 @@ public class Brush {
 
     public void setRadius(int radius) {
         int oldRadius = this.radius;
-        this.radius = Math.clamp(radius, Constants.MIN_BRUSH_RADIUS, Constants.MAX_BRUSH_RADIUS);
+        this.radius = Math.clamp(radius, K.MIN_BRUSH_RADIUS, K.MAX_BRUSH_RADIUS);
         if (oldRadius != this.radius) {
             log.debug("Brush radius changed to: {}", this.radius);
             this.lastRadiusChangeTime = System.currentTimeMillis();

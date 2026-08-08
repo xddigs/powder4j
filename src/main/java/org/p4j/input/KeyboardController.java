@@ -1,6 +1,6 @@
 package org.p4j.input;
 
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.data.BrushShape;
 import org.p4j.data.ElementID;
 import java.util.Arrays;
@@ -123,10 +123,10 @@ public class KeyboardController extends KeyAdapter {
     private void toggleEscape() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastEscapeTime <
-                Constants.ESCAPE_DOUBLE_PRESS_INTERVAL) {
+                K.ESCAPE_DOUBLE_PRESS_INTERVAL) {
             System.exit(0);
         }
         lastEscapeTime = currentTime;
-        Constants.IS_RUNNING ^= true;
+        K.IS_RUNNING ^= true;
     }
 }

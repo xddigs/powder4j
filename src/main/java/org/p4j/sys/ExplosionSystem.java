@@ -1,6 +1,6 @@
 package org.p4j.sys;
 
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
 
@@ -45,6 +45,6 @@ public class ExplosionSystem {
     }
 
     public static void explodeTNT(World world, int centerX, int centerY) {
-        createExplosion(world, centerX, centerY, Constants.TNT_EXPLOSION_RADIUS);
+        createExplosion(world, centerX, centerY, K.TNT_EXPLOSION_RADIUS);
     }
 }

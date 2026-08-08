@@ -2,7 +2,7 @@ package org.p4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.core.SimulationLoop;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
@@ -41,7 +41,7 @@ public class App extends JFrame {
         setResizable(false);
         setFocusTraversalKeysEnabled(false);
 
-        this.brush = new Brush(ElementID.SAND, Constants.DEFAULT_BRUSH_RADIUS);
+        this.brush = new Brush(ElementID.SAND, K.DEFAULT_BRUSH_RADIUS);
         this.keyController = new KeyboardController(brush);
 
         this.palette = new Palette();
@@ -77,8 +77,8 @@ public class App extends JFrame {
                 int deltaX = currentX - lastWindowX;
                 int deltaY = currentY - lastWindowY;
 
-                if (Math.abs(deltaX) > Constants.WINDOW_SHAKING_THRESHOLD ||
-                        Math.abs(deltaY) > Constants.WINDOW_SHAKING_THRESHOLD) {
+                if (Math.abs(deltaX) > K.WINDOW_SHAKING_THRESHOLD ||
+                        Math.abs(deltaY) > K.WINDOW_SHAKING_THRESHOLD) {
                     world.applyInertia(-deltaX, -deltaY);
                 }
 
@@ -94,8 +94,8 @@ public class App extends JFrame {
     static void main() {
         log.info("Starting main entry point...");
         SwingUtilities.invokeLater(() -> new App(
-                Constants.APP_TITLE + Constants.VERSION,
-                Constants.DEFAULT_SIM_WIDTH, Constants.DEFAULT_SIM_HEIGHT,
-                Constants.DEFAULT_SCALE));
+                K.APP_TITLE + K.VERSION,
+                K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
+                K.DEFAULT_SCALE));
     }
 }

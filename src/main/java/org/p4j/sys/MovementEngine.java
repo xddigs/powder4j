@@ -1,6 +1,6 @@
 package org.p4j.sys;
 
-import org.p4j.core.Constants;
+import org.p4j.core.K;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
 
@@ -37,8 +37,8 @@ public class MovementEngine {
     private boolean updatePowder(int x, int y, int idx, ElementID type) {
         short currentId = world.getGrid()[idx];
 
-        float currentVel = world.getVelocity(idx) + Constants.GRAVITY;
-        float maxSpeed = Constants.MAX_FALL_SPEED;
+        float currentVel = world.getVelocity(idx) + K.GRAVITY;
+        float maxSpeed = K.MAX_FALL_SPEED;
         if (currentVel > maxSpeed) currentVel = maxSpeed;
 
         int steps = Math.max(1, (int) currentVel);
@@ -105,8 +105,8 @@ public class MovementEngine {
     }
 
     private boolean updateGas(int x, int y, int idx, ElementID type) {
-        float currentVel = world.getVelocity(idx) + Constants.GRAVITY;
-        float maxSpeed = Constants.MAX_GAS_SPEED;
+        float currentVel = world.getVelocity(idx) + K.GRAVITY;
+        float maxSpeed = K.MAX_GAS_SPEED;
         if (currentVel > maxSpeed) currentVel = maxSpeed;
 
         int steps = Math.max(1, (int) currentVel);
