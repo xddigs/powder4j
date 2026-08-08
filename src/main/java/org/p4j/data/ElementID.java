@@ -137,6 +137,12 @@ public enum ElementID {
         return density < 0;
     }
 
+    public boolean isPowder() {
+        return this == SAND || this == SILICON || this == DIRT ||
+                this == SEED || this == SALT || this == SODIUM ||
+                this == CEMENT || this == GUNPOWDER || this == THERMITE;
+    }
+
     public boolean isSolid() {
         return !isLiquid && !isGas() && id != EMPTY.id && id != FIRE.id;
     }
@@ -152,4 +158,5 @@ public enum ElementID {
         }
         return BY_ID[index];
     }
+
 }

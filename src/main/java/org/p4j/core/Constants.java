@@ -55,6 +55,7 @@ public final class Constants {
 
     public static final float GRAVITY = 0.4f;
 
+    public static final float MAX_GAS_SPEED = 3.0f;
     public static final int MAX_FALL_SPEED = 6;
     public static final int WATER_FALL_SPEED = 2;
     public static final int WATER_DISPERSION_RATE = 16;
