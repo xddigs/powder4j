@@ -21,25 +21,25 @@ public enum ElementID {
     SALT((byte) 12, "Salt", "NaCl", 0xFFF5F5F5, false, 3, false, false, false, false, false, 0),
     SAND((byte) 13, "Sand", "SiO2", 0xFFE5C07B, true, 3, false, true, false, false, false, 0),
     GLASS((byte) 14, "Glass", "SiO2", 0x80E0F7FA, false, 5, false, false, false, false, false, 0),
-    LAVA((byte) 15, "Lava", "SiO2+", 0xFFFF4500, false, 3, false, false, false, true, true, 2),
+    LAVA((byte) 15, "Lava", "SiO2+", 0xFFFF4500, true, 3, false, false, false, true, true, 2),
     OBSIDIAN((byte) 16, "Obsidian", "SiO2+", 0xFF1C1326, false, 5, false, false, false, false, false, 0),
     CEMENT((byte) 17, "Cement", "CaCO3", 0xFF9E9E9E, false, 4, false, false, false, false, false, 0),
     METHANE((byte) 18, "Methane", "CH4", 0x8800FFAA, false, -2, true, false, false, false, false, 0),
     TNT((byte) 19, "TNT", "C7H5N3O6", 0xFFC23616, false, 1, true, true, false, false, false, 0),
     GASOLINE((byte) 20, "Gasoline", "C8H18", 0xFFD4A373, false, 1, true, true, false, false, true, 5),
-    OIL((byte) 21, "Oil", "CnHm", 0xFF8A9A20, true, 1, true, true, false, false, true, 4),
-    WOOD((byte) 22, "Wood", "C6H10O5", 0xFF8B5A2B, true, 4, true, true, false, false, false, 0),
+    OIL((byte) 21, "Oil", "CnHm", 0xFF8A9A20, false, 1, true, true, false, false, true, 4),
+    WOOD((byte) 22, "Wood", "C6H10O5", 0xFF8B5A2B, false, 4, true, true, false, false, false, 0),
     MUD((byte) 23, "Mud", "SiO2+H2O", 0xFF3E2723, false, 4, true, true, false, false, true, 1),
     SEED((byte) 24, "Seed", "Sd", 0xFF8BC34A, false, 3, true, true, false, false, false, 0),
     THERMITE((byte) 25, "Thermite", "Fe+Al", 0xFFB71C1C, false, 4, true, false, false, false, false, 0),
     GUNPOWDER((byte) 26, "Gunpowder", "KNO3", 0xFF53565A, false, 3, true, true, false, false, false, 0),
-    STONE((byte) 27, "Stone", "ST", 0xFF808080, true, 4, false, false, false, false, false, 0),
+    STONE((byte) 27, "Stone", "ST", 0xFF808080, false, 4, false, false, false, false, false, 0),
     GRAVEL((byte) 28, "Gravel", "Gr", 0xFF9B8773, false, 3, false, true, false, false, false, 0),
-    DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, false, 3, false, true, false, false, false, 0),
+    DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, true, 3, false, true, false, false, false, 0),
     WET_SAND((byte) 30, "Wet Sand", "SiO2", 0xFF9E753B, false, 4, false, true, false, false, false, 0),
     FIRE((byte) 31, "Fire", "Q", 0xFFE06C75, true, 0, false, false, false, true, false, 0),
     GRASS((byte) 32, "Grass", "G", 0xFF4CAF50, false, 4, true, true, false, false, false, 0),
-    SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, false, 4, false, true, false, false, false, 0),
+    SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0),
     CARBON((byte) 34, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, 0);
 
     private final byte id;
@@ -158,5 +158,4 @@ public enum ElementID {
         }
         return BY_ID[index];
     }
-
 }
