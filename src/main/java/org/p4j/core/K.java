@@ -122,6 +122,12 @@ public final class K {
     public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
     public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;
 
+    public static final double EXPLOSION_CORE_RADIUS_RATIO = 0.3;
+    public static final double EXPLOSION_MID_RADIUS_RATIO = 0.7;
+    public static final float EXPLOSION_MID_FIRE_CHANCE = 0.25f;
+    public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
+    public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
+
     public static final float HEAT_ADD_FIRE = 15.0f;
     public static final float HEAT_ADD_LAVA = 25.0f;
     public static final float IRON_HEAT_CONDUCTIVITY = 0.75f;

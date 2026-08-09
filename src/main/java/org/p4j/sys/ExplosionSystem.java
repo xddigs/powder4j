@@ -24,19 +24,19 @@ public class ExplosionSystem {
                 if (!world.isInBounds(targetX, targetY)) continue;
                 double normalizedDist = Math.sqrt(distSq) / (double) radius;
 
-                if (normalizedDist < 0.3) {
+                if (normalizedDist < K.EXPLOSION_CORE_RADIUS_RATIO) {
                     world.setCell(targetX, targetY, ElementID.FIRE);
-                } else if (normalizedDist < 0.7) {
-                    if (random.nextFloat() < 0.25f) {
+                } else if (normalizedDist < K.EXPLOSION_MID_RADIUS_RATIO) {
+                    if (random.nextFloat() < K.EXPLOSION_MID_FIRE_CHANCE) {
                         world.setCell(targetX, targetY, ElementID.FIRE);
                     } else {
                         world.setCell(targetX, targetY, ElementID.EMPTY);
                     }
                 } else {
                     float rnd = random.nextFloat();
-                    if (rnd < 0.35f) {
-                        world.setCell(targetX, targetY, ElementID.SMOKE_GRAY);
-                    } else if (rnd < 0.60f) {
+                    if (rnd < K.EXPLOSION_OUTER_CO2_CHANCE) {
+                        world.setCell(targetX, targetY, ElementID.CARBON_DIOXIDE);
+                    } else if (rnd < K.EXPLOSION_OUTER_EMPTY_CHANCE) {
                         world.setCell(targetX, targetY, ElementID.EMPTY);
                     }
                 }
