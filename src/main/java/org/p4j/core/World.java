@@ -3,6 +3,7 @@ package org.p4j.core;
 import org.p4j.data.ElementID;
 import org.p4j.sys.MovementEngine;
 import org.p4j.sys.ReactionEngine;
+import org.p4j.sys.ThermoEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,29 +18,46 @@ public class World {
     private static final Logger log = LoggerFactory.getLogger(World.class);
     private final ReactionEngine reaction;
     private final MovementEngine movement;
+    private final ThermoEngine thermo;
     private final int width;
     private final int height;
     private final byte[] grid;
-    private final float[] temperature;
-    private final boolean[] updated;
     private final float[] velocity;
+    private final boolean[] updated;
+    private float[] temperature;
+    private float[] nextTemperature;
 
     public World(int width, int height) {
         log.debug("Constructing simulation world: {}x{}", width, height);
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
+        this.thermo = new ThermoEngine();
         this.width = width;
         this.height = height;
         this.grid = new byte[width * height];
         this.temperature = new float[width * height];
+        this.nextTemperature = new float[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
         Arrays.fill(temperature, 20.0f);
+        Arrays.fill(nextTemperature, 20.0f);
     }
 
     public void update() {
         Arrays.fill(updated, false);
         if (!K.IS_RUNNING) return;
+
+        thermo.update(grid, temperature, nextTemperature, width, height,
+                (idx, newElement, newTemp) -> {
+            grid[idx] = newElement.getId();
+            updated[idx] = true;
+
+        });
+
+        float[] tempSwap = temperature;
+        temperature = nextTemperature;
+        nextTemperature = tempSwap;
+
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
 
@@ -286,6 +304,8 @@ public class World {
             int index = y * width + x;
             grid[index] = type.getId();
             velocity[index] = 0;
+            temperature[index] = type.getDefaultTemp();
+            nextTemperature[index] = type.getDefaultTemp();
         }
     }
 
