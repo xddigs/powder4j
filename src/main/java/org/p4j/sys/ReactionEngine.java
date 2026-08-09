@@ -122,7 +122,13 @@ public class ReactionEngine {
                         return true;
                     }
 
-                    if (neighbor == ElementID.FIRE) {
+                    if (neighbor == ElementID.SILICON) {
+                        grid[idx] = ElementID.DIRT.getId();
+                        grid[nIdx] = ElementID.DIRT.getId();
+                        updated[idx] = true;
+                    }
+
+                    if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA) {
                         if (Math.random() < K.FIRE_IGNITION_CHANCE) {
                             grid[idx] = ElementID.FIRE.getId();
                             updated[idx] = true;
@@ -412,17 +418,31 @@ public class ReactionEngine {
                     }
 
                     if (e == ElementID.SEED) {
-                        boolean isOnFertileGround = (neighbor == ElementID.DIRT ||
-                                neighbor == ElementID.MUD ||
-                                neighbor.isWater());
-                        if (isOnFertileGround) {
-                            float rand = ThreadLocalRandom.current().nextFloat();
-                            if (rand < K.GROW_TREE_CHANCE) {
-                                world.growTree(x, y);
+                        int belowY = y + 1;
+                        if (world.isInBounds(x, belowY)) {
+                            int belowIdx = world.getIndex(x, belowY);
+                            ElementID ground = ElementID.fromId(grid[belowIdx]);
+                            boolean isOnFertileGround = (ground == ElementID.DIRT ||
+                                    ground == ElementID.MUD ||
+                                    ground.isWater());
+
+                            boolean isStackedOnSeed = (ground == ElementID.SEED);
+
+                            if (isStackedOnSeed) {
+                                grid[idx] = ElementID.EMPTY.getId();
+                                updated[idx] = true;
                                 return true;
-                            } else if (rand < K.GROW_GRASS_CHANCE) {
-                                world.growGrass(x, y);
-                                return true;
+                            }
+
+                            if (isOnFertileGround) {
+                                float rand = ThreadLocalRandom.current().nextFloat();
+                                if (rand < K.GROW_TREE_CHANCE) {
+                                    world.growTree(x, y);
+                                    return true;
+                                } else if (rand < K.GROW_GRASS_CHANCE) {
+                                    world.growGrass(x, y);
+                                    return true;
+                                }
                             }
                         }
                     }

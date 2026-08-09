@@ -35,7 +35,7 @@ public enum ElementID {
     GUNPOWDER((byte) 26, "Gunpowder", "KNO3+S+C", 0xFF53565A, false, 3, true, true, false, false, false, 0),
     STONE((byte) 27, "Stone", "SiO2", 0xFF808080, false, 4, false, false, false, false, false, 0),
     GRAVEL((byte) 28, "Gravel", "SiO2", 0xFF9B8773, false, 3, false, true, false, false, false, 0),
-    DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, false, 3, false, true, false, false, false, 0),
+    DIRT((byte) 29, "Dirt", "CSi+H2O", 0xFF5D4037, false, 3, false, true, false, false, false, 0),
     WET_SAND((byte) 30, "Wet Sand", "SiO2+H2O", 0xFF9E753B, false, 4, false, true, false, false, false, 0),
     FIRE((byte) 31, "Fire", "Q", 0xFFFF5722, true, 0, false, false, false, true, false, 0),
     GRASS((byte) 32, "Grass", "C6H10O5", 0xFF4CAF50, false, 4, true, true, false, false, false, 0),
