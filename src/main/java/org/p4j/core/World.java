@@ -43,13 +43,13 @@ public class World {
                 byte id = grid[idx];
                 if (id == 0) continue;
 
-                ElementID type = ElementID.fromId(id);
-                boolean hasMoved = movement.update(x, y, idx, type);
-                if (hasMoved) {
-                    continue;
-                }
+                boolean hasReacted = reaction.process(x, y, idx);
+                if (hasReacted) continue;
 
-                reaction.process(x, y, idx);
+                byte currentId = grid[idx];
+                if (currentId == 0) continue;
+                ElementID currentType = ElementID.fromId(currentId);
+                movement.update(x, y, idx, currentType);
             }
         }
     }
