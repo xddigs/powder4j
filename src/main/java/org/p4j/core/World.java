@@ -6,6 +6,7 @@ import org.p4j.sys.ReactionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -34,6 +35,7 @@ public class World {
     }
 
     public void update() {
+        Arrays.fill(updated, false);
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
 
@@ -41,7 +43,9 @@ public class World {
                 int x = leftToRight ? i : (width - 1 - i);
                 int idx = getIndex(x, y);
                 byte id = grid[idx];
+
                 if (id == 0) continue;
+                if (updated[idx]) continue;
 
                 boolean hasReacted = reaction.process(x, y, idx);
                 if (hasReacted) continue;

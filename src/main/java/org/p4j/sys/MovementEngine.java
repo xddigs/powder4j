@@ -108,9 +108,10 @@ public class MovementEngine {
     }
 
     private boolean updateGas(int x, int y, int idx, ElementID type) {
-        float currentVel = world.getVelocity(idx) + K.GRAVITY;
+        float currentVel = world.getVelocity(idx) + 0.3f;
         float maxSpeed = K.MAX_GAS_SPEED;
         if (currentVel > maxSpeed) currentVel = maxSpeed;
+
         int steps = Math.max(1, (int) currentVel);
         int currentX = x;
         int currentY = y;
@@ -120,49 +121,51 @@ public class MovementEngine {
 
         for (int i = 0; i < steps; i++) {
             int aboveY = currentY - 1;
+            boolean movedThisStep = false;
+
             if (aboveY >= 0) {
                 int aboveIdx = world.getIndex(currentX, aboveY);
                 if (canGasDisplace(currentId, world.getGrid()[aboveIdx])) {
+                    int prevIdx = currentIdx;
                     world.swap(currentIdx, aboveIdx);
-                    leaveGasTrail(currentIdx, type);
+                    leaveGasTrail(prevIdx, type);
                     currentY = aboveY;
                     currentIdx = aboveIdx;
                     hasMoved = true;
-                    continue;
-                }
+                    movedThisStep = true;
+                } else {
+                    boolean isLeftFirst = ThreadLocalRandom.current().nextBoolean();
+                    int[] dxs = isLeftFirst ? new int[]{-1, 1} : new int[]{1, -1};
 
-                boolean isLeftFirst = ThreadLocalRandom.current().nextBoolean();
-                int[] dxs = isLeftFirst ? new int[]{-1, 1} : new int[]{1, -1};
-                boolean hasDiagonallyMoved = false;
-
-                for (int dx : dxs) {
-                    int diagX = currentX + dx;
-                    if (diagX >= 0 && diagX < world.getWidth()) {
-                        int diagIdx = world.getIndex(diagX, aboveY);
-                        if (canGasDisplace(currentId, world.getGrid()[diagIdx])) {
-                            world.swap(currentIdx, diagIdx);
-                            leaveGasTrail(currentIdx, type);
-                            currentX = diagX;
-                            currentY = aboveY;
-                            currentIdx = diagIdx;
-                            hasMoved = true;
-                            hasDiagonallyMoved = true;
-                            break;
+                    for (int dx : dxs) {
+                        int diagX = currentX + dx;
+                        if (diagX >= 0 && diagX < world.getWidth()) {
+                            int diagIdx = world.getIndex(diagX, aboveY);
+                            if (canGasDisplace(currentId, world.getGrid()[diagIdx])) {
+                                int prevIdx = currentIdx;
+                                world.swap(currentIdx, diagIdx);
+                                leaveGasTrail(prevIdx, type);
+                                currentX = diagX;
+                                currentY = aboveY;
+                                currentIdx = diagIdx;
+                                hasMoved = true;
+                                movedThisStep = true;
+                                break;
+                            }
                         }
                     }
                 }
-
-                if (hasDiagonallyMoved) continue;
             }
 
-            int dispersionRate = Math.max(1, type.getDispersionRate());
-            int dir = ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
-            if (world.flow(currentX, currentY, currentIdx, dir, dispersionRate, currentId) ||
-                    world.flow(currentX, currentY, currentIdx, -dir, dispersionRate, currentId)) {
-                hasMoved = true;
+            if (!movedThisStep) {
+                int dispersionRate = Math.max(1, type.getDispersionRate());
+                int dir = ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
+                if (world.flow(currentX, currentY, currentIdx, dir, dispersionRate, currentId) ||
+                        world.flow(currentX, currentY, currentIdx, -dir, dispersionRate, currentId)) {
+                    hasMoved = true;
+                }
+                break;
             }
-
-            break;
         }
 
         world.setVelocity(currentIdx, hasMoved ? currentVel : 0.0f);
@@ -189,6 +192,13 @@ public class MovementEngine {
         if (targetId == ElementID.EMPTY.getId()) {
             return true;
         }
-        return world.canDisplace(currentId, targetId);
+        if (targetId == ElementID.STONE.getId()) {
+            return false;
+        }
+
+        float currentDensity = ElementID.fromId(currentId).getDensity();
+        float targetDensity = ElementID.fromId(targetId).getDensity();
+
+        return currentDensity < targetDensity;
     }
 }
