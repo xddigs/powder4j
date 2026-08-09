@@ -351,9 +351,11 @@ public class World {
                     int idx = y * width + x;
                     byte typeId = grid[idx];
 
-                    if (typeId == ElementID.EMPTY.getId() || typeId ==
-                            ElementID.STONE.getId())
+                    if (typeId == ElementID.EMPTY.getId() ||
+                        typeId == ElementID.STONE.getId() ||
+                        typeId == ElementID.IRON.getId()) {
                         continue;
+                    }
 
                     int currentX = x;
                     for (int s = 0; s < absStepsX; s++) {
