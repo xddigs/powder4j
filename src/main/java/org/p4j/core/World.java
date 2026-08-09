@@ -315,8 +315,10 @@ public class World {
                     byte typeId = grid[idx];
 
                     if (typeId == ElementID.EMPTY.getId() ||
-                            typeId == ElementID.STONE.getId())
+                        typeId == ElementID.STONE.getId() ||
+                        typeId == ElementID.IRON.getId()) {
                         continue;
+                    }
 
                     int currentY = y;
                     for (int s = 0; s < absStepsY; s++) {
