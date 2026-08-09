@@ -14,7 +14,9 @@ public class MovementEngine {
     }
 
     public boolean update(int x, int y, int idx, ElementID type) {
-        if (type == ElementID.EMPTY || type == ElementID.STONE) {
+        if (type == ElementID.EMPTY ||
+            type == ElementID.STONE ||
+            type == ElementID.IRON) {
             world.setVelocity(idx, 0.0f);
             return false;
         }
