@@ -453,7 +453,7 @@ public class FastRender extends Canvas {
 
         if (element == ElementID.IRON) {
             int shift = (int) v;
-
+            return adjustBrightness(baseColor, shift);
         }
 
         if (element == ElementID.FIRE || element == ElementID.LAVA) {

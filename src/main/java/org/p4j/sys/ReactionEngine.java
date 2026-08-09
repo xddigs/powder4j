@@ -136,19 +136,15 @@ public class ReactionEngine {
     }
 
     private boolean reactIron(int x, int y, int idx) {
-        float currentTemp = world.getTemperature(idx);
         byte[] grid = world.getGrid();
-        int width = world.getWidth();
-        int height = world.getHeight();
-
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
 
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    int nIdx = ny * width + nx;
+                if (world.isInBounds(nx, ny)) {
+                    int nIdx = world.getIndex(nx, ny);
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
                     if (neighbor == ElementID.FIRE) {
@@ -156,6 +152,20 @@ public class ReactionEngine {
                     } else if (neighbor == ElementID.LAVA) {
                         world.addTemperature(idx, K.HEAT_ADD_LAVA);
                     }
+                }
+            }
+        }
+
+        float currentTemp = world.getTemperature(idx);
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (world.isInBounds(nx, ny)) {
+                    int nIdx = world.getIndex(nx, ny);
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
                     float neighborTemp = world.getTemperature(nIdx);
                     if (currentTemp > neighborTemp) {
@@ -163,35 +173,58 @@ public class ReactionEngine {
                                 K.IRON_HEAT_CONDUCTIVITY;
                         world.addTemperature(nIdx, heatTransfer);
                         world.addTemperature(idx, -heatTransfer);
+                        currentTemp -= heatTransfer;
                     }
 
                     if (currentTemp > K.IRON_REACTION_THRESHOLD) {
-                        triggerHeatReaction(nIdx, neighbor, currentTemp);
+                        heat(nIdx, neighbor, currentTemp);
                     }
                 }
             }
         }
 
         if (currentTemp > K.AMBIENT_TEMPERATURE) {
-            world.setTemperature(idx, Math.max(K.AMBIENT_TEMPERATURE,
-                    currentTemp - K.COOLING_RATE));
+            world.setTemperature(idx,
+                    Math.max(K.AMBIENT_TEMPERATURE,
+                            currentTemp - K.COOLING_RATE));
         }
 
         return false;
     }
 
-    private void triggerHeatReaction(int neighborIdx,
-                                     ElementID neighbor, float ironTemp) {
+    private void heat(int neighborIdx,
+                      ElementID neighbor,
+                      float ironTemp) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
 
-        if (neighbor == ElementID.WATER && ironTemp >= K.WATER_BOILING_TEMP) {
+        if (neighbor == ElementID.WATER && ironTemp >=
+                K.WATER_BOILING_TEMP) {
             grid[neighborIdx] = ElementID.STEAM.getId();
             updated[neighborIdx] = true;
-        } else if (neighbor == ElementID.WOOD && ironTemp >= K.WOOD_IGNITION_TEMP) {
+        } else if ((neighbor == ElementID.OIL ||
+                neighbor == ElementID.GASOLINE) && ironTemp >=
+                K.OIL_BOILING_TEMP) {
             grid[neighborIdx] = ElementID.FIRE.getId();
             updated[neighborIdx] = true;
-        } else if (neighbor == ElementID.METHANE && ironTemp >= K.METHANE_IGNITION_TEMP) {
+        }
+
+        else if (neighbor == ElementID.MUD && ironTemp >=
+                K.WATER_BOILING_TEMP) {
+            grid[neighborIdx] = ElementID.DIRT.getId();
+            updated[neighborIdx] = true;
+        } else if (neighbor == ElementID.SAND && ironTemp >=
+                K.SAND_BOILING_TEMP) {
+            grid[neighborIdx] = ElementID.LAVA.getId();
+            updated[neighborIdx] = true;
+        }
+
+        else if (neighbor == ElementID.WOOD && ironTemp >=
+                K.WOOD_IGNITION_TEMP) {
+            grid[neighborIdx] = ElementID.FIRE.getId();
+            updated[neighborIdx] = true;
+        } else if (neighbor == ElementID.METHANE && ironTemp >=
+                K.METHANE_IGNITION_TEMP) {
             grid[neighborIdx] = ElementID.FIRE.getId();
             updated[neighborIdx] = true;
         }

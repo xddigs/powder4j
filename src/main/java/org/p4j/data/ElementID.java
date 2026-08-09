@@ -42,7 +42,7 @@ public enum ElementID {
     SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0),
     CARBON((byte) 34, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, 0),
     OXYGEN((byte) 35, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, 3),
-    IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, true, false, 0),
+    IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, false, 0),
     NITROGEN((byte) 37, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, 0);
 
     private final byte id;

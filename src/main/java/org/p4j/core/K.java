@@ -139,6 +139,8 @@ public final class K {
 
     public static final float IRON_REACTION_THRESHOLD = 80.0f;
     public static final float WATER_BOILING_TEMP = 100.0f;
+    public static final float SAND_BOILING_TEMP = 400.0f;
+    public static final float OIL_BOILING_TEMP = 120.0f;
     public static final float METHANE_IGNITION_TEMP = 150.0f;
     public static final float WOOD_IGNITION_TEMP = 230.0f;
 
