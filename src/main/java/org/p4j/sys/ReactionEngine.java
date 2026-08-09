@@ -35,6 +35,7 @@ public class ReactionEngine {
             case GUNPOWDER -> reactGunpowder(x, y, idx);
             case WOOD -> reactWood(x, y, idx);
             case FIRE -> reactFire(x, y, idx);
+            case CARBON_MONOXIDE, CARBON_DIOXIDE -> reactGas(x, y, idx);
             default -> false;
         };
     }
@@ -889,7 +890,7 @@ public class ReactionEngine {
         return false;
     }
 
-    private boolean reactSmoke(int x, int y, int idx) {
+    private boolean reactGas(int x, int y, int idx) {
         byte[] grid = world.getGrid();
         float[] velocity = world.getVelocity();
 
