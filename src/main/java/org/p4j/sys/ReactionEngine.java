@@ -22,7 +22,7 @@ public class ReactionEngine {
             case HYDROGEN, OXYGEN -> reactHydrogen(x, y, idx);
             case SAND -> reactSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
-            case SILICON, DIRT, SEED, SALT, SODIUM -> reactPowder(x, y, idx, type);
+            case SILICON, DIRT, SEED, SALT, SODIUM, MUD -> reactPowder(x, y, idx, type);
             case TNT -> reactTNT(x, y, idx);
             case LAVA -> reactLava(x, y, idx);
             case STEAM -> reactSteam(x, y, idx);
