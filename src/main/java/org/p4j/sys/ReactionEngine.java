@@ -23,6 +23,7 @@ public class ReactionEngine {
             case SAND -> reactSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
             case SILICON, DIRT, SEED, SALT, SODIUM, MUD -> reactPowder(x, y, idx, type);
+            case IRON -> reactIron(x, y, idx);
             case TNT -> reactTNT(x, y, idx);
             case LAVA -> reactLava(x, y, idx);
             case STEAM -> reactSteam(x, y, idx);
@@ -127,6 +128,68 @@ public class ReactionEngine {
         return false;
     }
 
+    private boolean reactIron(int x, int y, int idx) {
+        float currentTemp = world.getTemperature(idx);
+        byte[] grid = world.getGrid();
+        int width = world.getWidth();
+        int height = world.getHeight();
+
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.FIRE) {
+                        world.addTemperature(idx, K.HEAT_ADD_FIRE);
+                    } else if (neighbor == ElementID.LAVA) {
+                        world.addTemperature(idx, K.HEAT_ADD_LAVA);
+                    }
+
+                    float neighborTemp = world.getTemperature(nIdx);
+                    if (currentTemp > neighborTemp) {
+                        float heatTransfer = (currentTemp - neighborTemp) *
+                                K.IRON_HEAT_CONDUCTIVITY;
+                        world.addTemperature(nIdx, heatTransfer);
+                        world.addTemperature(idx, -heatTransfer);
+                    }
+
+                    if (currentTemp > K.IRON_REACTION_THRESHOLD) {
+                        triggerHeatReaction(nIdx, neighbor, currentTemp);
+                    }
+                }
+            }
+        }
+
+        if (currentTemp > K.AMBIENT_TEMPERATURE) {
+            world.setTemperature(idx, Math.max(K.AMBIENT_TEMPERATURE,
+                    currentTemp - K.COOLING_RATE));
+        }
+
+        return false;
+    }
+
+    private void triggerHeatReaction(int neighborIdx,
+                                     ElementID neighbor, float ironTemp) {
+        byte[] grid = world.getGrid();
+        boolean[] updated = world.getUpdated();
+
+        if (neighbor == ElementID.WATER && ironTemp >= K.WATER_BOILING_TEMP) {
+            grid[neighborIdx] = ElementID.STEAM.getId();
+            updated[neighborIdx] = true;
+        } else if (neighbor == ElementID.WOOD && ironTemp >= K.WOOD_IGNITION_TEMP) {
+            grid[neighborIdx] = ElementID.FIRE.getId();
+            updated[neighborIdx] = true;
+        } else if (neighbor == ElementID.METHANE && ironTemp >= K.METHANE_IGNITION_TEMP) {
+            grid[neighborIdx] = ElementID.FIRE.getId();
+            updated[neighborIdx] = true;
+        }
+    }
+
     private boolean reactTNT(int x, int y, int idx) {
         byte[] grid = world.getGrid();
         int width = world.getWidth();
@@ -197,10 +260,10 @@ public class ReactionEngine {
     }
 
     private boolean reactFluid(int x, int y, int idx, 
-                                      ElementID currentElement) {
+                                      ElementID e) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
-        boolean isFlammableFluid = currentElement.isFlammable();
+        boolean isFlammableFluid = e.isFlammable();
         int width = world.getWidth();
         int height = world.getHeight();
 
@@ -214,7 +277,7 @@ public class ReactionEngine {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
-                    if (currentElement == ElementID.OIL && neighbor == ElementID.STEAM) {
+                    if (e == ElementID.OIL && neighbor == ElementID.STEAM) {
                         if (Math.random() < K.GASOLINE_CREATION_CHANCE) {
                             grid[idx] = ElementID.GASOLINE.getId();
                             grid[nIdx] = ElementID.SMOKE_DARK.getId();
@@ -224,7 +287,7 @@ public class ReactionEngine {
                         }
                     }
 
-                    if (currentElement.isWater() && (neighbor == ElementID.MUD || 
+                    if (e.isWater() && (neighbor == ElementID.MUD ||
                             neighbor == ElementID.DIRT)) {
                         if (soak(x, y, idx)) {
                             return true;
@@ -232,7 +295,7 @@ public class ReactionEngine {
                     }
 
                     if (isFlammableFluid && neighbor.isHot()) {
-                        if (currentElement == ElementID.GASOLINE) {
+                        if (e == ElementID.GASOLINE) {
                             ExplosionSystem.createExplosion(world, x, y, 
                                     K.GENERAL_EXPLOSION_RADIUS);
                         } else {
@@ -241,10 +304,12 @@ public class ReactionEngine {
                         }
                         return true;
 
-                    } else if (neighbor.isFlammable()) {
-                        if (currentElement.isHot()) {
-                            grid[nIdx] = ElementID.SMOKE_GRAY.getId();
+                    } else if (e.isWater() && neighbor.isFlammable()) {
+                        if (e.isHot()) {
+                            grid[idx] = ElementID.STEAM.getId();
+                            grid[nIdx] = ElementID.STEAM.getId();
                             updated[nIdx] = true;
+                            return true;
                         }
                     }
                 }

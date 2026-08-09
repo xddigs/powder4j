@@ -20,6 +20,7 @@ public class World {
     private final int width;
     private final int height;
     private final byte[] grid;
+    private final float[] temperature;
     private final boolean[] updated;
     private final float[] velocity;
 
@@ -30,8 +31,10 @@ public class World {
         this.width = width;
         this.height = height;
         this.grid = new byte[width * height];
+        this.temperature = new float[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
+        Arrays.fill(temperature, 20.0f);
     }
 
     public void update() {
@@ -403,5 +406,17 @@ public class World {
 
     public void setVelocity(int idx, float vel) {
         this.velocity[idx] = vel;
+    }
+
+    public float getTemperature(int idx) {
+        return temperature[idx];
+    }
+
+    public void setTemperature(int idx, float temp) {
+        this.temperature[idx] = temp;
+    }
+
+    public void addTemperature(int idx, float amount) {
+        this.temperature[idx] += amount;
     }
 }

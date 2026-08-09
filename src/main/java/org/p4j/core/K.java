@@ -122,6 +122,17 @@ public final class K {
     public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
     public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;
 
+    public static final float HEAT_ADD_FIRE = 15.0f;
+    public static final float HEAT_ADD_LAVA = 25.0f;
+    public static final float IRON_HEAT_CONDUCTIVITY = 0.75f;
+    public static final float AMBIENT_TEMPERATURE = 20.0f;
+    public static final float COOLING_RATE = 0.12f;
+
+    public static final float IRON_REACTION_THRESHOLD = 80.0f;
+    public static final float WATER_BOILING_TEMP = 100.0f;
+    public static final float METHANE_IGNITION_TEMP = 150.0f;
+    public static final float WOOD_IGNITION_TEMP = 230.0f;
+
     public static final int HUD_SLIDER_X_PADDING = 25;
     public static final int HUD_SLIDER_Y_PADDING = 50;
     public static final int HUD_SLIDER_WIDTH = 10;
