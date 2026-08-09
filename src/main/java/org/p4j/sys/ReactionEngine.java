@@ -19,7 +19,7 @@ public class ReactionEngine {
 
         return switch (type) {
             case CARBON -> reactCarbon(x, y, idx);
-            case HYDROGEN -> reactHydrogen(x, y, idx);
+            case HYDROGEN, OXYGEN -> reactHydrogen(x, y, idx);
             case SAND -> reactSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
             case SILICON, DIRT, SEED, SALT, SODIUM -> reactPowder(x, y, idx, type);
@@ -47,21 +47,46 @@ public class ReactionEngine {
 
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    int nIdx = ny * width + nx;
+
+                if (world.isInBounds(nx, ny)) {
+                    int nIdx = world.getIndex(nx, ny);
                     if (ElementID.fromId(grid[nIdx]).isWater()) {
                         grid[idx] = ElementID.WET_SAND.getId();
                         grid[nIdx] = ElementID.EMPTY.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
+                        expandWetElement(x, y, ElementID.WET_SAND);
+
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    private void expandWetElement(int startX, int startY,
+                                  ElementID wetElement) {
+        byte[] grid = world.getGrid();
+        boolean[] updated = world.getUpdated();
+        int[][] directions = {{0, 1}, {-1, 1}, {1, 1}, {-1, 0}, {1, 0}};
+
+        for (int[] dir : directions) {
+            int targetX = startX + dir[0];
+            int targetY = startY + dir[1];
+
+            if (world.isInBounds(targetX, targetY)) {
+                int targetIdx = world.getIndex(targetX, targetY);
+                if (grid[targetIdx] == ElementID.EMPTY.getId()) {
+                    grid[targetIdx] = wetElement.getId();
+                    updated[targetIdx] = true;
+                    break;
+                }
+            }
+        }
     }
 
     private boolean reactCarbon(int x, int y, int idx) {
@@ -218,7 +243,7 @@ public class ReactionEngine {
     }
 
     private boolean reactPowder(int x, int y, int idx, 
-                                       ElementID currentType) {
+                                       ElementID e) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
         int width = world.getWidth();
@@ -234,15 +259,31 @@ public class ReactionEngine {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
 
-                    if (currentType == ElementID.SILICON) {
-                        if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA) {
+                    if (e == ElementID.SILICON) {
+                        if (neighbor == ElementID.FIRE) {
                             grid[idx] = ElementID.GLASS.getId();
+                            updated[idx] = true;
+                            return true;
+                        }
+
+                        if (neighbor == ElementID.OXYGEN) {
+                            grid[idx] = ElementID.SAND.getId();
+                            grid[nIdx] = ElementID.SAND.getId();
                             updated[idx] = true;
                             return true;
                         }
                     }
 
-                    if (currentType == ElementID.DIRT && neighbor.isWater()) {
+                    if (e == ElementID.SAND) {
+                        if (neighbor == ElementID.FIRE) {
+                            grid[idx] = ElementID.LAVA.getId();
+                            grid[nIdx] = ElementID.LAVA.getId();
+                            updated[idx] = true;
+                            return true;
+                        }
+                    }
+
+                    if (e == ElementID.DIRT && neighbor.isWater()) {
                         if (ThreadLocalRandom.current().nextFloat() <
                                 K.MUD_SPREAD_CHANCE) {
                             grid[idx] = ElementID.MUD.getId();
@@ -253,7 +294,7 @@ public class ReactionEngine {
                         }
                     }
 
-                    if (currentType == ElementID.SEED) {
+                    if (e == ElementID.SEED) {
                         boolean isOnFertileGround = (neighbor == ElementID.DIRT ||
                                 neighbor == ElementID.MUD ||
                                 neighbor.isWater());
@@ -269,7 +310,7 @@ public class ReactionEngine {
                         }
                     }
 
-                    if (currentType == ElementID.SALT && (neighbor == ElementID.FIRE ||
+                    if (e == ElementID.SALT && (neighbor == ElementID.FIRE ||
                             neighbor == ElementID.LAVA)) {
                         grid[idx] = ElementID.SODIUM.getId();
                         grid[nIdx] = ElementID.CHLORINE.getId();
@@ -278,13 +319,13 @@ public class ReactionEngine {
                         return true;
                     }
 
-                    if (currentType == ElementID.SALT && neighbor.isWater()) {
+                    if (e == ElementID.SALT && neighbor.isWater()) {
                         grid[idx] = ElementID.WATER.getId();
                         updated[idx] = true;
                         return true;
                     }
 
-                    if (currentType == ElementID.SODIUM && neighbor.isWater()) {
+                    if (e == ElementID.SODIUM && neighbor.isWater()) {
                         ExplosionSystem.createExplosion(world, x, y,
                                 K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.FIRE.getId();
@@ -413,6 +454,14 @@ public class ReactionEngine {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.SODIUM) {
+                        grid[idx] = ElementID.SALT.getId();
+                        grid[nIdx] = ElementID.SALT.getId();
+                        updated[idx] = true;
+                        updated[nIdx] = true;
+                        return true;
+                    }
 
                     if (neighbor == ElementID.FIRE ||
                             neighbor == ElementID.LAVA ||
@@ -709,12 +758,29 @@ public class ReactionEngine {
 
                 if (world.isInBounds(nx, ny)) {
                     ElementID neighbor = ElementID.fromId(grid[world.getIndex(nx, ny)]);
+                    int nIdx = world.getIndex(nx, ny);
+                    ElementID e = ElementID.fromId(grid[idx]);
+                    if (e == ElementID.OXYGEN && neighbor == ElementID.HYDROGEN) {
+                        grid[idx] = ElementID.WATER.getId();
+                        grid[nIdx] = ElementID.WATER.getId();
+                        updated[idx] = true;
+                        return true;
+                    }
+
+                    if (e == ElementID.HYDROGEN && neighbor == ElementID.CHLORINE) {
+                        grid[idx] = ElementID.ACID.getId();
+                        grid[nIdx] = ElementID.ACID.getId();
+                        updated[idx] = true;
+                        return true;
+                    }
+
                     if (neighbor == ElementID.FIRE ||
                             neighbor == ElementID.LAVA ||
                             neighbor.isHot()) {
                         ExplosionSystem.createExplosion(world, x, y,
                                 K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.STEAM.getId();
+                        grid[nIdx] = ElementID.STEAM.getId();
                         updated[idx] = true;
                         return true;
                     }

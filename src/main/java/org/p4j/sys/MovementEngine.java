@@ -37,8 +37,11 @@ public class MovementEngine {
     private boolean updatePowder(int x, int y, int idx, ElementID type) {
         byte currentId = world.getGrid()[idx];
 
-        float currentVel = world.getVelocity(idx) + K.GRAVITY;
-        float maxSpeed = K.MAX_FALL_SPEED;
+        float density = Math.max(1, type.getDensity());
+        float gravityFactor = density / K.GRAVITY_MASS_FACTOR;
+
+        float currentVel = world.getVelocity(idx) + (K.GRAVITY * gravityFactor);
+        float maxSpeed = K.MAX_FALL_SPEED * (0.8f + (density * 0.1f));
         if (currentVel > maxSpeed) currentVel = maxSpeed;
 
         int steps = Math.max(1, (int) currentVel);
@@ -108,58 +111,84 @@ public class MovementEngine {
         float currentVel = world.getVelocity(idx) + K.GRAVITY;
         float maxSpeed = K.MAX_GAS_SPEED;
         if (currentVel > maxSpeed) currentVel = maxSpeed;
-
         int steps = Math.max(1, (int) currentVel);
         int currentX = x;
         int currentY = y;
         int currentIdx = idx;
-        boolean moved = false;
-
+        boolean hasMoved = false;
         byte currentId = world.getGrid()[idx];
 
         for (int i = 0; i < steps; i++) {
             int aboveY = currentY - 1;
-            if (aboveY < 0) {
-                currentVel = 0;
-                break;
-            }
+            if (aboveY >= 0) {
+                int aboveIdx = world.getIndex(currentX, aboveY);
+                if (canGasDisplace(currentId, world.getGrid()[aboveIdx])) {
+                    world.swap(currentIdx, aboveIdx);
+                    leaveGasTrail(currentIdx, type);
+                    currentY = aboveY;
+                    currentIdx = aboveIdx;
+                    hasMoved = true;
+                    continue;
+                }
 
-            int aboveIdx = world.getIndex(currentX, aboveY);
-            if (world.canDisplace(currentId, world.getGrid()[aboveIdx])) {
-                world.swap(currentIdx, aboveIdx);
-                currentY = aboveY;
-                currentIdx = aboveIdx;
-                moved = true;
-                continue;
-            }
+                boolean isLeftFirst = ThreadLocalRandom.current().nextBoolean();
+                int[] dxs = isLeftFirst ? new int[]{-1, 1} : new int[]{1, -1};
+                boolean hasDiagonallyMoved = false;
 
-            boolean leftFirst = ThreadLocalRandom.current().nextBoolean();
-            int[] dxs = leftFirst ? new int[]{-1, 1} : new int[]{1, -1};
-            boolean diagMoved = false;
-
-            for (int dx : dxs) {
-                int diagX = currentX + dx;
-                if (diagX >= 0 && diagX < world.getWidth()) {
-                    int diagIdx = world.getIndex(diagX, aboveY);
-                    if (world.canDisplace(currentId, world.getGrid()[diagIdx])) {
-                        world.swap(currentIdx, diagIdx);
-                        currentX = diagX;
-                        currentY = aboveY;
-                        currentIdx = diagIdx;
-                        moved = true;
-                        diagMoved = true;
-                        break;
+                for (int dx : dxs) {
+                    int diagX = currentX + dx;
+                    if (diagX >= 0 && diagX < world.getWidth()) {
+                        int diagIdx = world.getIndex(diagX, aboveY);
+                        if (canGasDisplace(currentId, world.getGrid()[diagIdx])) {
+                            world.swap(currentIdx, diagIdx);
+                            leaveGasTrail(currentIdx, type);
+                            currentX = diagX;
+                            currentY = aboveY;
+                            currentIdx = diagIdx;
+                            hasMoved = true;
+                            hasDiagonallyMoved = true;
+                            break;
+                        }
                     }
                 }
+
+                if (hasDiagonallyMoved) continue;
             }
 
-            if (!diagMoved) {
-                currentVel = 0;
-                break;
+            int dispersionRate = Math.max(1, type.getDispersionRate());
+            int dir = ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
+            if (world.flow(currentX, currentY, currentIdx, dir, dispersionRate, currentId) ||
+                    world.flow(currentX, currentY, currentIdx, -dir, dispersionRate, currentId)) {
+                hasMoved = true;
             }
+
+            break;
         }
 
-        world.setVelocity(currentIdx, currentVel);
-        return moved;
+        world.setVelocity(currentIdx, hasMoved ? currentVel : 0.0f);
+        return hasMoved;
+    }
+
+    private void leaveGasTrail(int trailIdx, ElementID gasType) {
+        if (ThreadLocalRandom.current().nextFloat() > K.GAS_TRAIL_CHANCE) return;
+        byte[] grid = world.getGrid();
+
+        if (grid[trailIdx] == ElementID.EMPTY.getId()) {
+            if (gasType == ElementID.METHANE) {
+                grid[trailIdx] = ElementID.CARBON.getId();
+            } else if (gasType == ElementID.STEAM) {
+                grid[trailIdx] = ElementID.SMOKE_LIGHT.getId();
+            } else if (gasType == ElementID.CHLORINE) {
+                grid[trailIdx] = ElementID.ACID.getId();
+            }
+            world.getUpdated()[trailIdx] = true;
+        }
+    }
+
+    private boolean canGasDisplace(byte currentId, byte targetId) {
+        if (targetId == ElementID.EMPTY.getId()) {
+            return true;
+        }
+        return world.canDisplace(currentId, targetId);
     }
 }
