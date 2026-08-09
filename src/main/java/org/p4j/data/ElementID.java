@@ -33,7 +33,7 @@ public enum ElementID {
     SEED((byte) 24, "Seed", "Sd", 0xFF8BC34A, true, 3, true, true, false, false, false, 0),
     THERMITE((byte) 25, "Thermite", "Fe+Al", 0xFFB71C1C, false, 4, true, false, false, false, false, 0),
     GUNPOWDER((byte) 26, "Gunpowder", "KNO3", 0xFF53565A, false, 3, true, true, false, false, false, 0),
-    STONE((byte) 27, "Stone", "ST", 0xFF808080, true, 4, false, false, false, false, false, 0),
+    STONE((byte) 27, "Stone", "ST", 0xFF808080, false, 4, false, false, false, false, false, 0),
     GRAVEL((byte) 28, "Gravel", "Gr", 0xFF9B8773, false, 3, false, true, false, false, false, 0),
     DIRT((byte) 29, "Dirt", "Soil", 0xFF5D4037, true, 3, false, true, false, false, false, 0),
     WET_SAND((byte) 30, "Wet Sand", "SiO2", 0xFF9E753B, false, 4, false, true, false, false, false, 0),
@@ -41,7 +41,8 @@ public enum ElementID {
     GRASS((byte) 32, "Grass", "G", 0xFF4CAF50, false, 4, true, true, false, false, false, 0),
     SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0),
     CARBON((byte) 34, "Carbon", "C", 0xFF222222, false, 3, true, false, false, false, false, 0),
-    OXYGEN((byte) 35, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, 3);
+    OXYGEN((byte) 35, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, 3),
+    IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, true, false, false, false, false, 0);
 
     private final byte id;
     private final String name;
