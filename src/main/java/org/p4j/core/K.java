@@ -60,6 +60,7 @@ public final class K {
     public static final int MENU_SYMBOL_FONT_SIZE = 14;
 
     public static final float GRAVITY = 0.4f;
+    public static final float GRAVITY_MASS_FACTOR = 3.0f;
 
     public static final float MAX_GAS_SPEED = 3.0f;
     public static final int MAX_FALL_SPEED = 6;
@@ -71,7 +72,7 @@ public final class K {
 
     public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
-    public static final double HYDROGEN_DISSIPATION_CHANCE = 0.05;
+    public static final double HYDROGEN_DISSIPATION_CHANCE = 0.15;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
@@ -94,6 +95,7 @@ public final class K {
     public static final double MERCURY_CREATION_CHANCE = 0.2;
     public static final double GUNPOWDER_CREATION_CHANCE = 0.1;
     public static final double THERMITE_CREATION_CHANCE = 0.1;
+    public static final double GAS_TRAIL_CHANCE = 0.15;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;
