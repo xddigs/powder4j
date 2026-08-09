@@ -48,6 +48,9 @@ public final class K {
     public static final String HUD_FONT_FAMILY = "Arial";
     public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
+
+    public static final String PAUSE_TEXT = "PAUSED";
+    public static final Color PAUSE_TEXT_COLOR = Color.WHITE;
     public static final int PAUSE_FONT_SIZE = 32;
 
     public static final int WHEEL_OUTER_RADIUS = 120;
@@ -145,6 +148,8 @@ public final class K {
     public static final int HUD_SLIDER_VISIBLE_MS = 2500;
 
     public static final Color HUD_SLIDER_COLOR = Color.WHITE;
+    public static final String HUD_SLIDER_PLUS_SYMBOL = "+";
+    public static final String HUD_SLIDER_MINUS_SYMBOL = "-";
 
     public static final int HUD_SLIDER_SYMBOL_OFFSET = 15;
     public static final int WINDOW_SHAKING_THRESHOLD = 5;
@@ -167,6 +172,7 @@ public final class K {
     public static final float SHOCKWAVE_ALPHA = 1.0f;
     public static final float SHOCKWAVE_INCREMENT = 2.0f;
     public static final float SHOCKWAVE_WIDTH = 4f;
+    public static final Color SHOCKWAVE_COLOR = Color.WHITE;
 
     public static final int RENDERING_FULL_CIRCLE_DEGREES = 360;
 
@@ -178,6 +184,7 @@ public final class K {
     public static final float HUD_SELECTED_STROKE_WIDTH = 2.5f;
     public static final float HUD_CENTER_STROKE_WIDTH = 1.5f;
 
+    public static final Color SHAPER_SELECTED_COLOR = new Color(60, 120, 210, 200);
     public static final int SHAPER_ICON_FONT_SIZE = 22;
     public static final int SHAPER_ICON_Y_OFFSET = 2;
 
@@ -201,4 +208,7 @@ public final class K {
     public static final int PARTICLE_GRAIN_OFFSET = 10;
 
     public static final int COLOR_CHANNEL_MAX = 255;
+    public static final int COLOR_ALPHA_SHIFT = 24;
+    public static final int COLOR_RED_SHIFT = 16;
+    public static final int COLOR_GREEN_SHIFT = 8;
 }

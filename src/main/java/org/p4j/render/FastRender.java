@@ -38,15 +38,24 @@ public class FastRender extends Canvas {
     private int shockwaveCenterY;
 
     public FastRender(int simWidth, int simHeight, int scale) {
-        log.debug("Initializing renderer: {}x{} at scale {}", simWidth, simHeight, scale);
+        log.debug("Initializing renderer: {}x{} at scale {}",
+                simWidth, simHeight, scale);
         this.scale = scale;
-        Dimension size = new Dimension(simWidth * scale, simHeight * scale);
+        Dimension size = new Dimension(
+                simWidth * scale,
+                simHeight * scale);
+
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
 
-        this.canvasImage = new BufferedImage(simWidth, simHeight, BufferedImage.TYPE_INT_ARGB);
-        this.pixelBuffer = ((DataBufferInt) canvasImage.getRaster().getDataBuffer()).getData();
+        this.canvasImage = new BufferedImage(
+                simWidth, simHeight,
+                BufferedImage.TYPE_INT_ARGB);
+
+        this.pixelBuffer = ((DataBufferInt)
+                canvasImage.getRaster()
+                        .getDataBuffer()).getData();
     }
 
     public void updatePixels(byte[] grid, int width) {
@@ -89,11 +98,11 @@ public class FastRender extends Canvas {
         slider(g, brush);
 
         if (!K.IS_RUNNING) {
-            g.setColor(Color.WHITE);
+            g.setColor(K.PAUSE_TEXT_COLOR);
             g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD,
                     K.PAUSE_FONT_SIZE));
             FontMetrics fm = g.getFontMetrics();
-            String pause = "PAUSED";
+            String pause = K.PAUSE_TEXT;
             int textX = getWidth() / 2 - fm.stringWidth(pause) / 2;
             int textY = getHeight() / 2 + fm.getAscent();
             g.drawString(pause, textX, textY);
@@ -129,7 +138,8 @@ public class FastRender extends Canvas {
                 }
             }
 
-            if (shockwaveAlpha <= K.SHOCKWAVE_MIN_ALPHA || shockwaveRadius >= maxShockwaveRadius) {
+            if (shockwaveAlpha <= K.SHOCKWAVE_MIN_ALPHA ||
+                    shockwaveRadius >= maxShockwaveRadius) {
                 shockwaveActive = false;
             } else {
                 Graphics2D g2d = (Graphics2D) g.create();
@@ -138,9 +148,11 @@ public class FastRender extends Canvas {
 
                 g2d.setComposite(AlphaComposite.getInstance(
                         AlphaComposite.SRC_OVER,
-                        Math.clamp(shockwaveAlpha, K.SHOCKWAVE_MIN_ALPHA, K.SHOCKWAVE_MAX_ALPHA)));
+                        Math.clamp(shockwaveAlpha,
+                                K.SHOCKWAVE_MIN_ALPHA,
+                                K.SHOCKWAVE_MAX_ALPHA)));
 
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(K.SHOCKWAVE_COLOR);
                 g2d.setStroke(new BasicStroke(K.SHOCKWAVE_WIDTH,
                         BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
@@ -157,8 +169,13 @@ public class FastRender extends Canvas {
 
     private void wheel(Graphics2D g, KeyboardController keyController,
                        MouseController mouseController) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g.setRenderingHint(
+                RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_PURE);
 
         List<ElementID> elements = keyController.getSelectableElements();
         int totalElements = elements.size();
@@ -179,9 +196,12 @@ public class FastRender extends Canvas {
             double angle = Math.toDegrees(Math.atan2(dy, dx));
             if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
 
-            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG) % K.RENDERING_FULL_CIRCLE_DEGREES;
-            if (adjustedAngle < 0)
+            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
+                    % K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            if (adjustedAngle < 0) {
                 adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
+            }
 
             int hoveredIdx = (int) (adjustedAngle / angleStep);
             if (hoveredIdx >= 0 && hoveredIdx < totalElements) {
@@ -273,9 +293,12 @@ public class FastRender extends Canvas {
             double angle = Math.toDegrees(Math.atan2(dy, dx));
             if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
 
-            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG) % K.RENDERING_FULL_CIRCLE_DEGREES;
-            if (adjustedAngle < 0)
+            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
+                    % K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            if (adjustedAngle < 0) {
                 adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
+            }
 
             int hoveredIdx = (int) (adjustedAngle / angleStep);
             if (hoveredIdx >= 0 && hoveredIdx < totalShapes) {
@@ -307,7 +330,7 @@ public class FastRender extends Canvas {
 
             if (i == selectedIdx) {
                 selectedSliceArea = sliceArea;
-                g.setColor(new Color(60, 120, 210, 200));
+                g.setColor(K.SHAPER_SELECTED_COLOR);
             } else {
                 g.setColor(K.HUD_BACKGROUND_COLOR);
             }
@@ -355,7 +378,8 @@ public class FastRender extends Canvas {
     }
 
     private void slider(Graphics2D g, Brush brush) {
-        long timeSinceLastChange = System.currentTimeMillis() - brush.getLastRadiusChangeTime();
+        long timeSinceLastChange = System.currentTimeMillis() -
+                brush.getLastRadiusChangeTime();
         if (timeSinceLastChange > K.HUD_SLIDER_VISIBLE_MS) {
             return;
         }
@@ -363,9 +387,12 @@ public class FastRender extends Canvas {
         float opacity = K.HUD_SLIDER_MAX_OPACITY;
         long fadeStartTime = K.HUD_SLIDER_VISIBLE_MS - K.HUD_SLIDER_FADE_DURATION_MS;
         if (timeSinceLastChange > fadeStartTime) {
-            opacity = K.HUD_SLIDER_MAX_OPACITY - (float) (timeSinceLastChange - fadeStartTime) / (float) K.HUD_SLIDER_FADE_DURATION_MS;
+            opacity = K.HUD_SLIDER_MAX_OPACITY - (float)
+                    (timeSinceLastChange - fadeStartTime) / (float)
+                    K.HUD_SLIDER_FADE_DURATION_MS;
         }
-        opacity = Math.clamp(opacity, K.HUD_SLIDER_MIN_OPACITY, K.HUD_SLIDER_MAX_OPACITY);
+        opacity = Math.clamp(opacity, K.HUD_SLIDER_MIN_OPACITY,
+                K.HUD_SLIDER_MAX_OPACITY);
 
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -375,8 +402,11 @@ public class FastRender extends Canvas {
         int sliderX = K.HUD_SLIDER_X_PADDING;
         int sliderY = K.HUD_SLIDER_Y_PADDING;
 
-        g.setColor(new Color(K.COLOR_CHANNEL_MAX, K.COLOR_CHANNEL_MAX, K.COLOR_CHANNEL_MAX, K.HUD_SLIDER_TRACK_ALPHA));
-        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight, K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
+        g.setColor(new Color(K.COLOR_CHANNEL_MAX, K.COLOR_CHANNEL_MAX,
+                K.COLOR_CHANNEL_MAX, K.HUD_SLIDER_TRACK_ALPHA));
+
+        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight,
+                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
         int minR = K.MIN_BRUSH_RADIUS;
         int maxR = K.MAX_BRUSH_RADIUS;
@@ -387,20 +417,24 @@ public class FastRender extends Canvas {
         int knobY = sliderY + sliderHeight - knobHeight;
 
         g.setColor(K.HUD_SLIDER_COLOR);
-        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight, K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
+        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight,
+                K.HUD_SLIDER_CORNER_RADIUS,
+                K.HUD_SLIDER_CORNER_RADIUS);
 
-        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_SLIDER_LABEL_FONT_SIZE));
+        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD,
+                K.HUD_SLIDER_LABEL_FONT_SIZE));
         FontMetrics fm = g.getFontMetrics();
 
-        String plus = "+";
+        String plus = K.HUD_SLIDER_PLUS_SYMBOL;
         g.drawString(plus, sliderX + (sliderWidth / 2) - (fm.stringWidth(plus) / 2),
                 sliderY - K.HUD_SLIDER_SYMBOL_OFFSET);
 
-        String minus = "-";
+        String minus = K.HUD_SLIDER_MINUS_SYMBOL;
         g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2),
                 sliderY + sliderHeight + fm.getAscent());
 
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                K.HUD_SLIDER_MAX_OPACITY));
     }
 
     public int getParticleColor(int x, int y, ElementID element) {
@@ -409,30 +443,44 @@ public class FastRender extends Canvas {
             return baseColor;
         }
 
+        double v = (Math.sin(x * K.MERCURY_COLOR_WAVE_FREQUENCY + y *
+                K.MERCURY_COLOR_WAVE_FREQUENCY) + 1) * K.MERCURY_COLOR_SHIFT_MULTIPLIER;
+
         if (element == ElementID.MERCURY) {
-            int shift = (int) ((Math.sin(x * K.MERCURY_COLOR_WAVE_FREQUENCY + y * K.MERCURY_COLOR_WAVE_FREQUENCY) + 1) * K.MERCURY_COLOR_SHIFT_MULTIPLIER);
+            int shift = (int) v;
             return adjustBrightness(baseColor, shift);
         }
 
+        if (element == ElementID.IRON) {
+            int shift = (int) v;
+
+        }
+
         if (element == ElementID.FIRE || element == ElementID.LAVA) {
-            int noise = (int) (Math.random() * K.FIRE_LAVA_COLOR_NOISE_RANGE - K.FIRE_LAVA_COLOR_NOISE_OFFSET);
+            int noise = (int) (Math.random() *
+                    K.FIRE_LAVA_COLOR_NOISE_RANGE -
+                    K.FIRE_LAVA_COLOR_NOISE_OFFSET);
             return adjustBrightness(baseColor, noise);
         }
 
-        int grain = ((x * K.PARTICLE_GRAIN_X_MULTIPLIER + y * K.PARTICLE_GRAIN_Y_MULTIPLIER) % K.PARTICLE_GRAIN_MODULO) - K.PARTICLE_GRAIN_OFFSET;
+        int grain = ((x * K.PARTICLE_GRAIN_X_MULTIPLIER + y *
+                K.PARTICLE_GRAIN_Y_MULTIPLIER) %
+                K.PARTICLE_GRAIN_MODULO) - K.PARTICLE_GRAIN_OFFSET;
         return adjustBrightness(baseColor, grain);
     }
 
     private static int adjustBrightness(int argb, int delta) {
-        int a = (argb >> 24) & K.COLOR_CHANNEL_MAX;
-        int r = (argb >> 16) & K.COLOR_CHANNEL_MAX;
-        int g = (argb >> 8) & K.COLOR_CHANNEL_MAX;
+        int a = (argb >> K.COLOR_ALPHA_SHIFT) & K.COLOR_CHANNEL_MAX;
+        int r = (argb >> K.COLOR_RED_SHIFT) & K.COLOR_CHANNEL_MAX;
+        int g = (argb >> K.COLOR_GREEN_SHIFT) & K.COLOR_CHANNEL_MAX;
         int b = argb & K.COLOR_CHANNEL_MAX;
 
         r = Math.clamp(r + delta, 0, K.COLOR_CHANNEL_MAX);
         g = Math.clamp(g + delta, 0, K.COLOR_CHANNEL_MAX);
         b = Math.clamp(b + delta, 0, K.COLOR_CHANNEL_MAX);
 
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        return (a << K.COLOR_ALPHA_SHIFT) |
+                (r << K.COLOR_RED_SHIFT) |
+                (g << K.COLOR_GREEN_SHIFT) | b;
     }
 }
