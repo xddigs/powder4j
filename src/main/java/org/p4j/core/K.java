@@ -9,7 +9,7 @@ public final class K {
     private K() {}
 
     public static final String APP_TITLE = "Powder4J ";
-    public static final String VERSION = "0.4.0";
+    public static final String VERSION = "0.6.0";
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
