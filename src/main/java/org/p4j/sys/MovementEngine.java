@@ -193,7 +193,7 @@ public class MovementEngine {
             if (gasType == ElementID.METHANE) {
                 grid[trailIdx] = ElementID.CARBON.getId();
             } else if (gasType == ElementID.STEAM) {
-                grid[trailIdx] = ElementID.SMOKE_LIGHT.getId();
+                grid[trailIdx] = ElementID.CARBON_MONOXIDE.getId();
             } else if (gasType == ElementID.CHLORINE) {
                 grid[trailIdx] = ElementID.ACID.getId();
             }

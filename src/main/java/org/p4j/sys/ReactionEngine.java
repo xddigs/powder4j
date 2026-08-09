@@ -35,7 +35,6 @@ public class ReactionEngine {
             case GUNPOWDER -> reactGunpowder(x, y, idx);
             case WOOD -> reactWood(x, y, idx);
             case FIRE -> reactFire(x, y, idx);
-            case SMOKE_DARK, SMOKE_GRAY, SMOKE_LIGHT -> reactSmoke(x, y, idx);
             default -> false;
         };
     }
@@ -114,6 +113,13 @@ public class ReactionEngine {
                 if (world.isInBounds(nx, ny)) {
                     int nIdx = world.getIndex(nx, ny);
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
+
+                    if (neighbor == ElementID.WATER) {
+                        grid[idx] = ElementID.OIL.getId();
+                        grid[nIdx] = ElementID.OIL.getId();
+                        updated[idx] = true;
+                        return true;
+                    }
 
                     if (neighbor == ElementID.FIRE) {
                         if (Math.random() < K.FIRE_IGNITION_CHANCE) {
@@ -203,7 +209,7 @@ public class ReactionEngine {
 
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     ElementID neighbor = ElementID.fromId(grid[ny * width + nx]);
-                    if (neighbor == ElementID.FIRE || neighbor == 
+                    if (neighbor == ElementID.FIRE || neighbor ==
                             ElementID.LAVA || neighbor.isHot()) {
                         ExplosionSystem.explodeTNT(world, x, y);
                         return true;
@@ -240,7 +246,7 @@ public class ReactionEngine {
                         updated[nIdx] = true;
                         return true;
 
-                    } else if (neighbor == ElementID.SAND || 
+                    } else if (neighbor == ElementID.SAND ||
                             neighbor == ElementID.SILICON) {
                         grid[nIdx] = ElementID.GLASS.getId();
                         updated[nIdx] = true;
@@ -259,7 +265,7 @@ public class ReactionEngine {
         return false;
     }
 
-    private boolean reactFluid(int x, int y, int idx, 
+    private boolean reactFluid(int x, int y, int idx,
                                       ElementID e) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
@@ -280,7 +286,7 @@ public class ReactionEngine {
                     if (e == ElementID.OIL && neighbor == ElementID.STEAM) {
                         if (Math.random() < K.GASOLINE_CREATION_CHANCE) {
                             grid[idx] = ElementID.GASOLINE.getId();
-                            grid[nIdx] = ElementID.SMOKE_DARK.getId();
+                            grid[nIdx] = ElementID.CARBON_MONOXIDE.getId();
                             updated[idx] = true;
                             updated[nIdx] = true;
                             return true;
@@ -296,7 +302,7 @@ public class ReactionEngine {
 
                     if (isFlammableFluid && neighbor.isHot()) {
                         if (e == ElementID.GASOLINE) {
-                            ExplosionSystem.createExplosion(world, x, y, 
+                            ExplosionSystem.createExplosion(world, x, y,
                                     K.GENERAL_EXPLOSION_RADIUS);
                         } else {
                             grid[idx] = ElementID.FIRE.getId();
@@ -318,7 +324,7 @@ public class ReactionEngine {
         return false;
     }
 
-    private boolean reactPowder(int x, int y, int idx, 
+    private boolean reactPowder(int x, int y, int idx,
                                        ElementID e) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
@@ -554,7 +560,7 @@ public class ReactionEngine {
                         return true;
                     }
                     if (neighbor == ElementID.WOOD) {
-                        grid[nIdx] = ElementID.SMOKE_DARK.getId();
+                        grid[nIdx] = ElementID.CARBON_DIOXIDE.getId();
                         grid[idx] = ElementID.EMPTY.getId();
                         updated[nIdx] = true;
                         updated[idx] = true;
@@ -626,7 +632,7 @@ public class ReactionEngine {
                     }
 
                     if (isCorrosible) {
-                        grid[nIdx] = ElementID.SMOKE_GRAY.getId();
+                        grid[nIdx] = ElementID.CARBON_MONOXIDE.getId();
                         velocity[nIdx] = 0;
                         updated[nIdx] = true;
                         grid[idx] = ElementID.EMPTY.getId();
@@ -705,7 +711,7 @@ public class ReactionEngine {
                 if (world.isInBounds(x, smokeY)) {
                     int smokeIdx = smokeY * width + x;
                     if (grid[smokeIdx] == ElementID.EMPTY.getId()) {
-                        grid[smokeIdx] = ElementID.SMOKE_DARK.getId();
+                        grid[smokeIdx] = ElementID.CARBON_MONOXIDE.getId();
                         updated[smokeIdx] = true;
                     }
                 }
@@ -769,7 +775,7 @@ public class ReactionEngine {
                         nearFuel = true;
                         if (neighbor == ElementID.OIL) {
                             grid[nIdx] = ElementID.FIRE.getId();
-                            grid[idx] = ElementID.SMOKE_DARK.getId();
+                            grid[idx] = ElementID.CARBON_MONOXIDE.getId();
                             updated[nIdx] = true;
                             updated[idx] = true;
                             return true;
@@ -784,9 +790,9 @@ public class ReactionEngine {
                     } else if (neighbor == ElementID.WATER &&
                             Math.random() < K.FIRE_EVAPORATION_CHANCE) {
                         double rand = Math.random();
-                        ElementID smokeType = ElementID.SMOKE_LIGHT;
+                        ElementID smokeType = ElementID.CARBON_DIOXIDE;
                         if (rand > K.FIRE_SMOKE_GRAY_THRESHOLD) {
-                            smokeType = ElementID.SMOKE_GRAY;
+                            smokeType = ElementID.CARBON_MONOXIDE;
                         }
 
                         if (Math.random() < K.SALT_CHANCE) {

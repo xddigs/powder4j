@@ -193,7 +193,7 @@ public class World {
                     int idx = currentY * width + tx;
                     ElementID current = ElementID.fromId(grid[idx]);
                     if (current == ElementID.EMPTY || current == ElementID.SEED ||
-                            current.isLiquid() || current == ElementID.SMOKE_LIGHT ||
+                            current.isLiquid() ||
                             current == ElementID.GRASS) {
                         grid[idx] = ElementID.WOOD.getId();
                         updated[idx] = true;
