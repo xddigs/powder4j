@@ -19,7 +19,7 @@ public final class K {
     public static final double TICKS_PER_SECOND = 60.0;
     public static final long NANOSECONDS_IN_SECOND = 1_000_000_000L;
 
-    public static final int DEFAULT_BRUSH_RADIUS = 3;
+    public static final int DEFAULT_BRUSH_RADIUS = 2;
     public static final int MIN_BRUSH_RADIUS = 1;
     public static final int MAX_BRUSH_RADIUS = 50;
     public static final int TNT_EXPLOSION_RADIUS = 24;
@@ -80,7 +80,7 @@ public final class K {
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
     public static final double WOOD_BURN_CHANCE = 0.05;
-    public static final double FIRE_IGNITION_CHANCE = 0.3;
+    public static final double FIRE_IGNITION_CHANCE = 0.03;
     public static final double TNT_CRAFTING_CHANCE = 0.1;
     public static final double WATER_CREATION_CHANCE = 0.005;
     public static final double LAVA_FLOW_SKIP_CHANCE = 0.65;
@@ -139,10 +139,11 @@ public final class K {
 
     public static final float IRON_REACTION_THRESHOLD = 80.0f;
     public static final float WATER_BOILING_TEMP = 100.0f;
-    public static final float SAND_BOILING_TEMP = 400.0f;
     public static final float OIL_BOILING_TEMP = 120.0f;
     public static final float METHANE_IGNITION_TEMP = 150.0f;
     public static final float WOOD_IGNITION_TEMP = 230.0f;
+    public static final float OIL_IGNITION_TEMP = 350.0f;
+    public static final float SAND_BOILING_TEMP = 400.0f;
 
     public static final int HUD_SLIDER_X_PADDING = 25;
     public static final int HUD_SLIDER_Y_PADDING = 50;

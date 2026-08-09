@@ -192,9 +192,7 @@ public class ReactionEngine {
         return false;
     }
 
-    private void heat(int neighborIdx,
-                      ElementID neighbor,
-                      float ironTemp) {
+    private void heat(int neighborIdx, ElementID neighbor, float ironTemp) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
 
@@ -202,14 +200,19 @@ public class ReactionEngine {
                 K.WATER_BOILING_TEMP) {
             grid[neighborIdx] = ElementID.STEAM.getId();
             updated[neighborIdx] = true;
-        } else if ((neighbor == ElementID.OIL ||
-                neighbor == ElementID.GASOLINE) && ironTemp >=
-                K.OIL_BOILING_TEMP) {
-            grid[neighborIdx] = ElementID.FIRE.getId();
-            updated[neighborIdx] = true;
-        }
-
-        else if (neighbor == ElementID.MUD && ironTemp >=
+        } else if (neighbor == ElementID.OIL) {
+            if (ironTemp >= K.OIL_BOILING_TEMP && ironTemp < K.OIL_IGNITION_TEMP) {
+                if (Math.random() < K.FIRE_IGNITION_CHANCE) {
+                    grid[neighborIdx] = ElementID.METHANE.getId();
+                    updated[neighborIdx] = true;
+                }
+            } else if (ironTemp >= K.OIL_IGNITION_TEMP) {
+                if (Math.random() < K.FIRE_IGNITION_CHANCE) {
+                    grid[neighborIdx] = ElementID.FIRE.getId();
+                    updated[neighborIdx] = true;
+                }
+            }
+        } else if (neighbor == ElementID.MUD && ironTemp >=
                 K.WATER_BOILING_TEMP) {
             grid[neighborIdx] = ElementID.DIRT.getId();
             updated[neighborIdx] = true;
@@ -217,9 +220,7 @@ public class ReactionEngine {
                 K.SAND_BOILING_TEMP) {
             grid[neighborIdx] = ElementID.LAVA.getId();
             updated[neighborIdx] = true;
-        }
-
-        else if (neighbor == ElementID.WOOD && ironTemp >=
+        } else if (neighbor == ElementID.WOOD && ironTemp >=
                 K.WOOD_IGNITION_TEMP) {
             grid[neighborIdx] = ElementID.FIRE.getId();
             updated[neighborIdx] = true;

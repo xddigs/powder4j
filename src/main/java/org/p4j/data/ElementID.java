@@ -27,7 +27,7 @@ public enum ElementID {
     METHANE((byte) 18, "Methane", "CH4", 0x8800FFAA, false, -2, true, false, false, false, false, 0),
     TNT((byte) 19, "TNT", "C7H5N3O6", 0xFFC23616, false, 1, true, true, false, false, false, 0),
     GASOLINE((byte) 20, "Gasoline", "C8H18", 0xFFD4A373, false, 1, true, true, false, false, true, 5),
-    OIL((byte) 21, "Olive Oil", "C18H34O2", 0xFF8A9A20, false, 1, true, true, false, false, true, 4),
+    OIL((byte) 21, "Olive Oil", "C18H34O2", 0xFF8A9A20, false, 1, false, true, false, false, true, 4),
     WOOD((byte) 22, "Wood", "C6H10O5", 0xFF8B5A2B, false, 4, true, true, false, false, false, 0),
     MUD((byte) 23, "Mud", "SiO2+H2O", 0xFF3E2723, false, 4, true, true, false, false, true, 1),
     SEED((byte) 24, "Seed", "Sd", 0xFF8BC34A, true, 3, true, true, false, false, false, 0),
