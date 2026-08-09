@@ -127,8 +127,14 @@ public class MovementEngine {
                 int aboveIdx = world.getIndex(currentX, aboveY);
                 if (canGasDisplace(currentId, world.getGrid()[aboveIdx])) {
                     int prevIdx = currentIdx;
+                    byte targetBeforeSwap = world.getGrid()[aboveIdx];
+
                     world.swap(currentIdx, aboveIdx);
-                    leaveGasTrail(prevIdx, type);
+
+                    if (targetBeforeSwap == ElementID.EMPTY.getId()) {
+                        leaveGasTrail(prevIdx, type);
+                    }
+
                     currentY = aboveY;
                     currentIdx = aboveIdx;
                     hasMoved = true;
@@ -143,8 +149,14 @@ public class MovementEngine {
                             int diagIdx = world.getIndex(diagX, aboveY);
                             if (canGasDisplace(currentId, world.getGrid()[diagIdx])) {
                                 int prevIdx = currentIdx;
+                                byte targetBeforeSwap = world.getGrid()[diagIdx];
+
                                 world.swap(currentIdx, diagIdx);
-                                leaveGasTrail(prevIdx, type);
+
+                                if (targetBeforeSwap == ElementID.EMPTY.getId()) {
+                                    leaveGasTrail(prevIdx, type);
+                                }
+
                                 currentX = diagX;
                                 currentY = aboveY;
                                 currentIdx = diagIdx;
@@ -173,7 +185,8 @@ public class MovementEngine {
     }
 
     private void leaveGasTrail(int trailIdx, ElementID gasType) {
-        if (ThreadLocalRandom.current().nextFloat() > K.GAS_TRAIL_CHANCE) return;
+        if (ThreadLocalRandom.current().nextFloat() >
+                K.GAS_TRAIL_CHANCE) return;
         byte[] grid = world.getGrid();
 
         if (grid[trailIdx] == ElementID.EMPTY.getId()) {
@@ -192,13 +205,21 @@ public class MovementEngine {
         if (targetId == ElementID.EMPTY.getId()) {
             return true;
         }
-        if (targetId == ElementID.STONE.getId()) {
+
+        ElementID targetType = ElementID.fromId(targetId);
+        if (targetType == ElementID.STONE || targetType.isSolid()) {
+            return false;
+        }
+
+        if (currentId == ElementID.FIRE.getId()) {
             return false;
         }
 
         float currentDensity = ElementID.fromId(currentId).getDensity();
-        float targetDensity = ElementID.fromId(targetId).getDensity();
+        float targetDensity = targetType.getDensity();
 
-        return currentDensity < targetDensity;
+        return (targetType.isLiquid() ||
+                targetType.isGas()) &&
+                (currentDensity < targetDensity);
     }
 }

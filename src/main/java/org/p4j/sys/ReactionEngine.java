@@ -758,8 +758,19 @@ public class ReactionEngine {
 
                 if (world.isInBounds(nx, ny)) {
                     ElementID neighbor = ElementID.fromId(grid[world.getIndex(nx, ny)]);
-                    int nIdx = world.getIndex(nx, ny);
                     ElementID e = ElementID.fromId(grid[idx]);
+                    int nIdx = world.getIndex(nx, ny);
+
+                    if (e == ElementID.HYDROGEN && neighbor == ElementID.EMPTY) {
+                        if (Math.random() < K.WATER_CREATION_CHANCE) {
+                            grid[idx] = ElementID.WATER.getId();
+                            grid[nIdx] = ElementID.WATER.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return true;
+                        }
+                    }
+
                     if (e == ElementID.OXYGEN && neighbor == ElementID.HYDROGEN) {
                         grid[idx] = ElementID.WATER.getId();
                         grid[nIdx] = ElementID.WATER.getId();

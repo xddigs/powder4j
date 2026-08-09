@@ -36,6 +36,7 @@ public class World {
 
     public void update() {
         Arrays.fill(updated, false);
+        if (!K.IS_RUNNING) return;
         for (int y = height - 1; y >= 0; y--) {
             boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
 
