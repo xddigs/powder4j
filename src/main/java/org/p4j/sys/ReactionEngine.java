@@ -140,12 +140,6 @@ public class ReactionEngine {
         return false;
     }
 
-    public void heat(int x, int y, float tempAmount) {
-        if (!world.isInBounds(x, y)) return;
-        int idx = world.getIndex(x, y);
-        world.addTemperature(idx, tempAmount);
-    }
-
     private boolean reactTNT(int x, int y, int idx) {
         byte[] grid = world.getGrid();
         int width = world.getWidth();
@@ -924,6 +918,12 @@ public class ReactionEngine {
                 }
             }
         }
+    }
+
+    public void heat(int x, int y, float tempAmount) {
+        if (!world.isInBounds(x, y)) return;
+        int idx = world.getIndex(x, y);
+        world.addTemperature(idx, tempAmount);
     }
 
     public void absorb(int startX, int startY, int radius, int maxWater) {

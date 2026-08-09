@@ -51,7 +51,6 @@ public class World {
                 (idx, newElement, newTemp) -> {
             grid[idx] = newElement.getId();
             updated[idx] = true;
-
         });
 
         float[] tempSwap = temperature;
@@ -94,6 +93,14 @@ public class World {
         float tempVel = velocity[i];
         velocity[i] = velocity[j];
         velocity[j] = tempVel;
+
+        float tempT = temperature[i];
+        temperature[i] = temperature[j];
+        temperature[j] = tempT;
+
+        float tempNextT = nextTemperature[i];
+        nextTemperature[i] = nextTemperature[j];
+        nextTemperature[j] = tempNextT;
 
         updated[i] = true;
         updated[j] = true;
