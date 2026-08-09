@@ -53,7 +53,18 @@ public class ReactionEngine {
 
                 if (world.isInBounds(nx, ny)) {
                     int nIdx = world.getIndex(nx, ny);
-                    if (ElementID.fromId(grid[nIdx]).isWater()) {
+                    ElementID e = ElementID.fromId(grid[nIdx]);
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    if (e.isHot() && neighbor == ElementID.SAND) {
+                        if (Math.random() < K.LAVA_CREATION_CHANCE) {
+                            grid[idx] = ElementID.LAVA.getId();
+                            grid[nIdx] = ElementID.LAVA.getId();
+                            updated[idx] = true;
+                            return true;
+                        }
+                    }
+
+                    if (neighbor.isWater()) {
                         grid[idx] = ElementID.WET_SAND.getId();
                         grid[nIdx] = ElementID.EMPTY.getId();
                         updated[idx] = true;
