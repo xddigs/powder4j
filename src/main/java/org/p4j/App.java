@@ -41,7 +41,7 @@ public class App extends JFrame {
         setResizable(false);
         setFocusTraversalKeysEnabled(false);
 
-        this.brush = new Brush(ElementID.SAND, K.DEFAULT_BRUSH_RADIUS);
+        this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS);
         this.keyController = new KeyboardController(brush);
 
         this.palette = new Palette();
