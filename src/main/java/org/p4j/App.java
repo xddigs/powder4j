@@ -42,10 +42,10 @@ public class App extends JFrame {
         setResizable(false);
         setFocusTraversalKeysEnabled(false);
 
-        this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS);
-        this.palette = new Palette();
         this.world = new World(simulationWidth, simulationHeight);
-        this.render = new Render(simulationWidth, simulationHeight, scale);
+        this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
+        this.palette = new Palette();
+        this.render = new Render(simulationWidth, simulationHeight, world, scale);
 
         this.keyController = new KeyboardController(brush, world, render);
         this.mouseController = new MouseController(

@@ -31,6 +31,7 @@ public class KeyboardController extends KeyAdapter {
     private boolean wasEPressed = false;
     private boolean wasVPressed = true;
     private boolean wasShiftPressed = false;
+    private boolean wasCtrlPressed = false;
     private int selectedIndex = 0;
     private int selectedShapeIndex = 0;
     private int selectedTypeIndex = 0;
@@ -92,6 +93,10 @@ public class KeyboardController extends KeyAdapter {
             world.getHeatMap().toggleMode();
         }
 
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            wasCtrlPressed = true;
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_F12) {
             Screenshot.save(render.getPixelBuffer(),
                     world.getWidth(), world.getHeight());
@@ -122,6 +127,10 @@ public class KeyboardController extends KeyAdapter {
         if (e.getKeyCode() == KeyEvent.VK_E) {
             wasEPressed = false;
         }
+
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            wasCtrlPressed = false;
+        }
     }
 
     public boolean wasTabPressed() {
@@ -142,6 +151,10 @@ public class KeyboardController extends KeyAdapter {
 
     public boolean wasVPressed() {
         return wasVPressed;
+    }
+
+    public boolean wasCtrlPressed() {
+        return wasCtrlPressed;
     }
 
     public int getSelectedIndex() {

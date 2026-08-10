@@ -127,8 +127,16 @@ public class MouseController extends MouseAdapter implements
     public void mouseWheelMoved(MouseWheelEvent e) {
         int rotation = e.getWheelRotation();
         if (rotation < 0) {
+            if (keyboardController.wasCtrlPressed()) {
+                brush.changeTemperature(5);
+                return;
+            }
             brush.changeRadius(1);
         } else {
+            if (keyboardController.wasCtrlPressed()) {
+                brush.changeTemperature(-5);
+                return;
+            }
             brush.changeRadius(-1);
         }
     }

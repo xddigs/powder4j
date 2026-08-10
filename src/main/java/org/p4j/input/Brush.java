@@ -1,6 +1,7 @@
 package org.p4j.input;
 
 import org.p4j.core.K;
+import org.p4j.core.World;
 import org.p4j.data.BrushType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +20,17 @@ public class Brush {
     private BrushShape shape;
     private int radius;
     private long lastRadiusChangeTime;
+    private long lastTemperatureChangeTime;
+    private final World world;
 
-    public Brush(ElementID defaultElement, int initialRadius) {
+    public Brush(ElementID defaultElement, int initialRadius, World world) {
         this.element = defaultElement;
         this.shape = BrushShape.CIRCLE;
         this.type = BrushType.BRUSH;
         this.radius = initialRadius;
         this.lastRadiusChangeTime = 0;
+        this.lastTemperatureChangeTime = 0;
+        this.world = world;
     }
 
     public ElementID getElement() {
@@ -54,8 +59,8 @@ public class Brush {
         int oldRadius = this.radius;
         this.radius = Math.clamp(radius, K.MIN_BRUSH_RADIUS, K.MAX_BRUSH_RADIUS);
         if (oldRadius != this.radius) {
-            log.debug("Brush radius changed to: {}", this.radius);
             this.lastRadiusChangeTime = System.currentTimeMillis();
+            log.debug("Brush radius changed to: {}", this.radius);
         }
     }
 
@@ -65,6 +70,14 @@ public class Brush {
 
     public void changeRadius(int delta) {
         setRadius(this.radius + delta);
+    }
+
+    public void changeTemperature(float delta) {
+        float calculatedTemp = world.getThermo().getAmbientTemp() + delta;
+        float newTemp = Math.clamp(calculatedTemp, K.MIN_COLD_TEMP, K.MAX_HOT_TEMP);
+        world.getThermo().setAmbientTemp(newTemp);
+        this.lastTemperatureChangeTime = System.currentTimeMillis();
+        log.debug("Changing temperature by: {}ºC, it's now {}", delta, newTemp);
     }
 
     public boolean contains(int dx, int dy) {
@@ -85,7 +98,16 @@ public class Brush {
     }
 
     public void setType(BrushType type) {
-        log.debug("Brush type changed to: {}", type);
         this.type = type;
+        log.debug("Brush type changed to: {}", type);
     }
+
+    public float getTargetTemperature() {
+        return world.getThermo().getAmbientTemp();
+    }
+
+    public long getLastTemperatureChangeTime() {
+        return lastTemperatureChangeTime;
+    }
+
 }

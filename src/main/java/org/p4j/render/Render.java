@@ -28,6 +28,7 @@ import java.util.List;
 public class Render extends Canvas {
     private static final Logger log = LoggerFactory.getLogger(Render.class);
     private final BufferedImage canvasImage;
+    private final World world;
     private final int[] pixelBuffer;
     private final int scale;
 
@@ -38,10 +39,11 @@ public class Render extends Canvas {
     private int shockwaveCenterX;
     private int shockwaveCenterY;
 
-    public Render(int simWidth, int simHeight, int scale) {
+    public Render(int simWidth, int simHeight, World world, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}",
                 simWidth, simHeight, scale);
         this.scale = scale;
+        this.world = world;
         Dimension size = new Dimension(
                 simWidth * scale,
                 simHeight * scale);
@@ -114,6 +116,7 @@ public class Render extends Canvas {
         }
 
         slider(g, brush);
+        regulate(g, brush);
 
         if (!K.IS_RUNNING) {
             g.setColor(K.PAUSE_TEXT_COLOR);
@@ -546,61 +549,103 @@ public class Render extends Canvas {
         g.drawString(typeText, textX, textY);
     }
 
-    private void slider(Graphics2D g, Brush brush) {
-        long timeSinceLastChange = System.currentTimeMillis() -
-                brush.getLastRadiusChangeTime();
+    private void drawSlider(Graphics2D g,
+                                    int xPadding,
+                                    float minVal, float maxVal, float currentVal,
+                                    long lastChangeTime,
+                                    Color fillColor,
+                                    String topSymbol, String bottomSymbol) {
+
+        long timeSinceLastChange = System.currentTimeMillis() - lastChangeTime;
         if (timeSinceLastChange > K.HUD_SLIDER_VISIBLE_MS) {
             return;
         }
 
-        float opacity = K.HUD_SLIDER_MAX_OPACITY;
-        long fadeStartTime = K.HUD_SLIDER_VISIBLE_MS - K.HUD_SLIDER_FADE_DURATION_MS;
-        if (timeSinceLastChange > fadeStartTime) {
-            opacity = K.HUD_SLIDER_MAX_OPACITY - (float)
-                    (timeSinceLastChange - fadeStartTime) / (float)
-                    K.HUD_SLIDER_FADE_DURATION_MS;
-        }
-        opacity = Math.clamp(opacity, K.HUD_SLIDER_MIN_OPACITY,
-                K.HUD_SLIDER_MAX_OPACITY);
+        float opacity = getOpacity(timeSinceLastChange);
 
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                           RenderingHints.VALUE_ANTIALIAS_ON);
 
         int sliderWidth = K.HUD_SLIDER_WIDTH;
         int sliderHeight = getHeight() - (K.HUD_SLIDER_Y_PADDING * 2);
-        int sliderX = K.HUD_SLIDER_X_PADDING;
+        int sliderX = xPadding;
         int sliderY = K.HUD_SLIDER_Y_PADDING;
 
         g.setColor(K.UI_BACKGROUND_COLOR);
         g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight,
                 K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
-        int minR = K.MIN_BRUSH_RADIUS;
-        int maxR = K.MAX_BRUSH_RADIUS;
-        int currentR = brush.getRadius();
+        float ratio = (currentVal - minVal) / (maxVal - minVal);
+        ratio = Math.clamp(ratio, 0.0f, 1.0f);
 
-        float ratio = (float) (currentR - minR) / (maxR - minR);
         int knobHeight = (int) (ratio * sliderHeight);
         int knobY = sliderY + sliderHeight - knobHeight;
 
-        g.setColor(K.HUD_SLIDER_COLOR);
+        g.setColor(fillColor);
         g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight,
-                K.HUD_SLIDER_CORNER_RADIUS,
-                K.HUD_SLIDER_CORNER_RADIUS);
+                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
         g.setFont(K.FONT_SMALL);
         FontMetrics fm = g.getFontMetrics();
 
-        String plus = K.HUD_SLIDER_PLUS_SYMBOL;
-        g.drawString(plus, sliderX + (sliderWidth / 2) - (fm.stringWidth(plus) / 2),
-                sliderY - K.HUD_SLIDER_SYMBOL_OFFSET);
+        if (topSymbol != null && !topSymbol.isEmpty()) {
+            g.setColor(K.TEXT_COLOR);
+            g.drawString(topSymbol, sliderX + (sliderWidth / 2) -
+                        (fm.stringWidth(topSymbol) / 2),
+                      sliderY - K.HUD_SLIDER_SYMBOL_OFFSET);
+        }
 
-        String minus = K.HUD_SLIDER_MINUS_SYMBOL;
-        g.drawString(minus, sliderX + (sliderWidth / 2) - (fm.stringWidth(minus) / 2),
-                sliderY + sliderHeight + fm.getAscent());
+        if (bottomSymbol != null && !bottomSymbol.isEmpty()) {
+            g.setColor(K.TEXT_COLOR);
+            g.drawString(bottomSymbol, sliderX + (sliderWidth / 2) -
+                        (fm.stringWidth(bottomSymbol) / 2),
+                      sliderY + sliderHeight + fm.getAscent());
+        }
 
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                K.HUD_SLIDER_MAX_OPACITY));
+        g.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
+    }
+
+    private static float getOpacity(long timeSinceLastChange) {
+        float opacity = K.HUD_SLIDER_MAX_OPACITY;
+        long fadeStartTime = K.HUD_SLIDER_VISIBLE_MS -
+                K.HUD_SLIDER_FADE_DURATION_MS;
+
+        if (timeSinceLastChange > fadeStartTime) {
+            opacity = K.HUD_SLIDER_MAX_OPACITY - (float)
+                    (timeSinceLastChange - fadeStartTime) / (float)
+                    K.HUD_SLIDER_FADE_DURATION_MS;
+        }
+        opacity = Math.clamp(opacity, K.HUD_SLIDER_MIN_OPACITY,
+                            K.HUD_SLIDER_MAX_OPACITY);
+        return opacity;
+    }
+
+    private void slider(Graphics2D g, Brush brush) {
+        drawSlider(g,
+                K.HUD_SLIDER_X_PADDING,
+                K.MIN_BRUSH_RADIUS,
+                K.MAX_BRUSH_RADIUS,
+                brush.getRadius(),
+                brush.getLastRadiusChangeTime(),
+                K.HUD_SLIDER_COLOR,
+                K.HUD_SLIDER_PLUS_SYMBOL,
+                K.HUD_SLIDER_MINUS_SYMBOL
+        );
+    }
+
+    private void regulate(Graphics2D g, Brush brush) {
+        int xPosition = K.HUD_SLIDER_WIDTH + K.HUD_SLIDER_X_PADDING + K.HUD_SLIDER_SYMBOL_OFFSET;
+        drawSlider(g, xPosition,
+                K.MIN_COLD_TEMP,
+                K.MAX_HOT_TEMP,
+                world.getThermo().getAmbientTemp(),
+                brush.getLastTemperatureChangeTime(),
+                K.HUD_SLIDER_COLOR,
+                "\uF06D",
+                "\uE645"
+        );
     }
 
     public int getParticleColor(int x, int y, ElementID element) {
