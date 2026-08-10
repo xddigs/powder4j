@@ -14,6 +14,13 @@ public final class K {
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
 
+    public static final Color GAME_BACKGROUND_COLOR = new Color(24, 24, 37);
+    public static final Color TEXT_COLOR = new Color(202, 211, 245);
+    public static final Color TEXT_COLOR_UNSELECTED = new Color(150, 160, 200);
+    public static final Color UI_BACKGROUND_COLOR = new Color(110, 115, 141);
+    public static final Color UI_BACKGROUND_BORDER_COLOR = new Color(110, 115, 141, 100);
+    public static final Color HIGHLIGHT_COLOR = new Color(60, 120, 210, 200);
+
     public static boolean IS_RUNNING = true;
 
     public static final double TICKS_PER_SECOND = 60.0;
@@ -26,12 +33,6 @@ public final class K {
     public static final int CHLORINE_EXPLOSION_RADIUS = 12;
     public static final int GENERAL_EXPLOSION_RADIUS = 4;
 
-    public static final double TNT_FIRE_SPAWN_THRESHOLD = 0.4;
-    public static final double TNT_SPAWN_DEBRIS_CHANCE = 0.8;
-
-    public static final float TNT_DEBRIS_MAX_VELOCITY = 8.0f;
-    public static final float TNT_DEBRIS_MIN_VELOCITY = 4.0f;
-
     public static final int BUFFER_STRATEGY_COUNT = 3;
     public static final int DEFAULT_PALETTE_COLOR = 0xFF000000;
 
@@ -41,35 +42,22 @@ public final class K {
     public static final double HUD_FULL_CIRCLE = 360.0;
     public static final double HUD_START_OFFSET_DEG = -90.0;
 
-    public static final Color HUD_BACKGROUND_COLOR = new Color(30, 35, 45, 200);
-    public static final Color HUD_BORDER_COLOR = new Color(255, 255, 255, 50);
-    public static final Color HUD_CENTER_COLOR = new Color(15, 18, 25);
-    public static final Color HUD_TEXT_UNSELECTED = Color.WHITE;
     public static final String HUD_FONT_FAMILY = "Arial";
     public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
 
     public static final String NANINF = "naninf";
     public static final String PAUSE_TEXT = "PAUSED";
-    public static final Color PAUSE_TEXT_COLOR = Color.WHITE;
+    public static final Color PAUSE_TEXT_COLOR = TEXT_COLOR;
     public static final int PAUSE_FONT_SIZE = 32;
 
-    public static final int WHEEL_OUTER_RADIUS = 120;
-    public static final int WHEEL_INNER_RADIUS = 40;
-    public static final Color WHEEL_BG_COLOR = new Color(30, 35, 45, 200);
-    public static final Color WHEEL_BORDER_COLOR = new Color(255, 255, 255, 50);
-    public static final float MENU_BORDER_STROKE = 1.5f;
-    public static final Color MENU_BACKGROUND_COLOR = new Color(15, 18, 25);
-    public static final Color MENU_BORDER_COLOR = new Color(255, 255, 255, 50);
-    public static final int MENU_SYMBOL_FONT_SIZE = 14;
+    public static final Color MENU_BACKGROUND_COLOR = UI_BACKGROUND_COLOR;
 
     public static final float GRAVITY = 0.4f;
     public static final float GRAVITY_MASS_FACTOR = 3.0f;
 
     public static final float MAX_GAS_SPEED = 3.0f;
     public static final int MAX_FALL_SPEED = 6;
-    public static final int WATER_FALL_SPEED = 2;
-    public static final int WATER_DISPERSION_RATE = 16;
     public static final int MOUSE_BUTTON_RIGHT = 3;
 
     public static final long ESCAPE_DOUBLE_PRESS_INTERVAL = 500;
@@ -80,11 +68,8 @@ public final class K {
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
-    public static final double WOOD_BURN_CHANCE = 0.05;
     public static final double FIRE_IGNITION_CHANCE = 0.03;
-    public static final double TNT_CRAFTING_CHANCE = 0.1;
     public static final double WATER_CREATION_CHANCE = 0.5;
-    public static final double LAVA_FLOW_SKIP_CHANCE = 0.65;
     public static final double STEAM_CONDENSE_CHANCE = 0.1;
     public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
@@ -97,9 +82,6 @@ public final class K {
     public static final double LAVA_CREATION_CHANCE = 0.001;
     public static final double CEMENT_CREATION_CHANCE = 0.15;
     public static final double METHANE_CREATION_CHANCE = 0.1;
-    public static final double MERCURY_CREATION_CHANCE = 0.2;
-    public static final double GUNPOWDER_CREATION_CHANCE = 0.1;
-    public static final double THERMITE_CREATION_CHANCE = 0.1;
     public static final double GAS_TRAIL_CHANCE = 0.15;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
@@ -123,9 +105,6 @@ public final class K {
     public static final int TREE_MIN_X_MARGIN = 1;
     public static final int TREE_MAX_X_MARGIN_OFFSET = 2;
 
-    public static final float CHLORINE_DEBRIS_MAX_VELOCITY = 3.0f;
-    public static final float CHLORINE_DEBRIS_MIN_VELOCITY = 1.0f;
-
     public static final double EXPLOSION_CORE_RADIUS_RATIO = 0.3;
     public static final double EXPLOSION_MID_RADIUS_RATIO = 0.7;
     public static final float EXPLOSION_MID_FIRE_CHANCE = 0.25f;
@@ -134,9 +113,6 @@ public final class K {
 
     public static final float HEAT_ADD_FIRE = 25.0f;
     public static final float HEAT_ADD_LAVA = 40.0f;
-    public static final float IRON_HEAT_CONDUCTIVITY = 0.75f;
-    public static final float AMBIENT_TEMPERATURE = 20.0f;
-    public static final float COOLING_RATE = 0.12f;
 
     public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
@@ -153,20 +129,12 @@ public final class K {
     public static final float CONDUCTIVITY_AVG_FACTOR = 0.5f;
     public static final float MAX_DELTA_RATIO = 0.35f;
 
-    public static final float IRON_REACTION_THRESHOLD = 80.0f;
-    public static final float WATER_BOILING_TEMP = 100.0f;
-    public static final float OIL_BOILING_TEMP = 120.0f;
-    public static final float METHANE_IGNITION_TEMP = 150.0f;
-    public static final float WOOD_IGNITION_TEMP = 230.0f;
-    public static final float OIL_IGNITION_TEMP = 350.0f;
-    public static final float SAND_BOILING_TEMP = 400.0f;
-
     public static final int HUD_SLIDER_X_PADDING = 25;
     public static final int HUD_SLIDER_Y_PADDING = 50;
     public static final int HUD_SLIDER_WIDTH = 10;
     public static final int HUD_SLIDER_VISIBLE_MS = 2500;
 
-    public static final Color HUD_SLIDER_COLOR = Color.WHITE;
+    public static final Color HUD_SLIDER_COLOR = TEXT_COLOR;
     public static final String HUD_SLIDER_PLUS_SYMBOL = "+";
     public static final String HUD_SLIDER_MINUS_SYMBOL = "-";
 
@@ -185,31 +153,20 @@ public final class K {
     public static final int MOUSE_OFFSET_X = 20;
     public static final int MOUSE_OFFSET_Y = 20;
 
-    public static final Color SHAPER_SELECTED_COLOR = new Color(60, 120, 210, 200);
     public static final int SHAPER_ICON_FONT_SIZE = 22;
     public static final int SHAPER_ICON_Y_OFFSET = 2;
-
-    public static final Color HIGHLIGHT_COLOR = SHAPER_SELECTED_COLOR;
-    public static final Color BG_COLOR = new Color(20, 24, 32, 220);
-    public static final Color TEXT_COLOR = Color.WHITE;
-    public static final Color SUBTEXT_COLOR = new Color(180, 190, 200);
 
     public static final double FIRE_SMOKE_GRAY_THRESHOLD = 0.66;
     public static final double FIRE_NEAR_FUEL_PAUSE_CHANCE = 0.7;
 
-    public static final float FLUID_DIAGONAL_VELOCITY_RETENTION = 0.5f;
-    public static final float FLUID_MOMENTUM_THRESHOLD = 2.0f;
-    public static final float FLUID_MOMENTUM_DISPERSION_MULTIPLIER = 0.8f;
-
     public static final int MUD_MAX_DEPTH = 15;
 
-    public static final int FLUID_HYDROSTATIC_PRESSURE_BONUS = 2;
     public static final int SHOCKWAVE_RADIUS_MAX = 10;
 
     public static final float SHOCKWAVE_ALPHA = 1.0f;
     public static final float SHOCKWAVE_INCREMENT = 2.0f;
     public static final float SHOCKWAVE_WIDTH = 4f;
-    public static final Color SHOCKWAVE_COLOR = Color.WHITE;
+    public static final Color SHOCKWAVE_COLOR = TEXT_COLOR;
 
     public static final int RENDERING_FULL_CIRCLE_DEGREES = 360;
 
@@ -226,7 +183,6 @@ public final class K {
     public static final float HUD_SLIDER_MAX_OPACITY = 1.0f;
     public static final int HUD_SLIDER_CORNER_RADIUS = 5;
     public static final int HUD_SLIDER_LABEL_FONT_SIZE = 20;
-    public static final int HUD_SLIDER_LABEL_ALPHA = 60;
     public static final int HUD_SLIDER_TRACK_ALPHA = 60;
 
     public static final double MERCURY_COLOR_WAVE_FREQUENCY = 0.5;

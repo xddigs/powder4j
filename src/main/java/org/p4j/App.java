@@ -13,6 +13,7 @@ import org.p4j.render.FastRender;
 import org.p4j.render.Palette;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -47,6 +48,7 @@ public class App extends JFrame {
         this.palette = new Palette();
         this.world = new World(simulationWidth, simulationHeight);
         this.render = new FastRender(simulationWidth, simulationHeight, scale);
+
         this.mouseController = new MouseController(
                 world, brush, keyController, scale);
         this.loop = new SimulationLoop(world, render, palette,

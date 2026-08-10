@@ -48,6 +48,7 @@ public class FastRender extends Canvas {
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
+        setBackground(K.GAME_BACKGROUND_COLOR);
 
         this.canvasImage = new BufferedImage(
                 simWidth, simHeight,
@@ -239,13 +240,13 @@ public class FastRender extends Canvas {
                 selectedSliceArea = sliceArea;
                 g.setColor(new Color(el.getColorArgb()));
             } else {
-                g.setColor(K.HUD_BACKGROUND_COLOR);
+                g.setColor(K.UI_BACKGROUND_COLOR);
             }
 
             g.fill(sliceArea);
 
             g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
-            g.setColor(K.HUD_BORDER_COLOR);
+            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
             g.draw(sliceArea);
         }
 
@@ -255,10 +256,10 @@ public class FastRender extends Canvas {
             g.draw(selectedSliceArea);
         }
 
-        g.setColor(K.HUD_CENTER_COLOR);
+        g.setColor(K.UI_BACKGROUND_COLOR);
         g.fill(innerHole);
         g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
-        g.setColor(K.HUD_TEXT_UNSELECTED);
+        g.setColor(K.TEXT_COLOR_UNSELECTED);
         g.draw(innerHole);
 
         ElementID selectedElement = elements.get(selectedIdx);
@@ -334,15 +335,15 @@ public class FastRender extends Canvas {
 
             if (i == selectedIdx) {
                 selectedSliceArea = sliceArea;
-                g.setColor(K.SHAPER_SELECTED_COLOR);
+                g.setColor(K.HIGHLIGHT_COLOR);
             } else {
-                g.setColor(K.HUD_BACKGROUND_COLOR);
+                g.setColor(K.UI_BACKGROUND_COLOR);
             }
 
             g.fill(sliceArea);
 
             g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
-            g.setColor(K.HUD_BORDER_COLOR);
+            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
             g.draw(sliceArea);
 
             double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
@@ -364,10 +365,10 @@ public class FastRender extends Canvas {
             g.draw(selectedSliceArea);
         }
 
-        g.setColor(K.HUD_CENTER_COLOR);
+        g.setColor(K.UI_BACKGROUND_COLOR);
         g.fill(innerHole);
         g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
-        g.setColor(K.HUD_TEXT_UNSELECTED);
+        g.setColor(K.TEXT_COLOR_UNSELECTED);
         g.draw(innerHole);
 
         BrushShape selectedShape = shapes.get(selectedIdx);

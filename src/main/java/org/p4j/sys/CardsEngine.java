@@ -76,7 +76,7 @@ public class CardsEngine {
             cardY = my - K.CARD_HEIGHT - K.MOUSE_OFFSET_Y;
         }
 
-        g2d.setColor(K.BG_COLOR);
+        g2d.setColor(K.MENU_BACKGROUND_COLOR);
         g2d.fillRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
                           K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
         g2d.setColor(K.HIGHLIGHT_COLOR);
@@ -91,7 +91,7 @@ public class CardsEngine {
         g2d.drawString(header, cardX + K.CARD_PADDING, lineY);
 
         g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.PLAIN, K.HUD_FONT_SIZE));
-        g2d.setColor(K.SUBTEXT_COLOR);
+        g2d.setColor(K.TEXT_COLOR);
         lineY += K.CARD_LINEHEIGHT;
         g2d.drawString("Temp: " + format(
                 card.liveTemp()), cardX + K.CARD_PADDING, lineY);

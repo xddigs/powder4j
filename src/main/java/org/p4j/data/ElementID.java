@@ -6,7 +6,7 @@ package org.p4j.data;
  * Compounds, organic materials, and mixtures must be crafted or generated via reactions.
  */
 public enum ElementID {
-    EMPTY((byte) 0, "Air", "N2+O2", 0xFF0B0E14, false, 0, false, false, false, false, false, 0, 20.0f, Float.MAX_VALUE, Float.MAX_VALUE, 1.00f, 0.02f, null, null),
+    EMPTY((byte) 0, "Air", "N2+O2", 0xFF25273B, false, 0, false, false, false, false, false, 0, 20.0f, Float.MAX_VALUE, Float.MAX_VALUE, 1.00f, 0.02f, null, null),
     HYDROGEN((byte) 1, "Hydrogen", "H2", 0x88E0F2FE, true, -3, true, false, false, false, false, 0, 20.0f, -259.1f, -252.8f, 14.30f, 0.18f, null, null),
     CARBON_DIOXIDE((byte) 2, "Carbon Dioxide", "CO2", 0xAA7F8C8D, false, -1, false, false, false, false, false, 0, 20.0f, -78.5f, Float.MAX_VALUE, 0.84f, 0.015f, null, null),
     SODIUM((byte) 3, "Sodium", "Na", 0xFFD1D5DB, true, 3, false, true, false, false, false, 0, 20.0f, 97.8f, 883.0f, 1.23f, 0.80f, "LAVA", null),

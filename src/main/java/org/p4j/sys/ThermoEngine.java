@@ -16,11 +16,6 @@ public class ThermoEngine {
 
     public ThermoEngine() {}
 
-    public ThermoEngine(float ambientTemp, float simulationSpeed) {
-        this.ambientTemp = ambientTemp;
-        this.simulationSpeed = simulationSpeed;
-    }
-
     public void update(byte[] elements, float[] temps, float[] nextTemps,
                        int width, int height, PhaseChangeCallback callback) {
         int totalCells = width * height;

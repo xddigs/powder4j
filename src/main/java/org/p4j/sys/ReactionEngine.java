@@ -43,8 +43,6 @@ public class ReactionEngine {
     private boolean reactSand(int x, int y, int idx) {
         byte[] grid = world.getGrid();
         boolean[] updated = world.getUpdated();
-        int width = world.getWidth();
-        int height = world.getHeight();
 
         for (int dy = -1; dy <= 1; dy++) {
             for (int dx = -1; dx <= 1; dx++) {
@@ -957,12 +955,6 @@ public class ReactionEngine {
         }
 
         return null;
-    }
-
-    public void heat(int x, int y, float tempAmount) {
-        if (!world.isInBounds(x, y)) return;
-        int idx = world.getIndex(x, y);
-        world.addTemperature(idx, tempAmount);
     }
 
     public void absorb(int startX, int startY, int radius, int maxWater) {
