@@ -828,7 +828,7 @@ public class ReactionEngine {
                     ElementID e = ElementID.fromId(grid[idx]);
                     int nIdx = world.getIndex(nx, ny);
 
-                    if (e == ElementID.HYDROGEN && neighbor == ElementID.EMPTY) {
+                    if (e == ElementID.OXYGEN && neighbor == ElementID.HYDROGEN) {
                         if (Math.random() < K.WATER_CREATION_CHANCE) {
                             grid[idx] = ElementID.WATER.getId();
                             grid[nIdx] = ElementID.WATER.getId();
@@ -836,13 +836,6 @@ public class ReactionEngine {
                             updated[nIdx] = true;
                             return true;
                         }
-                    }
-
-                    if (e == ElementID.OXYGEN && neighbor == ElementID.HYDROGEN) {
-                        grid[idx] = ElementID.WATER.getId();
-                        grid[nIdx] = ElementID.WATER.getId();
-                        updated[idx] = true;
-                        return true;
                     }
 
                     if (e == ElementID.HYDROGEN && neighbor == ElementID.CHLORINE) {
