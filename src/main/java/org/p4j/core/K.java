@@ -70,7 +70,6 @@ public final class K {
     public static final double WOOD_IGNITION_CHANCE = 0.02;
     public static final double FIRE_IGNITION_CHANCE = 0.03;
     public static final double WATER_CREATION_CHANCE = 0.25;
-    public static final double STEAM_CONDENSE_CHANCE = 0.1;
     public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
     public static final double GROW_TREE_CHANCE = 0.005;
@@ -111,8 +110,8 @@ public final class K {
     public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
     public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
 
-    public static final float HEAT_ADD_FIRE = 25.0f;
-    public static final float HEAT_ADD_LAVA = 40.0f;
+    public static final float HEAT_ADD_FIRE = 100.0f;
+    public static final float HEAT_ADD_LAVA = 400.0f;
 
     public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;

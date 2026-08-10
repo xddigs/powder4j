@@ -12,7 +12,7 @@ public enum ElementID {
     SODIUM((byte) 3, "Sodium", "Na", 0xFFD1D5DB, true, 3, false, true, false, false, State.SOLID, true, 0, 20.0f, 97.8f, 883.0f, 1.23f, 0.80f),
     CHLORINE((byte) 4, "Chlorine", "Cl2", 0xFF88FF00, true, 1, false, false, false, false, State.LIQUID, false, 4, 20.0f, -101.5f, -34.0f, 0.48f, 0.01f),
     MERCURY((byte) 5, "Mercury", "Hg", 0xFFCFD8DC, false, 5, false, false, false, false, State.LIQUID, false, 1, 20.0f, -38.8f, 356.7f, 0.14f, 0.25f),
-    WATER((byte) 6, "Water", "H2O", 0xFF4FA6ED, false, 2, false, false, true, false, State.LIQUID, false, 5, 20.0f, Float.NEGATIVE_INFINITY, 100.0f, 4.18f, 0.60f),
+    WATER((byte) 6, "Water", "H2O", 0xFF4FA6ED, false, 2, false, false, true, false, State.LIQUID, false, 5, 20.0f, 0.0f, 100.0f, 4.18f, 0.60f),
     ICE((byte) 7, "Ice", "H2O(s)", 0xFFA5F2F3, false, 4, false, true, false, false, State.SOLID, false, 0, -10.0f, 0.0f, Float.MAX_VALUE, 2.09f, 0.70f),
     STEAM((byte) 8, "Steam", "H2O(g)", 0xCCFFFFFF, false, -1, false, false, false, false, State.GAS, false, 0, 120.0f, Float.MAX_VALUE, Float.MAX_VALUE, 2.01f, 0.03f),
     CARBON_MONOXIDE((byte) 9, "Carbon Monoxide", "CO", 0x88555555, false, -2, true, false, false, false, State.GAS, false, 0, 20.0f, -205.0f, -191.5f, 1.04f, 0.02f),

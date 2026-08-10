@@ -86,18 +86,18 @@ public class ThermoEngine {
             float temp = nextTemps[i];
 
             boolean canBoil = temp >= elem.getBoilingPoint() +
-                            K.LATENT_HEAT_ACTIVATION_DELTA;
+                    K.LATENT_HEAT_ACTIVATION_DELTA;
 
             boolean canMelt = temp >= elem.getMeltingPoint() +
-                            K.LATENT_HEAT_ACTIVATION_DELTA;
+                    K.LATENT_HEAT_ACTIVATION_DELTA;
 
-            if (canBoil) {
+            if (elem.isLiquid() && canBoil) {
                 float postBoilTemp = Math.max(
                         elem.getBoilingPoint(),
                         temp - K.BOIL_LATENT_HEAT_CONSUMPTION
                 );
                 callback.onPhaseChange(i, postBoilTemp);
-            } else if (canMelt) {
+            } else if (elem.isSolid() && canMelt) {
                 float postMeltTemp = Math.max(
                         elem.getMeltingPoint(),
                         temp - K.MELT_LATENT_HEAT_CONSUMPTION
