@@ -151,6 +151,7 @@ public final class K {
     public static final int CARD_WIDTH = 180;
     public static final int CARD_HEIGHT = 90;
     public static final int CARD_PADDING = 8;
+    public static final int CARD_WIDTH_DIVISOR = 5;
     public static final int CARD_LINEHEIGHT = 20;
     public static final int CARD_OFFSET = 12;
     public static final int MOUSE_OFFSET_X = 20;

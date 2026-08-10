@@ -55,6 +55,8 @@ public class CardsEngine {
 
         float liveTemp = world.getTemperatureAt(lastGridX, lastGridY);
         ElementCard card = createCard(elem, liveTemp);
+        String header = card.name() + " (" + card.symbol() + ")";
+        FontMetrics fm = g2d.getFontMetrics();
 
         int px = lastGridX * K.DEFAULT_SCALE;
         int py = lastGridY * K.DEFAULT_SCALE;
@@ -76,18 +78,19 @@ public class CardsEngine {
             cardY = my - K.CARD_HEIGHT - K.MOUSE_OFFSET_Y;
         }
 
+        int cardWidth = K.CARD_WIDTH + fm.stringWidth(header) / K.CARD_WIDTH_DIVISOR;
+
         g2d.setColor(K.MENU_BACKGROUND_COLOR);
-        g2d.fillRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
+        g2d.fillRoundRect(cardX, cardY, cardWidth, K.CARD_HEIGHT,
                           K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
         g2d.setColor(K.HIGHLIGHT_COLOR);
-        g2d.drawRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
+        g2d.drawRoundRect(cardX, cardY, cardWidth, K.CARD_HEIGHT,
                           K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
         g2d.setFont(K.FONT_TINY);
         g2d.setColor(K.TEXT_COLOR);
         int lineY = cardY + K.CARD_PADDING + K.CARD_OFFSET;
 
-        String header = card.name() + " (" + card.symbol() + ")";
         g2d.drawString(header, cardX + K.CARD_PADDING, lineY);
 
         g2d.setFont(K.FONT_TINY);
