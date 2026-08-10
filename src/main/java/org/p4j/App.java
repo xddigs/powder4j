@@ -64,6 +64,7 @@ public class App extends JFrame {
         render.addMouseWheelListener(mouseController);
         render.addKeyListener(keyController);
         render.setFocusTraversalKeysEnabled(false);
+        render.requestFocusInWindow();
         addKeyListener(keyController);
         addComponentListener(new ComponentAdapter() {
             public void componentMoved(ComponentEvent e) {

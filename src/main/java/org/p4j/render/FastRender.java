@@ -1,15 +1,15 @@
 package org.p4j.render;
 
 import org.p4j.core.K;
-import org.p4j.data.BrushType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.p4j.core.World;
 import org.p4j.data.BrushShape;
+import org.p4j.data.BrushType;
 import org.p4j.data.ElementID;
 import org.p4j.input.Brush;
 import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
@@ -167,6 +167,7 @@ public class FastRender extends Canvas {
             }
         }
 
+        info(g2d, brush.getElement());
         world.getCards().render(g2d,
                 mouseController,
                 getWidth(),
@@ -174,6 +175,35 @@ public class FastRender extends Canvas {
 
         g.dispose();
         bs.show();
+    }
+
+    private void info(Graphics2D g2, ElementID element) {
+        if (element == null) return;
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        g2.setFont(K.FONT_SMALL);
+        FontMetrics fm = g2.getFontMetrics();
+
+        String elementInfo = element.getName() + " (" + element.getSymbol() + ")";
+
+        int textWidth = fm.stringWidth(elementInfo);
+        int iconSize = K.HUD_INFO_ICON_SIZE;
+        int spacing = 8;
+        int paddingRight = K.HUD_INFO_WIDTH_OFFSET;
+        int totalHUDWidth = iconSize + spacing + textWidth;
+        int iconX = getWidth() - paddingRight - totalHUDWidth;
+        int textX = iconX + iconSize + spacing;
+        int textY = getHeight() - K.HUD_SLIDER_Y_PADDING;
+        int iconY = textY - (fm.getAscent() / 2) - (iconSize / 2);
+
+        g2.setColor(new Color(element.getColorArgb()));
+        g2.fillOval(iconX, iconY, iconSize, iconSize);
+        g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+        g2.setColor(K.TEXT_COLOR);
+        g2.drawOval(iconX, iconY, iconSize, iconSize);
+        g2.drawString(elementInfo, textX, textY);
     }
 
     private void wheel(Graphics2D g, KeyboardController keyController,

@@ -129,11 +129,13 @@ public final class K {
     public static final float CONDUCTIVITY_AVG_FACTOR = 0.5f;
     public static final float MAX_DELTA_RATIO = 0.35f;
 
+    public static final int HUD_INFO_WIDTH_OFFSET = 25;
+    public static final int HUD_INFO_ICON_SIZE = 20;
+
     public static final int HUD_SLIDER_X_PADDING = 25;
     public static final int HUD_SLIDER_Y_PADDING = 50;
     public static final int HUD_SLIDER_WIDTH = 10;
     public static final int HUD_SLIDER_VISIBLE_MS = 2500;
-
     public static final Color HUD_SLIDER_COLOR = TEXT_COLOR;
     public static final String HUD_SLIDER_PLUS_SYMBOL = "+";
     public static final String HUD_SLIDER_MINUS_SYMBOL = "-";
