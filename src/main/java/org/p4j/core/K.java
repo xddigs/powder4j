@@ -12,9 +12,9 @@ public final class K {
 
     public static final String APP_TITLE = "Powder4J ";
     public static final String VERSION = "0.6.0";
-    public static final Font FONT_BIG = Fonts.get(32f, Font.BOLD);
-    public static final Font FONT_SMALL = Fonts.get(18f, Font.BOLD);
-    public static final Font FONT_TINY = Fonts.get(16f, Font.BOLD);
+    public static final Font FONT_BIG = Fonts.get(32f, Font.PLAIN);
+    public static final Font FONT_SMALL = Fonts.get(18f, Font.PLAIN);
+    public static final Font FONT_TINY = Fonts.get(16f, Font.PLAIN);
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;

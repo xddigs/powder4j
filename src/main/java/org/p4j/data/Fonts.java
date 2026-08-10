@@ -13,7 +13,8 @@ public class Fonts {
 
     static {
         Font font;
-        try (InputStream is = Fonts.class.getResourceAsStream("ArimoNerdFont-Bold.ttf")) {
+        try (InputStream is = Fonts.class
+                .getResourceAsStream("/ArimoNerdFont-Bold.ttf")) {
             if (is == null) {
                 throw new IOException("Font not found");
             }

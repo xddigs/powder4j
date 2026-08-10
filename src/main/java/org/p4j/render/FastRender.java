@@ -355,7 +355,7 @@ public class FastRender extends Canvas {
             int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
             int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
 
-            g.setFont(K.FONT_SMALL);
+            g.setFont(K.FONT_BIG);
             g.setColor(K.TEXT_COLOR);
             FontMetrics iconFm = g.getFontMetrics();
             g.drawString(shape.getSymbol(),
@@ -462,7 +462,7 @@ public class FastRender extends Canvas {
             int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
             int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
 
-            g.setFont(K.FONT_SMALL);
+            g.setFont(K.FONT_BIG);
             g.setColor(K.TEXT_COLOR);
             FontMetrics iconFm = g.getFontMetrics();
             g.drawString(type.getSymbol(),
