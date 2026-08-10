@@ -42,8 +42,11 @@ public enum ElementID {
     SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, 0, 20.0f, 1414.0f, Float.MAX_VALUE, 0.71f, 0.85f, "LAVA", null),
     CARBON((byte) 34, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, 0, 20.0f, 3550.0f, Float.MAX_VALUE, 0.71f, 0.60f, "LAVA", null),
     OXYGEN((byte) 35, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, 3, 20.0f, -218.8f, -183.0f, 0.92f, 0.02f, null, null),
-    IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, false, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, null, null),
-    NITROGEN((byte) 37, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null);
+    IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, false, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
+    NITROGEN((byte) 37, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
+    STEEL((byte) 38, "Steel", "Fe+C", 0xFF708090, true, 4, false, true, false, false, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
+    ALUMINUM((byte) 39, "Aluminum", "Al", 0xFFD4D8DD, false, 3, false, false, false, false, false, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
+    COPPER((byte) 40, "Copper", "Cu", 0xFFB87333, true, 4, false, true, false, false, false, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null);
 
     private final byte id;
     private final String name;
