@@ -1,6 +1,7 @@
 package org.p4j.core;
 
 import org.p4j.data.ElementID;
+import org.p4j.sys.CardsEngine;
 import org.p4j.sys.MovementEngine;
 import org.p4j.sys.ReactionEngine;
 import org.p4j.sys.ThermoEngine;
@@ -18,6 +19,7 @@ public class World {
     private static final Logger log = LoggerFactory.getLogger(World.class);
     private final ReactionEngine reaction;
     private final MovementEngine movement;
+    private final CardsEngine cards;
     private final ThermoEngine thermo;
     private final int width;
     private final int height;
@@ -31,6 +33,7 @@ public class World {
         log.debug("Constructing simulation world: {}x{}", width, height);
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
+        this.cards = new CardsEngine(this);
         this.thermo = new ThermoEngine();
         this.width = width;
         this.height = height;
@@ -425,6 +428,14 @@ public class World {
         return grid;
     }
 
+    public ElementID getElementAt(int x, int y) {
+        return ElementID.fromId(grid[getIndex(x, y)]);
+    }
+
+    public float getTemperatureAt(int x, int y) {
+        return temperature[getIndex(x, y)];
+    }
+
     public boolean[] getUpdated() {
         return updated;
     }
@@ -451,5 +462,21 @@ public class World {
 
     public void addTemperature(int idx, float amount) {
         this.temperature[idx] += amount;
+    }
+
+    public ReactionEngine getReaction() {
+        return reaction;
+    }
+
+    public MovementEngine getMovement() {
+        return movement;
+    }
+
+    public CardsEngine getCards() {
+        return cards;
+    }
+
+    public ThermoEngine getThermo() {
+        return thermo;
     }
 }

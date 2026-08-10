@@ -175,6 +175,20 @@ public final class K {
 
     public static final float INERTIA_SENSITIVITY = 0.35f;
 
+    public static final long HOVER_DELAY_MS = 2000L;
+    public static final int CARD_WIDTH = 180;
+    public static final int CARD_HEIGHT = 90;
+    public static final int CARD_PADDING = 8;
+    public static final int CARD_LINEHEIGHT = 20;
+    public static final int CARD_OFFSET = 12;
+    public static final int MOUSE_OFFSET_X = 12;
+    public static final int MOUSE_OFFSET_Y = 12;
+
+    public static final Color HIGHLIGHT_COLOR = new Color(255, 230, 0, 200);
+    public static final Color BG_COLOR = new Color(20, 24, 32, 220);
+    public static final Color TEXT_COLOR = Color.WHITE;
+    public static final Color SUBTEXT_COLOR = new Color(180, 190, 200);
+
     public static final double FIRE_SMOKE_GRAY_THRESHOLD = 0.66;
     public static final double FIRE_NEAR_FUEL_PAUSE_CHANCE = 0.7;
 

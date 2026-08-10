@@ -52,7 +52,6 @@ public class FastRender extends Canvas {
         this.canvasImage = new BufferedImage(
                 simWidth, simHeight,
                 BufferedImage.TYPE_INT_ARGB);
-
         this.pixelBuffer = ((DataBufferInt)
                 canvasImage.getRaster()
                         .getDataBuffer()).getData();
@@ -76,6 +75,7 @@ public class FastRender extends Canvas {
         }
 
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+        Graphics2D g2d = (Graphics2D) g.create();
         g.drawImage(canvasImage, 0, 0, getWidth(), getHeight(), null);
 
         if (keyController.wasTabPressed()) {
@@ -142,7 +142,6 @@ public class FastRender extends Canvas {
                     shockwaveRadius >= maxShockwaveRadius) {
                 shockwaveActive = false;
             } else {
-                Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -162,6 +161,11 @@ public class FastRender extends Canvas {
                 g2d.dispose();
             }
         }
+
+        world.getCards().render(g2d,
+                mouseController,
+                getWidth(),
+                getHeight());
 
         g.dispose();
         bs.show();
