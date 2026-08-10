@@ -450,12 +450,9 @@ public class FastRender extends Canvas {
         double v = (Math.sin(x * K.MERCURY_COLOR_WAVE_FREQUENCY + y *
                 K.MERCURY_COLOR_WAVE_FREQUENCY) + 1) * K.MERCURY_COLOR_SHIFT_MULTIPLIER;
 
-        if (element == ElementID.MERCURY) {
-            int shift = (int) v;
-            return adjustBrightness(baseColor, shift);
-        }
-
-        if (element == ElementID.IRON) {
+        if (element == ElementID.MERCURY ||
+            element == ElementID.IRON ||
+            element == ElementID.STEEL) {
             int shift = (int) v;
             return adjustBrightness(baseColor, shift);
         }

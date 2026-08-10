@@ -90,18 +90,19 @@ public class CardsEngine {
         String header = card.name() + " (" + card.symbol() + ")";
         g2d.drawString(header, cardX + K.CARD_PADDING, lineY);
 
+        g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.PLAIN, K.HUD_FONT_SIZE));
         g2d.setColor(K.SUBTEXT_COLOR);
         lineY += K.CARD_LINEHEIGHT;
         g2d.drawString("Temp: " + format(
                 card.liveTemp()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString("Def. Temp: " + format(
-                card.defaultTemp()), cardX + K.CARD_PADDING, lineY);
+        g2d.drawString("Boiling Point: " + format(
+                card.boilingPoint()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString("Boil Temp: " + format(
-                card.boilingPoint()), cardX + K.CARD_PADDING, lineY);
+        g2d.drawString("Melting Point: " + format(
+                card.meltingPoint()), cardX + K.CARD_PADDING, lineY);
     }
 
     private void resetHover() {
@@ -114,7 +115,7 @@ public class CardsEngine {
     private String format(float temp) {
         if (temp >= Float.MAX_VALUE ||
             Float.isInfinite(temp)) {
-            return "N/A";
+            return K.NANINF;
         }
         if (Math.abs(temp) >= 1_000_000f) {
             return String.format("%.2e°C", temp);
@@ -130,7 +131,8 @@ public class CardsEngine {
                 e.getSymbol(),
                 liveTemp,
                 e.getDefaultTemp(),
-                e.getBoilingPoint()
+                e.getBoilingPoint(),
+                e.getMeltingPoint()
         );
     }
 }
