@@ -81,25 +81,30 @@ public class ThermoEngine {
         }
 
         for (int i = 0; i < totalCells; i++) {
-            ElementID elem = ElementID.fromId(elements[i]);
-            if (elem == ElementID.EMPTY) continue;
+            ElementID e = ElementID.fromId(elements[i]);
+            if (e == ElementID.EMPTY) continue;
             float temp = nextTemps[i];
 
-            boolean canBoil = temp >= elem.getBoilingPoint() +
-                    K.LATENT_HEAT_ACTIVATION_DELTA;
+            boolean canBoil = temp >= e.getBoilingPoint() + K.LATENT_HEAT_ACTIVATION_DELTA;
+            boolean canMelt = temp >= e.getMeltingPoint() + K.LATENT_HEAT_ACTIVATION_DELTA;
 
-            boolean canMelt = temp >= elem.getMeltingPoint() +
-                    K.LATENT_HEAT_ACTIVATION_DELTA;
-
-            if (elem.isLiquid() && canBoil) {
+            if (e.isLiquid() && canBoil) {
+                ElementID ne = e.getBoilsInto();
+                if (ne != ElementID.EMPTY) {
+                    elements[i] = ne.getId();
+                }
                 float postBoilTemp = Math.max(
-                        elem.getBoilingPoint(),
+                        e.getBoilingPoint(),
                         temp - K.BOIL_LATENT_HEAT_CONSUMPTION
                 );
                 callback.onPhaseChange(i, postBoilTemp);
-            } else if (elem.isSolid() && canMelt) {
+            } else if (e.isSolid() && canMelt) {
+                ElementID ne = e.getMeltsInto();
+                if (ne != ElementID.EMPTY) {
+                    elements[i] = ne.getId();
+                }
                 float postMeltTemp = Math.max(
-                        elem.getMeltingPoint(),
+                        e.getMeltingPoint(),
                         temp - K.MELT_LATENT_HEAT_CONSUMPTION
                 );
                 callback.onPhaseChange(i, postMeltTemp);
