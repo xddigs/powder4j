@@ -5,6 +5,8 @@ import org.p4j.core.World;
 import org.p4j.data.BrushShape;
 import org.p4j.data.BrushType;
 import org.p4j.data.ElementID;
+import org.p4j.render.FastRender;
+import org.p4j.sys.Screenshot;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class KeyboardController extends KeyAdapter {
     private final Brush brush;
     private final World world;
+    private final FastRender render;
     private final List<ElementID> selectableElements;
     private final List<BrushShape> selectableShapes;
     private final List<BrushType> selectableTypes;
@@ -33,9 +36,10 @@ public class KeyboardController extends KeyAdapter {
     private int selectedTypeIndex = 0;
     private long lastEscapeTime = 0;
 
-    public KeyboardController(Brush brush, World world) {
+    public KeyboardController(Brush brush, World world, FastRender render) {
         this.brush = brush;
         this.world = world;
+        this.render = render;
         this.selectableElements = Arrays.stream(ElementID.values())
                 .filter(ElementID::isSelectable)
                 .collect(Collectors.toList());
@@ -86,6 +90,11 @@ public class KeyboardController extends KeyAdapter {
 
         if (e.getKeyCode() == KeyEvent.VK_T) {
             world.getHeatMap().toggleMode();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_F12) {
+            Screenshot.save(render.getPixelBuffer(),
+                    world.getWidth(), world.getHeight());
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {

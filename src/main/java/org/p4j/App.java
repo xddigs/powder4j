@@ -47,7 +47,7 @@ public class App extends JFrame {
         this.world = new World(simulationWidth, simulationHeight);
         this.render = new FastRender(simulationWidth, simulationHeight, scale);
 
-        this.keyController = new KeyboardController(brush, world);
+        this.keyController = new KeyboardController(brush, world, render);
         this.mouseController = new MouseController(
                 world, brush, keyController, scale);
         this.loop = new SimulationLoop(world, render, palette,

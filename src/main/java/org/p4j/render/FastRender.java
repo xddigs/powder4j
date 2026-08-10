@@ -11,7 +11,6 @@ import org.p4j.input.MouseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
@@ -648,5 +647,9 @@ public class FastRender extends Canvas {
         return (a << K.COLOR_ALPHA_SHIFT) |
                 (r << K.COLOR_RED_SHIFT) |
                 (g << K.COLOR_GREEN_SHIFT) | b;
+    }
+
+    public int[] getPixelBuffer() {
+        return pixelBuffer;
     }
 }
