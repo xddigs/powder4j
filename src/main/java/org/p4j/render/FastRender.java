@@ -105,8 +105,7 @@ public class FastRender extends Canvas {
 
         if (!K.IS_RUNNING) {
             g.setColor(K.PAUSE_TEXT_COLOR);
-            g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD,
-                    K.PAUSE_FONT_SIZE));
+            g.setFont(K.FONT_BIG);
             FontMetrics fm = g.getFontMetrics();
             String pause = K.PAUSE_TEXT;
             int textX = getWidth() / 2 - fm.stringWidth(pause) / 2;
@@ -257,7 +256,7 @@ public class FastRender extends Canvas {
 
         if (selectedSliceArea != null) {
             g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(Color.WHITE);
+            g.setColor(K.TEXT_COLOR);
             g.draw(selectedSliceArea);
         }
 
@@ -270,12 +269,12 @@ public class FastRender extends Canvas {
         ElementID selectedElement = elements.get(selectedIdx);
         String elementName = selectedElement.getName();
         elementName += " (" + selectedElement.getSymbol() + ")";
-        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
+        g.setFont(K.FONT_SMALL);
         FontMetrics fm = g.getFontMetrics();
         int textX = centerX - fm.stringWidth(elementName) / 2;
         int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
 
-        g.setColor(Color.WHITE);
+        g.setColor(K.TEXT_COLOR);
         g.drawString(elementName, textX, textY);
     }
 
@@ -356,8 +355,8 @@ public class FastRender extends Canvas {
             int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
             int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
 
-            g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.SHAPER_ICON_FONT_SIZE));
-            g.setColor(Color.WHITE);
+            g.setFont(K.FONT_SMALL);
+            g.setColor(K.TEXT_COLOR);
             FontMetrics iconFm = g.getFontMetrics();
             g.drawString(shape.getSymbol(),
                     iconX - iconFm.stringWidth(shape.getSymbol()) / 2,
@@ -366,7 +365,7 @@ public class FastRender extends Canvas {
 
         if (selectedSliceArea != null) {
             g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(Color.WHITE);
+            g.setColor(K.TEXT_COLOR);
             g.draw(selectedSliceArea);
         }
 
@@ -378,12 +377,12 @@ public class FastRender extends Canvas {
 
         BrushShape selectedShape = shapes.get(selectedIdx);
         String shapeText = selectedShape.getName();
-        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
+        g.setFont(K.FONT_SMALL);
         FontMetrics fm = g.getFontMetrics();
         int textX = centerX - fm.stringWidth(shapeText) / 2;
         int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
 
-        g.setColor(Color.WHITE);
+        g.setColor(K.TEXT_COLOR);
         g.drawString(shapeText, textX, textY);
     }
 
@@ -454,7 +453,6 @@ public class FastRender extends Canvas {
             }
 
             g.fill(sliceArea);
-
             g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
             g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
             g.draw(sliceArea);
@@ -464,8 +462,8 @@ public class FastRender extends Canvas {
             int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
             int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
 
-            g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.SHAPER_ICON_FONT_SIZE));
-            g.setColor(Color.WHITE);
+            g.setFont(K.FONT_SMALL);
+            g.setColor(K.TEXT_COLOR);
             FontMetrics iconFm = g.getFontMetrics();
             g.drawString(type.getSymbol(),
                     iconX - iconFm.stringWidth(type.getSymbol()) / 2,
@@ -474,7 +472,7 @@ public class FastRender extends Canvas {
 
         if (selectedSliceArea != null) {
             g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(Color.WHITE);
+            g.setColor(K.TEXT_COLOR);
             g.draw(selectedSliceArea);
         }
 
@@ -486,12 +484,12 @@ public class FastRender extends Canvas {
 
         BrushType selectedType = types.get(selectedIdx);
         String typeText = selectedType.getName();
-        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
+        g.setFont(K.FONT_SMALL);
         FontMetrics fm = g.getFontMetrics();
         int textX = centerX - fm.stringWidth(typeText) / 2;
         int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
 
-        g.setColor(Color.WHITE);
+        g.setColor(K.TEXT_COLOR);
         g.drawString(typeText, textX, textY);
     }
 
@@ -539,8 +537,7 @@ public class FastRender extends Canvas {
                 K.HUD_SLIDER_CORNER_RADIUS,
                 K.HUD_SLIDER_CORNER_RADIUS);
 
-        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD,
-                K.HUD_SLIDER_LABEL_FONT_SIZE));
+        g.setFont(K.FONT_SMALL);
         FontMetrics fm = g.getFontMetrics();
 
         String plus = K.HUD_SLIDER_PLUS_SYMBOL;

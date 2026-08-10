@@ -83,15 +83,15 @@ public class CardsEngine {
         g2d.drawRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
                           K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
-        g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
+        g2d.setFont(K.FONT_TINY);
         g2d.setColor(K.TEXT_COLOR);
         int lineY = cardY + K.CARD_PADDING + K.CARD_OFFSET;
 
         String header = card.name() + " (" + card.symbol() + ")";
         g2d.drawString(header, cardX + K.CARD_PADDING, lineY);
 
-        g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.PLAIN, K.HUD_FONT_SIZE));
-        g2d.setColor(K.TEXT_COLOR);
+        g2d.setFont(K.FONT_TINY);
+        g2d.setColor(K.TEXT_COLOR_UNSELECTED);
         lineY += K.CARD_LINEHEIGHT;
         g2d.drawString("T: " + format(
                 card.liveTemp()), cardX + K.CARD_PADDING, lineY);

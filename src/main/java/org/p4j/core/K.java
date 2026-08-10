@@ -1,6 +1,8 @@
 package org.p4j.core;
 
-import java.awt.Color;
+import org.p4j.data.Fonts;
+
+import java.awt.*;
 
 /**
  * Repository for constant values actively used throughout the application.
@@ -10,6 +12,9 @@ public final class K {
 
     public static final String APP_TITLE = "Powder4J ";
     public static final String VERSION = "0.6.0";
+    public static final Font FONT_BIG = Fonts.get(32f, Font.BOLD);
+    public static final Font FONT_SMALL = Fonts.get(18f, Font.BOLD);
+    public static final Font FONT_TINY = Fonts.get(16f, Font.BOLD);
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
@@ -41,15 +46,11 @@ public final class K {
 
     public static final double HUD_FULL_CIRCLE = 360.0;
     public static final double HUD_START_OFFSET_DEG = -90.0;
-
-    public static final String HUD_FONT_FAMILY = "Arial";
-    public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
 
     public static final String NANINF = "naninf";
     public static final String PAUSE_TEXT = "PAUSED";
     public static final Color PAUSE_TEXT_COLOR = TEXT_COLOR;
-    public static final int PAUSE_FONT_SIZE = 32;
 
     public static final Color MENU_BACKGROUND_COLOR = UI_BACKGROUND_COLOR;
 
@@ -151,8 +152,6 @@ public final class K {
     public static final int CARD_OFFSET = 12;
     public static final int MOUSE_OFFSET_X = 20;
     public static final int MOUSE_OFFSET_Y = 20;
-
-    public static final int SHAPER_ICON_FONT_SIZE = 22;
     public static final int SHAPER_ICON_Y_OFFSET = 2;
 
     public static final double FIRE_SMOKE_GRAY_THRESHOLD = 0.66;
@@ -181,7 +180,6 @@ public final class K {
     public static final float HUD_SLIDER_MIN_OPACITY = 0.0f;
     public static final float HUD_SLIDER_MAX_OPACITY = 1.0f;
     public static final int HUD_SLIDER_CORNER_RADIUS = 5;
-    public static final int HUD_SLIDER_LABEL_FONT_SIZE = 20;
     public static final int HUD_SLIDER_TRACK_ALPHA = 60;
 
     public static final double MERCURY_COLOR_WAVE_FREQUENCY = 0.5;
