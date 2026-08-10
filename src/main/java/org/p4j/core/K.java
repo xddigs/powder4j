@@ -131,11 +131,26 @@ public final class K {
     public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
     public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
 
-    public static final float HEAT_ADD_FIRE = 15.0f;
-    public static final float HEAT_ADD_LAVA = 25.0f;
+    public static final float HEAT_ADD_FIRE = 25.0f;
+    public static final float HEAT_ADD_LAVA = 40.0f;
     public static final float IRON_HEAT_CONDUCTIVITY = 0.75f;
     public static final float AMBIENT_TEMPERATURE = 20.0f;
     public static final float COOLING_RATE = 0.12f;
+
+    public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
+    public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
+    public static final float DEFAULT_SIMULATION_SPEED = 0.18f;
+
+    public static final float LATENT_HEAT_ACTIVATION_DELTA = 1.2f;
+    public static final float BOIL_LATENT_HEAT_CONSUMPTION = 8.0f;
+    public static final float MELT_LATENT_HEAT_CONSUMPTION = 2.0f;
+
+    public static final float BOUNDS_CONDUCTIVITY_FACTOR = 0.02f;
+    public static final float EMPTY_CONDUCTIVITY_FACTOR = 0.01f;
+
+    public static final float MIN_TEMP_DIFF = 0.01f;
+    public static final float CONDUCTIVITY_AVG_FACTOR = 0.5f;
+    public static final float MAX_DELTA_RATIO = 0.35f;
 
     public static final float IRON_REACTION_THRESHOLD = 80.0f;
     public static final float WATER_BOILING_TEMP = 100.0f;
