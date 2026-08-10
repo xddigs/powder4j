@@ -737,12 +737,17 @@ public class ReactionEngine {
     }
 
     private boolean reactGas(int x, int y, int idx) {
+        if (!world.isInBounds(x, y + 1)) {
+            return false;
+        }
+
         byte[] grid = world.getGrid();
         float[] velocity = world.getVelocity();
         boolean[] updated = world.getUpdated();
         int nIdx = world.getIndex(x, y + 1);
         ElementID e = ElementID.fromId(grid[idx]);
-        ElementID neighbor = ElementID.fromId(grid[world.getIndex(x, y + 1)]);
+        ElementID neighbor = ElementID.fromId(grid[nIdx]);
+        float temp = world.getTemperatureAt(x, y);
 
         if (Math.random() < K.SMOKE_DISSIPATION_CHANCE) {
             grid[idx] = ElementID.EMPTY.getId();
@@ -758,19 +763,26 @@ public class ReactionEngine {
             return true;
         }
 
-        if (neighbor == ElementID.FIRE ||
-                neighbor == ElementID.LAVA ||
-                neighbor.isHot() ||
-                neighbor == ElementID.HYDROGEN) {
-            ExplosionSystem.createExplosion(world, x, y,
-                    K.CHLORINE_EXPLOSION_RADIUS);
+        if (e == ElementID.HYDROGEN && neighbor == ElementID.CHLORINE) {
+            grid[idx] = ElementID.ACID.getId();
+            grid[nIdx] = ElementID.ACID.getId();
+            velocity[idx] = 0;
+            velocity[nIdx] = 0;
+            updated[idx] = true;
+            updated[nIdx] = true;
             return true;
         }
 
-        if (neighbor == ElementID.WATER) {
-            grid[idx] = ElementID.ACID.getId();
-            updated[idx] = true;
-            return true;
+        if (e == ElementID.CHLORINE && neighbor.isHot()) {
+            if (temp > e.getBoilingPoint()) {
+                ExplosionSystem.createExplosion(world, x, y,
+                        K.CHLORINE_EXPLOSION_RADIUS);
+                grid[idx] = ElementID.EMPTY.getId();
+                grid[nIdx] = ElementID.EMPTY.getId();
+                velocity[idx] = 0;
+                velocity[nIdx] = 0;
+                updated[idx] = true;
+            }
         }
         return false;
     }
