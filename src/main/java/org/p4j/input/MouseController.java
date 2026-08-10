@@ -8,12 +8,7 @@ import org.p4j.data.ElementID;
 
 import java.awt.event.*;
 
-/**
- * Facilitates user interaction with the simulation through mouse input.
- * This controller translates mouse gestures and clicks into world
- * modifications, enabling the placement or removal of elements.
- */
-public class MouseController extends MouseAdapter implements 
+public class MouseController extends MouseAdapter implements
         MouseMotionListener, MouseWheelListener {
     private static final Logger log = LoggerFactory.getLogger(MouseController.class);
     private final KeyboardController keyboardController;
@@ -23,14 +18,16 @@ public class MouseController extends MouseAdapter implements
 
     private boolean isPressed;
     private boolean isRightClick;
-    
+
     private int lastGridX = -1;
     private int lastGridY = -1;
 
     private int mouseX;
     private int mouseY;
 
-    public MouseController(World world, Brush brush, KeyboardController keyboardController, int scale) {
+    public MouseController(World world, Brush brush,
+                           KeyboardController keyboardController,
+                           int scale) {
         this.world = world;
         this.brush = brush;
         this.keyboardController = keyboardController;
@@ -120,14 +117,53 @@ public class MouseController extends MouseAdapter implements
     private void paint(int centerX, int centerY) {
         ElementID targetType = isRightClick ? ElementID.EMPTY : brush.getElement();
         int r = brush.getRadius();
+
         for (int dy = -r; dy <= r; dy++) {
             for (int dx = -r; dx <= r; dx++) {
                 if (brush.contains(dx, dy)) {
-                    world.setCell(centerX + dx, centerY + dy, targetType);
+                    int targetX = centerX + dx;
+                    int targetY = centerY + dy;
+
+                    if (world.isInBounds(targetX, targetY)) {
+                        ElementID currentElement = world.getElementAt(targetX, targetY);
+                        ElementID resultElement = getResultingElement(targetType, currentElement);
+
+                        if (resultElement != null && resultElement != currentElement) {
+                            world.setCell(targetX, targetY, resultElement);
+                        }
+                    }
                 }
             }
         }
     }
+
+    private ElementID getResultingElement(ElementID brushElement,
+                                          ElementID currentElement) {
+        if (isRightClick) {
+            return ElementID.EMPTY;
+        }
+
+        if (currentElement == ElementID.EMPTY) {
+            return brushElement;
+        }
+
+        ElementID reactionProduct = world.getReaction()
+                .produce(brushElement, currentElement);
+        if (reactionProduct != null) {
+            return reactionProduct;
+        }
+
+        if (brushElement.isSolid() && !currentElement.isSolid()) {
+            return brushElement;
+        }
+
+        if (brushElement.isLiquid() && currentElement.isGas()) {
+            return brushElement;
+        }
+
+        return currentElement;
+    }
+
     @Override
     public void mouseMoved(MouseEvent e) {
         mouseX = e.getX();

@@ -45,7 +45,7 @@ public enum ElementID {
     IRON((byte) 36, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, false, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
     NITROGEN((byte) 37, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
     STEEL((byte) 38, "Steel", "Fe+C", 0xFF708090, true, 4, false, true, false, false, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
-    ALUMINUM((byte) 39, "Aluminum", "Al", 0xFFD4D8DD, false, 3, false, false, false, false, false, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
+    ALUMINUM((byte) 39, "Aluminum", "Al", 0xFFD4D8DD, true, 3, false, false, false, false, false, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
     COPPER((byte) 40, "Copper", "Cu", 0xFFB87333, true, 4, false, true, false, false, false, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null),
     COPPER_OXIDIZED((byte) 41, "Oxidized Copper", "Cu2O", 0xFF43B3AE, false, 4, false, false, false, false, false, 0, 20.0f, 1235.0f, Float.MAX_VALUE, 0.51f, 0.20f, "LAVA", null);
 

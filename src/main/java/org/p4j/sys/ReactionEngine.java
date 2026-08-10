@@ -22,7 +22,8 @@ public class ReactionEngine {
             case HYDROGEN, OXYGEN -> reactHydrogen(x, y, idx);
             case SAND -> reactSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
-            case SILICON, DIRT, SEED, SALT, SODIUM, MUD -> reactPowder(x, y, idx, type);
+            case SILICON, DIRT, SEED, SALT, SODIUM, MUD, ASH -> reactPowder(x, y, idx, type);
+            case COPPER -> reactCopper(x, y, idx);
             case TNT -> reactTNT(x, y, idx);
             case LAVA -> reactLava(x, y, idx);
             case STEAM -> reactSteam(x, y, idx);
@@ -261,6 +262,32 @@ public class ReactionEngine {
                             updated[nIdx] = true;
                             return true;
                         }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean reactCopper(int x, int y, int idx) {
+        byte[] grid = world.getGrid();
+        boolean[] updated = world.getUpdated();
+        int width = world.getWidth();
+        int height = world.getHeight();
+
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                    int nIdx = ny * width + nx;
+                    ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    if (neighbor == ElementID.OXYGEN) {
+                        grid[nIdx] = ElementID.COPPER_OXIDIZED.getId();
+                        updated[idx] = true;
+                        return true;
                     }
                 }
             }
@@ -918,6 +945,25 @@ public class ReactionEngine {
                 }
             }
         }
+    }
+
+    public ElementID produce(ElementID elementA, ElementID elementB) {
+        if ((elementA == ElementID.OXYGEN && elementB == ElementID.COPPER) ||
+                (elementA == ElementID.COPPER && elementB == ElementID.OXYGEN)) {
+            return ElementID.COPPER_OXIDIZED;
+        }
+
+        if ((elementA == ElementID.HYDROGEN && elementB == ElementID.CHLORINE) ||
+        (elementA == ElementID.CHLORINE && elementB == ElementID.HYDROGEN)) {
+            return ElementID.ACID;
+        }
+
+        if ((elementA == ElementID.ACID && elementB == ElementID.STEEL) ||
+                (elementA == ElementID.STEEL && elementB == ElementID.ACID)) {
+            return ElementID.ASH;
+        }
+
+        return null;
     }
 
     public void heat(int x, int y, float tempAmount) {
