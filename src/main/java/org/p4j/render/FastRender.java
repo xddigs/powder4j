@@ -213,10 +213,7 @@ public class FastRender extends Canvas {
 
         g2.setColor(new Color(element.getColorArgb()));
         g2.fillOval(iconX, iconY, iconSize, iconSize);
-
-        g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
         g2.setColor(K.TEXT_COLOR);
-        g2.drawOval(iconX, iconY, iconSize, iconSize);
         g2.drawString(elementInfo, textX, textY);
     }
 
@@ -562,9 +559,7 @@ public class FastRender extends Canvas {
         int sliderX = K.HUD_SLIDER_X_PADDING;
         int sliderY = K.HUD_SLIDER_Y_PADDING;
 
-        g.setColor(new Color(K.COLOR_CHANNEL_MAX, K.COLOR_CHANNEL_MAX,
-                K.COLOR_CHANNEL_MAX, K.HUD_SLIDER_TRACK_ALPHA));
-
+        g.setColor(K.UI_BACKGROUND_COLOR);
         g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight,
                 K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
