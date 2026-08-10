@@ -200,11 +200,22 @@ public class ReactionEngine {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
+                    float currentTemp = world.getTemperatureAt(x, y);
 
                     if (e == ElementID.OIL && neighbor == ElementID.STEAM) {
                         if (Math.random() < K.GASOLINE_CREATION_CHANCE) {
                             grid[idx] = ElementID.GASOLINE.getId();
                             grid[nIdx] = ElementID.CARBON_MONOXIDE.getId();
+                            updated[idx] = true;
+                            updated[nIdx] = true;
+                            return true;
+                        }
+                    }
+
+                    if (e.isWater()) {
+                        if (currentTemp < e.getDefaultTemp()) {
+                            grid[idx] = ElementID.ICE.getId();
+                            grid[nIdx] = ElementID.ICE.getId();
                             updated[idx] = true;
                             updated[nIdx] = true;
                             return true;
