@@ -227,8 +227,4 @@ public class MouseController extends MouseAdapter implements
     public int getMouseY() {
         return mouseY;
     }
-
-    public boolean isLeftPressed() {
-        return isPressed;
-    }
 }
