@@ -1,15 +1,16 @@
 package org.p4j.input;
 
 import org.p4j.core.K;
+import org.p4j.core.World;
 import org.p4j.data.BrushShape;
 import org.p4j.data.BrushType;
 import org.p4j.data.ElementID;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /*
  * Handles keyboard input events for the simulation.
@@ -18,6 +19,7 @@ import java.awt.event.KeyEvent;
  */
 public class KeyboardController extends KeyAdapter {
     private final Brush brush;
+    private final World world;
     private final List<ElementID> selectableElements;
     private final List<BrushShape> selectableShapes;
     private final List<BrushType> selectableTypes;
@@ -31,8 +33,9 @@ public class KeyboardController extends KeyAdapter {
     private int selectedTypeIndex = 0;
     private long lastEscapeTime = 0;
 
-    public KeyboardController(Brush brush) {
+    public KeyboardController(Brush brush, World world) {
         this.brush = brush;
+        this.world = world;
         this.selectableElements = Arrays.stream(ElementID.values())
                 .filter(ElementID::isSelectable)
                 .collect(Collectors.toList());
@@ -79,6 +82,10 @@ public class KeyboardController extends KeyAdapter {
 
         if (e.getKeyCode() == KeyEvent.VK_V) {
             wasVPressed ^= true;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_T) {
+            world.getHeatMap().toggleMode();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {

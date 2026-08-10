@@ -1,6 +1,7 @@
 package org.p4j.core;
 
 import org.p4j.data.ElementID;
+import org.p4j.render.HeatMap;
 import org.p4j.sys.CardsEngine;
 import org.p4j.sys.MovementEngine;
 import org.p4j.sys.ReactionEngine;
@@ -20,6 +21,7 @@ public class World {
     private final ReactionEngine reaction;
     private final MovementEngine movement;
     private final CardsEngine cards;
+    private final HeatMap heatmap;
     private final ThermoEngine thermo;
     private final int width;
     private final int height;
@@ -35,6 +37,7 @@ public class World {
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
         this.cards = new CardsEngine(this);
+        this.heatmap = new HeatMap(this);
         this.thermo = new ThermoEngine();
         this.width = width;
         this.height = height;
@@ -85,12 +88,6 @@ public class World {
                 movement.update(x, y, idx, currentType);
             }
         }
-    }
-
-    public boolean canDisplace(byte upperId, byte lowerId) {
-        if (lowerId == ElementID.STONE.getId()) return false;
-        return ElementID.fromId(upperId).getDensity() >
-                ElementID.fromId(lowerId).getDensity();
     }
 
     public void swap(int i, int j) {
@@ -312,6 +309,12 @@ public class World {
         }
     }
 
+    public boolean canDisplace(byte upperId, byte lowerId) {
+        if (lowerId == ElementID.STONE.getId()) return false;
+        return ElementID.fromId(upperId).getDensity() >
+                ElementID.fromId(lowerId).getDensity();
+    }
+
     public void applyInertia(float forceX, float forceY) {
         int stepsX = Math.round(forceX * K.INERTIA_SENSITIVITY);
         int stepsY = Math.round(forceY * K.INERTIA_SENSITIVITY);
@@ -474,5 +477,9 @@ public class World {
 
     public ThermoEngine getThermo() {
         return thermo;
+    }
+
+    public HeatMap getHeatMap() {
+        return heatmap;
     }
 }

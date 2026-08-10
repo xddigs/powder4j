@@ -11,6 +11,7 @@ import org.p4j.input.MouseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
@@ -59,12 +60,24 @@ public class FastRender extends Canvas {
                         .getDataBuffer()).getData();
     }
 
-    public void updatePixels(byte[] grid, int width) {
-        int length = Math.min(grid.length, pixelBuffer.length);
-        for (int i = 0; i < length; i++) {
-            int x = i % width;
-            int y = i / width;
-            pixelBuffer[i] = getParticleColor(x, y, ElementID.fromId(grid[i]));
+    public void updatePixels(World world) {
+        byte[] grid = world.getGrid();
+        int width = world.getWidth();
+        int height = world.getHeight();
+        HeatMap heatmap = world.getHeatMap();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int idx = world.getIndex(x, y);
+                byte elemId = grid[idx];
+                float temp = world.getTemperature(idx);
+                int heatColor = heatmap.getColorForPixel(elemId, temp);
+                if (heatColor != -1) {
+                    pixelBuffer[idx] = heatColor;
+                } else {
+                    pixelBuffer[idx] = getParticleColor(x, y, ElementID.fromId(elemId));
+                }
+            }
         }
     }
 

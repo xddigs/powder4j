@@ -118,6 +118,9 @@ public final class K {
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
     public static final float DEFAULT_SIMULATION_SPEED = 0.18f;
 
+    public static final float MIN_COLD_TEMP = -200.0f;
+    public static final float MAX_HOT_TEMP  = 1500.0f;
+
     public static final float LATENT_HEAT_ACTIVATION_DELTA = 1.2f;
     public static final float BOIL_LATENT_HEAT_CONSUMPTION = 8.0f;
     public static final float MELT_LATENT_HEAT_CONSUMPTION = 2.0f;
