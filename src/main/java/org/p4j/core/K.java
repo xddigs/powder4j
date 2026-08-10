@@ -17,8 +17,8 @@ public final class K {
     public static final Color GAME_BACKGROUND_COLOR = new Color(24, 24, 37);
     public static final Color TEXT_COLOR = new Color(202, 211, 245);
     public static final Color TEXT_COLOR_UNSELECTED = new Color(150, 160, 200);
-    public static final Color UI_BACKGROUND_COLOR = new Color(110, 115, 141);
-    public static final Color UI_BACKGROUND_BORDER_COLOR = new Color(110, 115, 141, 100);
+    public static final Color UI_BACKGROUND_COLOR = new Color(78, 84, 114);
+    public static final Color UI_BACKGROUND_BORDER_COLOR = TEXT_COLOR;
     public static final Color HIGHLIGHT_COLOR = new Color(60, 120, 210, 200);
 
     public static boolean IS_RUNNING = true;
