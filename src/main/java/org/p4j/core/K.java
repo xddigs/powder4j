@@ -49,6 +49,7 @@ public final class K {
     public static final int HUD_FONT_SIZE = 16;
     public static final int HUD_TEXT_Y_OFFSET = 20;
 
+    public static final String NANINF = "naninf";
     public static final String PAUSE_TEXT = "PAUSED";
     public static final Color PAUSE_TEXT_COLOR = Color.WHITE;
     public static final int PAUSE_FONT_SIZE = 32;

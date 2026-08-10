@@ -7,5 +7,6 @@ public record ElementCard(
         String symbol,
         float liveTemp,
         float defaultTemp,
-        float boilingPoint
+        float boilingPoint,
+        float meltingPoint
 ) {}
