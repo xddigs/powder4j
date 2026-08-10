@@ -1,23 +1,18 @@
 package org.p4j.sys;
 
+import org.p4j.core.K;
 import org.p4j.data.ElementID;
 
-/**
- * Engine responsible for thermodynamic simulation:
- * - Conductive heat transfer between neighboring cells.
- * - Ambient thermal exchange.
- * - Evaluation and triggering of phase changes (melting and boiling).
- */
 public class ThermoEngine {
 
     @FunctionalInterface
     public interface PhaseChangeCallback {
-        void onPhaseChange(int index, ElementID newElement, float currentTemp);
+        void onPhaseChange(int idx, ElementID newElem, float currentTemp);
     }
 
-    private float ambientTemp = 20.0f;
-    private final float ambientLossRate = 0.0005f;
-    private float simulationSpeed = 0.2f;
+    private float ambientTemp = K.DEFAULT_AMBIENT_TEMP;
+    private final float ambientLossRate = K.DEFAULT_AMBIENT_LOSS_RATE;
+    private float simulationSpeed = K.DEFAULT_SIMULATION_SPEED;
 
     public ThermoEngine() {}
 
@@ -42,21 +37,50 @@ public class ThermoEngine {
                 }
 
                 float currentTemp = temps[index];
-                float heatFlow = 0.0f;
 
-                heatFlow += computeFlow(currentElem, currentTemp,
-                        elements, temps, x + 1, y, width, height);
-                heatFlow += computeFlow(currentElem, currentTemp,
-                        elements, temps, x - 1, y, width, height);
-                heatFlow += computeFlow(currentElem, currentTemp,
-                        elements, temps, x, y + 1, width, height);
-                heatFlow += computeFlow(currentElem, currentTemp,
-                        elements, temps, x, y - 1, width, height);
+                if (currentElem == ElementID.FIRE) {
+                    currentTemp = Math.max(
+                            currentTemp + K.HEAT_ADD_FIRE,
+                            currentElem.getDefaultTemp()
+                    );
+                    temps[index] = currentTemp;
+                } else if (currentElem == ElementID.LAVA) {
+                    currentTemp = Math.max(
+                            currentTemp + K.HEAT_ADD_LAVA,
+                            currentElem.getDefaultTemp()
+                    );
+                    temps[index] = currentTemp;
+                }
 
-                float deltaTemp = (heatFlow * simulationSpeed) / currentElem.getHeatCapacity();
-                float newTemp = currentTemp + deltaTemp;
+                float totalDeltaTemp = 0.0f;
 
-                newTemp += (ambientTemp - newTemp) * ambientLossRate;
+                totalDeltaTemp += computeDeltaTemp(
+                        currentElem, currentTemp, elements, temps,
+                        x + 1, y, width, height
+                );
+                totalDeltaTemp += computeDeltaTemp(
+                        currentElem, currentTemp, elements, temps,
+                        x - 1, y, width, height
+                );
+                totalDeltaTemp += computeDeltaTemp(
+                        currentElem, currentTemp, elements, temps,
+                        x, y + 1, width, height
+                );
+                totalDeltaTemp += computeDeltaTemp(
+                        currentElem, currentTemp, elements, temps,
+                        x, y - 1, width, height
+                );
+
+                float newTemp = currentTemp +
+                        (totalDeltaTemp * simulationSpeed);
+
+                if (currentElem == ElementID.FIRE ||
+                        currentElem == ElementID.LAVA) {
+                    newTemp = Math.max(newTemp, currentElem.getDefaultTemp());
+                } else {
+                    newTemp += (ambientTemp - newTemp) * ambientLossRate;
+                }
+
                 nextTemps[index] = newTemp;
             }
         }
@@ -66,35 +90,71 @@ public class ThermoEngine {
             if (elem == ElementID.EMPTY) continue;
             float temp = nextTemps[i];
 
-            if (temp >= elem.getBoilingPoint() && elem.getBoilInto() != null) {
-                callback.onPhaseChange(i, elem.getBoilInto(), temp);
-            } else if (temp >= elem.getMeltingPoint() && elem.getMeltTo() != null) {
-                callback.onPhaseChange(i, elem.getMeltTo(), temp);
+            boolean canBoil = elem.getBoilInto() != null &&
+                    temp >= elem.getBoilingPoint() +
+                            K.LATENT_HEAT_ACTIVATION_DELTA;
+
+            boolean canMelt = elem.getMeltTo() != null &&
+                    temp >= elem.getMeltingPoint() +
+                            K.LATENT_HEAT_ACTIVATION_DELTA;
+
+            if (canBoil) {
+                float postBoilTemp = Math.max(
+                        elem.getBoilingPoint(),
+                        temp - K.BOIL_LATENT_HEAT_CONSUMPTION
+                );
+                callback.onPhaseChange(i, elem.getBoilInto(), postBoilTemp);
+            } else if (canMelt) {
+                float postMeltTemp = Math.max(
+                        elem.getMeltingPoint(),
+                        temp - K.MELT_LATENT_HEAT_CONSUMPTION
+                );
+                callback.onPhaseChange(i, elem.getMeltTo(), postMeltTemp);
             }
         }
     }
 
-    private float computeFlow(ElementID sourceElem, float sourceTemp,
-                              byte[] elements, float[] temps,
-                              int nx, int ny, int width, int height) {
+    private float computeDeltaTemp(ElementID sourceElem, float sourceTemp,
+                                   byte[] elements, float[] temps,
+                                   int nx, int ny, int width, int height) {
         if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
-            float k = sourceElem.getConductivity() * 0.05f;
-            return k * (ambientTemp - sourceTemp);
+            float k = sourceElem.getConductivity() *
+                    K.BOUNDS_CONDUCTIVITY_FACTOR;
+            return (ambientTemp - sourceTemp) * k;
         }
 
         int nIndex = nx + ny * width;
         ElementID targetElem = ElementID.fromId(elements[nIndex]);
 
         if (targetElem == ElementID.EMPTY) {
-            float k = sourceElem.getConductivity() * 0.02f;
-            return k * (ambientTemp - sourceTemp);
+            float k = sourceElem.getConductivity() *
+                    K.EMPTY_CONDUCTIVITY_FACTOR;
+            return (ambientTemp - sourceTemp) * k;
         }
 
         float targetTemp = temps[nIndex];
-        float avgConductivity = (sourceElem.getConductivity() +
-                targetElem.getConductivity()) * 0.5f;
+        float tempDiff = targetTemp - sourceTemp;
 
-        return avgConductivity * (targetTemp - sourceTemp);
+        if (Math.abs(tempDiff) < K.MIN_TEMP_DIFF) {
+            return 0.0f;
+        }
+
+        float avgConductivity = (sourceElem.getConductivity() +
+                targetElem.getConductivity()) *
+                K.CONDUCTIVITY_AVG_FACTOR;
+
+        float capacityRatio = targetElem.getHeatCapacity() /
+                (sourceElem.getHeatCapacity() +
+                        targetElem.getHeatCapacity());
+
+        float rawDelta = tempDiff * avgConductivity * capacityRatio;
+        float maxAllowedDelta = tempDiff * K.MAX_DELTA_RATIO;
+
+        if (tempDiff > 0) {
+            return Math.min(rawDelta, maxAllowedDelta);
+        } else {
+            return Math.max(rawDelta, maxAllowedDelta);
+        }
     }
 
     public float getAmbientTemp() {

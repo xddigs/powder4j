@@ -39,8 +39,8 @@ public class World {
         this.nextTemperature = new float[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
-        Arrays.fill(temperature, 20.0f);
-        Arrays.fill(nextTemperature, 20.0f);
+        Arrays.fill(temperature, K.DEFAULT_AMBIENT_TEMP);
+        Arrays.fill(nextTemperature, K.DEFAULT_AMBIENT_TEMP);
     }
 
     public void update() {
@@ -49,9 +49,11 @@ public class World {
 
         thermo.update(grid, temperature, nextTemperature, width, height,
                 (idx, newElement, newTemp) -> {
-            grid[idx] = newElement.getId();
-            updated[idx] = true;
-        });
+                    grid[idx] = newElement.getId();
+                    temperature[idx] = newTemp;
+                    nextTemperature[idx] = newTemp;
+                    updated[idx] = true;
+                });
 
         float[] tempSwap = temperature;
         temperature = nextTemperature;
