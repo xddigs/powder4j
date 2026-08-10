@@ -83,7 +83,7 @@ public final class K {
     public static final double WOOD_BURN_CHANCE = 0.05;
     public static final double FIRE_IGNITION_CHANCE = 0.03;
     public static final double TNT_CRAFTING_CHANCE = 0.1;
-    public static final double WATER_CREATION_CHANCE = 0.005;
+    public static final double WATER_CREATION_CHANCE = 0.0005;
     public static final double LAVA_FLOW_SKIP_CHANCE = 0.65;
     public static final double STEAM_CONDENSE_CHANCE = 0.1;
     public static final double GLASS_FUSION_CHANCE = 0.05;
