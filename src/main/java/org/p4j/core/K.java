@@ -64,12 +64,12 @@ public final class K {
 
     public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
-    public static final double HYDROGEN_DISSIPATION_CHANCE = 0.15;
+    public static final double HYDROGEN_DISSIPATION_CHANCE = 0.08;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
     public static final double FIRE_IGNITION_CHANCE = 0.03;
-    public static final double WATER_CREATION_CHANCE = 0.5;
+    public static final double WATER_CREATION_CHANCE = 0.25;
     public static final double STEAM_CONDENSE_CHANCE = 0.1;
     public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
@@ -82,7 +82,7 @@ public final class K {
     public static final double LAVA_CREATION_CHANCE = 0.001;
     public static final double CEMENT_CREATION_CHANCE = 0.15;
     public static final double METHANE_CREATION_CHANCE = 0.1;
-    public static final double GAS_TRAIL_CHANCE = 0.15;
+    public static final double GAS_TRAIL_CHANCE = 0.04;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
     public static final int TREE_WATER_ABSORB_MAX = 12;
@@ -118,7 +118,6 @@ public final class K {
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
     public static final float DEFAULT_SIMULATION_SPEED = 0.18f;
 
-    public static final float MIN_COLD_TEMP = -200.0f;
     public static final float MAX_HOT_TEMP  = 1500.0f;
 
     public static final float LATENT_HEAT_ACTIVATION_DELTA = 1.2f;
@@ -149,7 +148,7 @@ public final class K {
 
     public static final float INERTIA_SENSITIVITY = 0.35f;
 
-    public static final long HOVER_DELAY_MS = 2000L;
+    public static final long HOVER_DELAY_MS = 1000L;
     public static final int CARD_WIDTH = 180;
     public static final int CARD_HEIGHT = 90;
     public static final int CARD_PADDING = 8;
@@ -185,7 +184,6 @@ public final class K {
     public static final float HUD_SLIDER_MIN_OPACITY = 0.0f;
     public static final float HUD_SLIDER_MAX_OPACITY = 1.0f;
     public static final int HUD_SLIDER_CORNER_RADIUS = 5;
-    public static final int HUD_SLIDER_TRACK_ALPHA = 60;
 
     public static final double MERCURY_COLOR_WAVE_FREQUENCY = 0.5;
     public static final int MERCURY_COLOR_SHIFT_MULTIPLIER = 15;

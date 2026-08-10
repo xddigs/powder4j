@@ -54,11 +54,9 @@ public class World {
         if (!K.IS_RUNNING) return;
 
         thermo.update(grid, temperature, nextTemperature, width, height,
-                (idx, newElement, newTemp) -> {
-                    grid[idx] = newElement.getId();
+                (idx, newTemp) -> {
                     temperature[idx] = newTemp;
                     nextTemperature[idx] = newTemp;
-                    updated[idx] = true;
                 });
 
         float[] tempSwap = temperature;
@@ -110,6 +108,7 @@ public class World {
 
     public boolean flow(int x, int y, int idx, int dir, int maxDistance, byte currentId) {
         int bestX = x;
+
         for (int i = 1; i <= maxDistance; i++) {
             int nextX = x + (dir * i);
             if (nextX < 0 || nextX >= width) break;
@@ -131,40 +130,6 @@ public class World {
             swap(idx, y * width + bestX);
             return true;
         }
-        return false;
-    }
-
-    public boolean soak(int waterX, int waterY, int waterIdx) {
-        int maxDepth = K.MUD_MAX_DEPTH;
-        int[] xOffsets = {0, -1, 1};
-
-        for (int dx : xOffsets) {
-            int checkX = waterX + dx;
-            if (checkX < 0 || checkX >= width) continue;
-
-            for (int dy = 1; dy <= maxDepth; dy++) {
-                int checkY = waterY + dy;
-                if (checkY >= height) break;
-
-                int targetIdx = checkY * width + checkX;
-                ElementID element = ElementID.fromId(grid[targetIdx]);
-
-                if (element == ElementID.DIRT) {
-                    grid[waterIdx] = ElementID.EMPTY.getId();
-                    velocity[waterIdx] = 0;
-                    updated[waterIdx] = true;
-
-                    grid[targetIdx] = ElementID.MUD.getId();
-                    updated[targetIdx] = true;
-                    return true;
-                }
-
-                if (element != ElementID.MUD) {
-                    break;
-                }
-            }
-        }
-
         return false;
     }
 
@@ -302,9 +267,22 @@ public class World {
     }
 
     public boolean canDisplace(byte upperId, byte lowerId) {
-        if (lowerId == ElementID.STONE.getId()) return false;
-        return ElementID.fromId(upperId).getDensity() >
-                ElementID.fromId(lowerId).getDensity();
+        if (lowerId == ElementID.EMPTY.getId()) {
+            return true;
+        }
+
+        ElementID upper = ElementID.fromId(upperId);
+        ElementID lower = ElementID.fromId(lowerId);
+
+        if (lower.isBlock() || lower.isSolid()) {
+            return false;
+        }
+
+        if (lower.isGas() || lower.isLiquid() || lower.isPowder()) {
+            return upper.getDensity() > lower.getDensity();
+        }
+
+        return false;
     }
 
     public void applyInertia(float forceX, float forceY) {
@@ -331,18 +309,12 @@ public class World {
                 for (int x = 0; x < width; x++) {
                     int idx = y * width + x;
                     byte typeId = grid[idx];
-
-                    if (typeId == ElementID.EMPTY.getId() ||
-                        typeId == ElementID.STONE.getId() ||
-                        typeId == ElementID.IRON.getId()) {
-                        continue;
-                    }
-
+                    ElementID e = ElementID.fromId(typeId);
+                    if (e.isBlock() || e == ElementID.EMPTY) continue;
                     int currentY = y;
                     for (int s = 0; s < absStepsY; s++) {
                         int targetY = currentY + (moveUp ? -1 : 1);
                         if (targetY < 0 || targetY >= height) break;
-
                         int targetIdx = targetY * width + x;
                         if (grid[targetIdx] == ElementID.EMPTY.getId() ||
                                 canDisplace(grid[idx], grid[targetIdx])) {
@@ -368,18 +340,12 @@ public class World {
                 for (int x = startX; x != endX; x += dirX) {
                     int idx = y * width + x;
                     byte typeId = grid[idx];
-
-                    if (typeId == ElementID.EMPTY.getId() ||
-                        typeId == ElementID.STONE.getId() ||
-                        typeId == ElementID.IRON.getId()) {
-                        continue;
-                    }
-
+                    ElementID e = ElementID.fromId(typeId);
+                    if (e.isBlock() || e == ElementID.EMPTY) continue;
                     int currentX = x;
                     for (int s = 0; s < absStepsX; s++) {
                         int targetX = currentX + (moveLeft ? -1 : 1);
                         if (targetX < 0 || targetX >= width) break;
-
                         int targetIdx = y * width + targetX;
                         if (grid[targetIdx] == ElementID.EMPTY.getId() ||
                                 canDisplace(grid[idx], grid[targetIdx])) {

@@ -13,24 +13,22 @@ public class MovementEngine {
         this.world = world;
     }
 
-    public boolean update(int x, int y, int idx, ElementID type) {
-        if (type == ElementID.EMPTY ||
-            type == ElementID.STONE ||
-            type == ElementID.IRON) {
+    public boolean update(int x, int y, int idx, ElementID e) {
+        if (e.isBlock() || e == ElementID.EMPTY) {
             world.setVelocity(idx, 0.0f);
             return false;
         }
 
-        if (type.isPowder() || type == ElementID.SAND) {
-            return updatePowder(x, y, idx, type);
+        if (e.isPowder() || e == ElementID.SAND) {
+            return updatePowder(x, y, idx, e);
         }
 
-        if (type.isLiquid() || type == ElementID.LAVA) {
-            return updateLiquid(x, y, idx, type);
+        if (e.isLiquid() || e == ElementID.LAVA) {
+            return updateLiquid(x, y, idx, e);
         }
 
-        if (type.isGas() || type == ElementID.FIRE) {
-            return updateGas(x, y, idx, type);
+        if (e.isGas() || e == ElementID.FIRE) {
+            return updateGas(x, y, idx, e);
         }
 
         return false;
@@ -192,13 +190,7 @@ public class MovementEngine {
         byte[] grid = world.getGrid();
 
         if (grid[trailIdx] == ElementID.EMPTY.getId()) {
-            if (gasType == ElementID.METHANE) {
-                grid[trailIdx] = ElementID.CARBON.getId();
-            } else if (gasType == ElementID.STEAM) {
-                grid[trailIdx] = ElementID.CARBON_MONOXIDE.getId();
-            } else if (gasType == ElementID.CHLORINE) {
-                grid[trailIdx] = ElementID.ACID.getId();
-            }
+            grid[trailIdx] = ElementID.EMPTY.getId();
             world.getUpdated()[trailIdx] = true;
         }
     }

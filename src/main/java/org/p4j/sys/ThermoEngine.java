@@ -7,7 +7,7 @@ public class ThermoEngine {
 
     @FunctionalInterface
     public interface PhaseChangeCallback {
-        void onPhaseChange(int idx, ElementID newElem, float currentTemp);
+        void onPhaseChange(int idx, float currentTemp);
     }
 
     private float ambientTemp = K.DEFAULT_AMBIENT_TEMP;
@@ -85,12 +85,10 @@ public class ThermoEngine {
             if (elem == ElementID.EMPTY) continue;
             float temp = nextTemps[i];
 
-            boolean canBoil = elem.getBoilInto() != null &&
-                    temp >= elem.getBoilingPoint() +
+            boolean canBoil = temp >= elem.getBoilingPoint() +
                             K.LATENT_HEAT_ACTIVATION_DELTA;
 
-            boolean canMelt = elem.getMeltTo() != null &&
-                    temp >= elem.getMeltingPoint() +
+            boolean canMelt = temp >= elem.getMeltingPoint() +
                             K.LATENT_HEAT_ACTIVATION_DELTA;
 
             if (canBoil) {
@@ -98,13 +96,13 @@ public class ThermoEngine {
                         elem.getBoilingPoint(),
                         temp - K.BOIL_LATENT_HEAT_CONSUMPTION
                 );
-                callback.onPhaseChange(i, elem.getBoilInto(), postBoilTemp);
+                callback.onPhaseChange(i, postBoilTemp);
             } else if (canMelt) {
                 float postMeltTemp = Math.max(
                         elem.getMeltingPoint(),
                         temp - K.MELT_LATENT_HEAT_CONSUMPTION
                 );
-                callback.onPhaseChange(i, elem.getMeltTo(), postMeltTemp);
+                callback.onPhaseChange(i, postMeltTemp);
             }
         }
     }
