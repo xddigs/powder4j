@@ -63,6 +63,13 @@ public class ReactionEngine {
                         }
                     }
 
+                    if (neighbor == ElementID.GUNPOWDER) {
+                        grid[idx] = ElementID.TNT.getId();
+                        grid[nIdx] = ElementID.TNT.getId();
+                        updated[idx] = true;
+                        updated[nIdx] = true;
+                    }
+
                     if (neighbor.isWater()) {
                         grid[idx] = ElementID.WET_SAND.getId();
                         grid[nIdx] = ElementID.EMPTY.getId();
@@ -953,7 +960,6 @@ public class ReactionEngine {
                 (elementA == ElementID.STEEL && elementB == ElementID.ACID)) {
             return ElementID.ASH;
         }
-
         return null;
     }
 
