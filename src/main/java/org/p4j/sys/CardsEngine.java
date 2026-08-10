@@ -59,11 +59,9 @@ public class CardsEngine {
         int px = lastGridX * K.DEFAULT_SCALE;
         int py = lastGridY * K.DEFAULT_SCALE;
         g2d.setColor(K.HIGHLIGHT_COLOR);
-        g2d.drawRoundRect(px - 1, py - 1,
+        g2d.drawRect(px - 1, py - 1,
                 K.DEFAULT_SCALE + 1,
-                K.DEFAULT_SCALE + 1,
-                K.HUD_SLIDER_CORNER_RADIUS,
-                K.HUD_SLIDER_CORNER_RADIUS);
+                K.DEFAULT_SCALE + 1);
 
         int mx = mouseController.getMouseX();
         int my = mouseController.getMouseY();
@@ -79,9 +77,11 @@ public class CardsEngine {
         }
 
         g2d.setColor(K.BG_COLOR);
-        g2d.fillRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT);
+        g2d.fillRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
+                          K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
         g2d.setColor(K.HIGHLIGHT_COLOR);
-        g2d.drawRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT);
+        g2d.drawRoundRect(cardX, cardY, K.CARD_WIDTH, K.CARD_HEIGHT,
+                          K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
 
         g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
         g2d.setColor(K.TEXT_COLOR);
@@ -92,17 +92,16 @@ public class CardsEngine {
 
         g2d.setColor(K.SUBTEXT_COLOR);
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString(String.format("Temp: %.1f°C", card.liveTemp()),
-                cardX + K.CARD_PADDING, lineY);
+        g2d.drawString("Temp: " + format(
+                card.liveTemp()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString(String.format("Def Temp: %.1f°C", card.defaultTemp()),
-                cardX + K.CARD_PADDING, lineY);
+        g2d.drawString("Def. Temp: " + format(
+                card.defaultTemp()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        String boilStr = card.boilingPoint() > 0 ?
-                String.format("Boil: %.1f°C", card.boilingPoint()) : "Boil: N/A";
-        g2d.drawString(boilStr, cardX + K.CARD_PADDING, lineY);
+        g2d.drawString("Boil Temp: " + format(
+                card.boilingPoint()), cardX + K.CARD_PADDING, lineY);
     }
 
     private void resetHover() {
@@ -110,6 +109,17 @@ public class CardsEngine {
         lastGridY = -1;
         hoverStartTime = 0L;
         isHoveringValidPixel = false;
+    }
+
+    private String format(float temp) {
+        if (temp >= Float.MAX_VALUE ||
+            Float.isInfinite(temp)) {
+            return "N/A";
+        }
+        if (Math.abs(temp) >= 1_000_000f) {
+            return String.format("%.2e°C", temp);
+        }
+        return String.format("%.1f°C", temp);
     }
 
     private ElementCard createCard(ElementID e, float liveTemp) {

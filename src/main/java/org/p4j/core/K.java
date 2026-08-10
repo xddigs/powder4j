@@ -181,10 +181,14 @@ public final class K {
     public static final int CARD_PADDING = 8;
     public static final int CARD_LINEHEIGHT = 20;
     public static final int CARD_OFFSET = 12;
-    public static final int MOUSE_OFFSET_X = 12;
-    public static final int MOUSE_OFFSET_Y = 12;
+    public static final int MOUSE_OFFSET_X = 20;
+    public static final int MOUSE_OFFSET_Y = 20;
 
-    public static final Color HIGHLIGHT_COLOR = new Color(255, 230, 0, 200);
+    public static final Color SHAPER_SELECTED_COLOR = new Color(60, 120, 210, 200);
+    public static final int SHAPER_ICON_FONT_SIZE = 22;
+    public static final int SHAPER_ICON_Y_OFFSET = 2;
+
+    public static final Color HIGHLIGHT_COLOR = SHAPER_SELECTED_COLOR;
     public static final Color BG_COLOR = new Color(20, 24, 32, 220);
     public static final Color TEXT_COLOR = Color.WHITE;
     public static final Color SUBTEXT_COLOR = new Color(180, 190, 200);
@@ -215,10 +219,6 @@ public final class K {
     public static final float HUD_BORDER_STROKE_WIDTH = 1.0f;
     public static final float HUD_SELECTED_STROKE_WIDTH = 2.5f;
     public static final float HUD_CENTER_STROKE_WIDTH = 1.5f;
-
-    public static final Color SHAPER_SELECTED_COLOR = new Color(60, 120, 210, 200);
-    public static final int SHAPER_ICON_FONT_SIZE = 22;
-    public static final int SHAPER_ICON_Y_OFFSET = 2;
 
     public static final long HUD_SLIDER_FADE_DURATION_MS = 500L;
     public static final float HUD_SLIDER_MIN_OPACITY = 0.0f;
