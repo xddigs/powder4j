@@ -109,8 +109,8 @@ public final class K {
     public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
     public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
 
-    public static final float HEAT_ADD_FIRE = 100.0f;
-    public static final float HEAT_ADD_LAVA = 400.0f;
+    public static final float HEAT_ADD_FIRE = 20.0f;
+    public static final float HEAT_ADD_LAVA = 100.0f;
 
     public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
