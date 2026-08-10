@@ -24,6 +24,7 @@ public class KeyboardController extends KeyAdapter {
     private boolean wasTabPressed = false;
     private boolean wasAltPressed = false;
     private boolean wasEPressed = false;
+    private boolean wasVPressed = true;
     private boolean wasShiftPressed = false;
     private int selectedIndex = 0;
     private int selectedShapeIndex = 0;
@@ -76,6 +77,10 @@ public class KeyboardController extends KeyAdapter {
             wasEPressed = true;
         }
 
+        if (e.getKeyCode() == KeyEvent.VK_V) {
+            wasVPressed ^= true;
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             toggleEscape();
         }
@@ -117,6 +122,10 @@ public class KeyboardController extends KeyAdapter {
 
     public boolean wasEPressed() {
         return wasEPressed;
+    }
+
+    public boolean wasVPressed() {
+        return wasVPressed;
     }
 
     public int getSelectedIndex() {

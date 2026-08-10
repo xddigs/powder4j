@@ -167,7 +167,7 @@ public class FastRender extends Canvas {
             }
         }
 
-        info(g2d, brush.getElement());
+        info(g2d, brush.getElement(), keyController);
         world.getCards().render(g2d,
                 mouseController,
                 getWidth(),
@@ -177,11 +177,17 @@ public class FastRender extends Canvas {
         bs.show();
     }
 
-    private void info(Graphics2D g2, ElementID element) {
+    private void info(Graphics2D g2,
+                      ElementID element,
+                      KeyboardController keyController) {
+        if (!keyController.wasVPressed()) return;
         if (element == null) return;
 
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                            RenderingHints.VALUE_STROKE_PURE);
 
         g2.setFont(K.FONT_SMALL);
         FontMetrics fm = g2.getFontMetrics();
@@ -198,8 +204,16 @@ public class FastRender extends Canvas {
         int textY = getHeight() - K.HUD_SLIDER_Y_PADDING;
         int iconY = textY - (fm.getAscent() / 2) - (iconSize / 2);
 
+        int shadowOffset = 2;
+        Color shadowColor = K.GAME_BACKGROUND_COLOR;
+
+        g2.setColor(shadowColor);
+        g2.fillOval(iconX + shadowOffset, iconY + shadowOffset, iconSize, iconSize);
+        g2.drawString(elementInfo, textX + shadowOffset, textY + shadowOffset);
+
         g2.setColor(new Color(element.getColorArgb()));
         g2.fillOval(iconX, iconY, iconSize, iconSize);
+
         g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
         g2.setColor(K.TEXT_COLOR);
         g2.drawOval(iconX, iconY, iconSize, iconSize);
