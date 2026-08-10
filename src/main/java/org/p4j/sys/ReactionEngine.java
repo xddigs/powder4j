@@ -22,7 +22,7 @@ public class ReactionEngine {
             case HYDROGEN, OXYGEN -> reactHydrogen(x, y, idx);
             case SAND -> reactSand(x, y, idx);
             case WATER, OIL, GASOLINE, MERCURY -> reactFluid(x, y, idx, type);
-            case SILICON, DIRT, SEED, SALT, SODIUM, MUD, ASH -> reactPowder(x, y, idx, type);
+            case SILICON, DIRT, SEED, SALT, SODIUM, SULFUR, MUD, ASH -> reactPowder(x, y, idx, type);
             case COPPER -> reactCopper(x, y, idx);
             case TNT -> reactTNT(x, y, idx);
             case LAVA -> reactLava(x, y, idx);
@@ -380,6 +380,13 @@ public class ReactionEngine {
                                 }
                             }
                         }
+                    }
+
+                    if (e == ElementID.SULFUR && neighbor == ElementID.WATER) {
+                        grid[idx] = ElementID.FIRE.getId();
+                        grid[nIdx] = ElementID.FIRE.getId();
+                        updated[idx] = true;
+                        return true;
                     }
 
                     if (e == ElementID.SALT && (neighbor == ElementID.FIRE ||
