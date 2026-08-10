@@ -17,6 +17,7 @@ Powder4J models complex emergent physics through local cell interactions. By app
     - **Toggle Current Element Info (`V`)**: Displays the current material's properties in a HUD.
     - **Toggle HeatMap (`T`)**: Displays a heat map of the current material's density.
     - **Clear Everything (`E`)**: Just a tiny bit more convinient than clearing by hand.
+    - **Take Screnshot (`F12`)**: Saves a screenshot of the current view.
 - **Customizable Brush System**: Real-time radius adjustments with visual fading HUD slider feedback and geometric shape masking.
 - **Fast Buffer Rendering**: Optimized direct pixel buffer strategy ensuring high frame rates even under heavy grid loads.
 
