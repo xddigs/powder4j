@@ -25,8 +25,8 @@ import java.util.List;
  * Using a buffered approach, this class efficiently renders the grid
  * to the screen by mapping element identifiers to their respective colors.
  */
-public class FastRender extends Canvas {
-    private static final Logger log = LoggerFactory.getLogger(FastRender.class);
+public class Render extends Canvas {
+    private static final Logger log = LoggerFactory.getLogger(Render.class);
     private final BufferedImage canvasImage;
     private final int[] pixelBuffer;
     private final int scale;
@@ -38,7 +38,7 @@ public class FastRender extends Canvas {
     private int shockwaveCenterX;
     private int shockwaveCenterY;
 
-    public FastRender(int simWidth, int simHeight, int scale) {
+    public Render(int simWidth, int simHeight, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}",
                 simWidth, simHeight, scale);
         this.scale = scale;

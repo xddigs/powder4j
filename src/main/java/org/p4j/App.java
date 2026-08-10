@@ -9,7 +9,7 @@ import org.p4j.data.ElementID;
 import org.p4j.input.Brush;
 import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
-import org.p4j.render.FastRender;
+import org.p4j.render.Render;
 import org.p4j.render.Palette;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ import java.awt.event.ComponentEvent;
  */
 public class App extends JFrame {
     private static final Logger log = LoggerFactory.getLogger(App.class);
-    private final FastRender render;
+    private final Render render;
     private final Palette palette;
     private final World world;
     private final SimulationLoop loop;
@@ -45,7 +45,7 @@ public class App extends JFrame {
         this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS);
         this.palette = new Palette();
         this.world = new World(simulationWidth, simulationHeight);
-        this.render = new FastRender(simulationWidth, simulationHeight, scale);
+        this.render = new Render(simulationWidth, simulationHeight, scale);
 
         this.keyController = new KeyboardController(brush, world, render);
         this.mouseController = new MouseController(
@@ -57,7 +57,7 @@ public class App extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         render.addMouseListener(mouseController);
         render.addMouseMotionListener(mouseController);
         render.addMouseWheelListener(mouseController);
