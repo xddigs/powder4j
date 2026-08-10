@@ -1,9 +1,9 @@
 package org.p4j.data;
 
 public enum BrushType {
-    BRUSH("Brush", "B"),
-    FILLER("Filler", "F"),
-    ERASER("Eraser", "E");
+    BRUSH("Brush", Character.toString(0xF0CE3)),
+    FILLER("Filler", Character.toString(0xF1416)),
+    ERASER("Eraser", Character.toString(0xF0DFE));
 
     private final String name;
     private final String symbol;
