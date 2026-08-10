@@ -93,15 +93,15 @@ public class CardsEngine {
         g2d.setFont(new Font(K.HUD_FONT_FAMILY, Font.PLAIN, K.HUD_FONT_SIZE));
         g2d.setColor(K.TEXT_COLOR);
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString("Temp: " + format(
+        g2d.drawString("T: " + format(
                 card.liveTemp()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString("Boiling Point: " + format(
+        g2d.drawString("BP: " + format(
                 card.boilingPoint()), cardX + K.CARD_PADDING, lineY);
 
         lineY += K.CARD_LINEHEIGHT;
-        g2d.drawString("Melting Point: " + format(
+        g2d.drawString("MP: " + format(
                 card.meltingPoint()), cardX + K.CARD_PADDING, lineY);
     }
 
