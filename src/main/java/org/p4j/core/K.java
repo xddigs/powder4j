@@ -76,7 +76,6 @@ public final class K {
     public static final double GROW_GRASS_CHANCE = 0.960;
     public static final double WOOD_ABSORPTION_CHANCE = 0.2;
     public static final double GASOLINE_CREATION_CHANCE = 0.15;
-    public static final double ICE_CREATION_CHANCE = 0.2;
     public static final double GRAVEL_CREATION_CHANCE = 0.2;
     public static final double LAVA_CREATION_CHANCE = 0.001;
     public static final double CEMENT_CREATION_CHANCE = 0.15;
