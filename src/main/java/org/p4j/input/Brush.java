@@ -1,6 +1,7 @@
 package org.p4j.input;
 
 import org.p4j.core.K;
+import org.p4j.data.BrushType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.p4j.data.BrushShape;
@@ -14,6 +15,7 @@ import org.p4j.data.ElementID;
 public class Brush {
     private static final Logger log = LoggerFactory.getLogger(Brush.class);
     private ElementID element;
+    private BrushType type;
     private BrushShape shape;
     private int radius;
     private long lastRadiusChangeTime;
@@ -21,6 +23,7 @@ public class Brush {
     public Brush(ElementID defaultElement, int initialRadius) {
         this.element = defaultElement;
         this.shape = BrushShape.CIRCLE;
+        this.type = BrushType.BRUSH;
         this.radius = initialRadius;
         this.lastRadiusChangeTime = 0;
     }
@@ -75,5 +78,14 @@ public class Brush {
                 yield Math.abs(dx) <= maxWidthAtY;
             }
         };
+    }
+
+    public BrushType getType() {
+        return type;
+    }
+
+    public void setType(BrushType type) {
+        log.debug("Brush type changed to: {}", type);
+        this.type = type;
     }
 }

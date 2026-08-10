@@ -2,6 +2,7 @@ package org.p4j.input;
 
 import org.p4j.core.K;
 import org.p4j.data.BrushShape;
+import org.p4j.data.BrushType;
 import org.p4j.data.ElementID;
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +20,14 @@ public class KeyboardController extends KeyAdapter {
     private final Brush brush;
     private final List<ElementID> selectableElements;
     private final List<BrushShape> selectableShapes;
+    private final List<BrushType> selectableTypes;
     private boolean wasTabPressed = false;
     private boolean wasAltPressed = false;
     private boolean wasEPressed = false;
+    private boolean wasShiftPressed = false;
     private int selectedIndex = 0;
     private int selectedShapeIndex = 0;
+    private int selectedTypeIndex = 0;
     private long lastEscapeTime = 0;
 
     public KeyboardController(Brush brush) {
@@ -32,7 +36,7 @@ public class KeyboardController extends KeyAdapter {
                 .filter(ElementID::isSelectable)
                 .collect(Collectors.toList());
         this.selectableShapes = List.of(BrushShape.values());
-
+        this.selectableTypes = List.of(BrushType.values());
         for (int i = 0; i < selectableElements.size(); i++) {
             if (selectableElements.get(i) == brush.getElement()) {
                 this.selectedIndex = i;
@@ -46,6 +50,12 @@ public class KeyboardController extends KeyAdapter {
                 break;
             }
         }
+
+        for (int i = 0; i < selectableTypes.size(); i++) {
+            if (selectableTypes.get(i) == brush.getType()) {
+                this.selectedTypeIndex = i;
+            }
+        }
     }
 
     @Override
@@ -56,6 +66,10 @@ public class KeyboardController extends KeyAdapter {
 
         if (e.getKeyCode() == KeyEvent.VK_ALT) {
             wasAltPressed = true;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+            wasShiftPressed = true;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_E) {
@@ -79,6 +93,11 @@ public class KeyboardController extends KeyAdapter {
             brush.setShape(selectableShapes.get(selectedShapeIndex));
         }
 
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+            wasShiftPressed = false;
+            brush.setType(selectableTypes.get(selectedTypeIndex));
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_E) {
             wasEPressed = false;
         }
@@ -90,6 +109,10 @@ public class KeyboardController extends KeyAdapter {
 
     public boolean wasAltPressed() {
         return wasAltPressed;
+    }
+
+    public boolean wasShiftPressed() {
+        return wasShiftPressed;
     }
 
     public boolean wasEPressed() {
@@ -112,12 +135,24 @@ public class KeyboardController extends KeyAdapter {
         this.selectedShapeIndex = selectedShapeIndex;
     }
 
+    public int getSelectedTypeIndex() {
+        return selectedTypeIndex;
+    }
+
+    public void setSelectedTypeIndex(int selectedTypeIndex) {
+        this.selectedTypeIndex = selectedTypeIndex;
+    }
+
     public List<ElementID> getSelectableElements() {
         return selectableElements;
     }
 
     public List<BrushShape> getSelectableShapes() {
         return selectableShapes;
+    }
+
+    public List<BrushType> getSelectableTypes() {
+        return selectableTypes;
     }
 
     private void toggleEscape() {

@@ -24,6 +24,7 @@ public class World {
     private final int width;
     private final int height;
     private final byte[] grid;
+    private final short[] atoms;
     private final float[] velocity;
     private final boolean[] updated;
     private float[] temperature;
@@ -38,12 +39,14 @@ public class World {
         this.width = width;
         this.height = height;
         this.grid = new byte[width * height];
+        this.atoms = new short[width * height];
         this.temperature = new float[width * height];
         this.nextTemperature = new float[width * height];
         this.updated = new boolean[width * height];
         this.velocity = new float[width * height];
         Arrays.fill(temperature, K.DEFAULT_AMBIENT_TEMP);
         Arrays.fill(nextTemperature, K.DEFAULT_AMBIENT_TEMP);
+        Arrays.fill(this.atoms, (short) -1);
     }
 
     public void update() {
@@ -70,8 +73,8 @@ public class World {
                 int idx = getIndex(x, y);
                 byte id = grid[idx];
 
-                if (id == 0) continue;
                 if (updated[idx]) continue;
+                if (id == 0) continue;
 
                 boolean hasReacted = reaction.process(x, y, idx);
                 if (hasReacted) continue;
@@ -94,6 +97,10 @@ public class World {
         byte tempGrid = grid[i];
         grid[i] = grid[j];
         grid[j] = tempGrid;
+
+        short tempAtom = atoms[i];
+        atoms[i] = atoms[j];
+        atoms[j] = tempAtom;
 
         float tempVel = velocity[i];
         velocity[i] = velocity[j];
@@ -294,27 +301,11 @@ public class World {
         return count;
     }
 
-    public void meltStone(int centerX, int centerY) {
-        int radius = 2;
-        for (int dy = -radius; dy <= radius; dy++) {
-            for (int dx = -radius; dx <= radius; dx++) {
-                int nx = centerX + dx;
-                int ny = centerY + dy;
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                    int nIdx = ny * width + nx;
-                    if (grid[nIdx] == ElementID.STONE.getId()) {
-                        grid[nIdx] = ElementID.LAVA.getId();
-                        updated[nIdx] = true;
-                    }
-                }
-            }
-        }
-    }
-
     public void setCell(int x, int y, ElementID type) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
             int index = y * width + x;
             grid[index] = type.getId();
+            atoms[index] = -1;
             velocity[index] = 0;
             temperature[index] = type.getDefaultTemp();
             nextTemperature[index] = type.getDefaultTemp();
@@ -427,6 +418,11 @@ public class World {
     public byte[] getGrid() {
         return grid;
     }
+
+    public short[] getAtoms() {
+        return atoms;
+    }
+
 
     public ElementID getElementAt(int x, int y) {
         return ElementID.fromId(grid[getIndex(x, y)]);

@@ -58,7 +58,6 @@ public final class K {
 
     public static final float MAX_GAS_SPEED = 3.0f;
     public static final int MAX_FALL_SPEED = 6;
-    public static final int MOUSE_BUTTON_RIGHT = 3;
 
     public static final long ESCAPE_DOUBLE_PRESS_INTERVAL = 500;
 

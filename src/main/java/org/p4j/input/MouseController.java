@@ -1,12 +1,15 @@
 package org.p4j.input;
 
-import org.p4j.core.K;
+import org.p4j.core.World;
+import org.p4j.data.BrushType;
+import org.p4j.data.ElementID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.p4j.core.World;
-import org.p4j.data.ElementID;
 
+import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class MouseController extends MouseAdapter implements
         MouseMotionListener, MouseWheelListener {
@@ -17,8 +20,6 @@ public class MouseController extends MouseAdapter implements
     private final int scale;
 
     private boolean isPressed;
-    private boolean isRightClick;
-
     private int lastGridX = -1;
     private int lastGridY = -1;
 
@@ -36,16 +37,22 @@ public class MouseController extends MouseAdapter implements
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (keyboardController.wasTabPressed()) return;
-        if (keyboardController.wasAltPressed()) return;
+        if (keyboardController.wasTabPressed() ||
+            keyboardController.wasAltPressed() ||
+            keyboardController.wasShiftPressed()) return;
+
         log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
         isPressed = true;
-        isRightClick = (e.getButton() == K.MOUSE_BUTTON_RIGHT);
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
 
-        paintLine(gridX, gridY, gridX, gridY);
+        if (brush.getType() == BrushType.FILLER) {
+            floodFill(gridX, gridY);
+        } else {
+            paintLine(gridX, gridY, gridX, gridY);
+        }
+
         lastGridX = gridX;
         lastGridY = gridY;
     }
@@ -62,22 +69,58 @@ public class MouseController extends MouseAdapter implements
     public void mouseDragged(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
+
         if (!isPressed || keyboardController.wasTabPressed() ||
-                keyboardController.wasAltPressed()) {
+                keyboardController.wasAltPressed() ||
+                keyboardController.wasShiftPressed()) {
             return;
         }
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
 
-        if (lastGridX != -1 && lastGridY != -1) {
-            paintLine(lastGridX, lastGridY, gridX, gridY);
+        if (brush.getType() == BrushType.FILLER) {
+            if (gridX != lastGridX || gridY != lastGridY) {
+                floodFill(gridX, gridY);
+            }
         } else {
-            paint(gridX, gridY);
+            if (lastGridX != -1 && lastGridY != -1) {
+                paintLine(lastGridX, lastGridY, gridX, gridY);
+            } else {
+                paint(gridX, gridY);
+            }
         }
 
         lastGridX = gridX;
         lastGridY = gridY;
+    }
+
+    private void floodFill(int startX, int startY) {
+        if (!world.isInBounds(startX, startY)) return;
+
+        ElementID targetElement = getActiveElement();
+        ElementID startElement = world.getElementAt(startX, startY);
+
+        if (startElement == targetElement) return;
+
+        Queue<Point> queue = new ArrayDeque<>();
+        queue.add(new Point(startX, startY));
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            int x = p.x;
+            int y = p.y;
+
+            if (!world.isInBounds(x, y)) continue;
+
+            if (world.getElementAt(x, y) == startElement) {
+                world.setCell(x, y, targetElement);
+                queue.add(new Point(x + 1, y));
+                queue.add(new Point(x - 1, y));
+                queue.add(new Point(x, y + 1));
+                queue.add(new Point(x, y - 1));
+            }
+        }
     }
 
     @Override
@@ -115,7 +158,7 @@ public class MouseController extends MouseAdapter implements
     }
 
     private void paint(int centerX, int centerY) {
-        ElementID targetType = isRightClick ? ElementID.EMPTY : brush.getElement();
+        ElementID targetType = getActiveElement();
         int r = brush.getRadius();
 
         for (int dy = -r; dy <= r; dy++) {
@@ -137,9 +180,16 @@ public class MouseController extends MouseAdapter implements
         }
     }
 
+    private ElementID getActiveElement() {
+        if (brush.getType() == BrushType.ERASER) {
+            return ElementID.EMPTY;
+        }
+        return brush.getElement();
+    }
+
     private ElementID getResultingElement(ElementID brushElement,
                                           ElementID currentElement) {
-        if (isRightClick) {
+        if (brushElement == ElementID.EMPTY) {
             return ElementID.EMPTY;
         }
 

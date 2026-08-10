@@ -1,6 +1,7 @@
 package org.p4j.render;
 
 import org.p4j.core.K;
+import org.p4j.data.BrushType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.p4j.core.World;
@@ -85,6 +86,10 @@ public class FastRender extends Canvas {
 
         if (keyController.wasAltPressed()) {
             shaper(g, keyController, mouseController);
+        }
+
+        if (keyController.wasShiftPressed()) {
+            typer(g, keyController, mouseController);
         }
 
         if (keyController.wasEPressed()) {
@@ -380,6 +385,114 @@ public class FastRender extends Canvas {
 
         g.setColor(Color.WHITE);
         g.drawString(shapeText, textX, textY);
+    }
+
+    private void typer(Graphics2D g, KeyboardController keyController,
+                        MouseController mouseController) {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        List<BrushType> types = keyController.getSelectableTypes();
+        int totalTypes = types.size();
+
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+        double outerRadius = K.HUD_OUTER_RADIUS;
+        double innerRadius = K.HUD_INNER_RADIUS;
+        double angleStep = K.HUD_FULL_CIRCLE / totalTypes;
+
+        int mx = mouseController.getMouseX();
+        int my = mouseController.getMouseY();
+        double dx = mx - centerX;
+        double dy = my - centerY;
+        double distSq = dx * dx + dy * dy;
+
+        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
+            double angle = Math.toDegrees(Math.atan2(dy, dx));
+            if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
+                    % K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            if (adjustedAngle < 0) {
+                adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
+            }
+
+            int hoveredIdx = (int) (adjustedAngle / angleStep);
+            if (hoveredIdx >= 0 && hoveredIdx < totalTypes) {
+                keyController.setSelectedTypeIndex(hoveredIdx);
+            }
+        }
+
+        int selectedIdx = keyController.getSelectedTypeIndex();
+        Ellipse2D.Double innerHole = new Ellipse2D.Double(
+                centerX - innerRadius, centerY - innerRadius,
+                innerRadius * 2, innerRadius * 2
+        );
+
+        Area holeArea = new Area(innerHole);
+        Area selectedSliceArea = null;
+
+        for (int i = 0; i < totalTypes; i++) {
+            BrushType type = types.get(i);
+            double startAngle = i * angleStep + K.HUD_START_OFFSET_DEG;
+
+            Arc2D.Double outerPie = new Arc2D.Double(
+                    centerX - outerRadius, centerY - outerRadius,
+                    outerRadius * 2, outerRadius * 2,
+                    -startAngle, -angleStep, Arc2D.PIE
+            );
+
+            Area sliceArea = new Area(outerPie);
+            sliceArea.subtract(holeArea);
+
+            if (i == selectedIdx) {
+                selectedSliceArea = sliceArea;
+                g.setColor(K.HIGHLIGHT_COLOR);
+            } else {
+                g.setColor(K.UI_BACKGROUND_COLOR);
+            }
+
+            g.fill(sliceArea);
+
+            g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
+            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
+            g.draw(sliceArea);
+
+            double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
+            double iconRadius = (innerRadius + outerRadius) / 2.0;
+            int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
+            int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
+
+            g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.SHAPER_ICON_FONT_SIZE));
+            g.setColor(Color.WHITE);
+            FontMetrics iconFm = g.getFontMetrics();
+            g.drawString(type.getSymbol(),
+                    iconX - iconFm.stringWidth(type.getSymbol()) / 2,
+                    iconY + iconFm.getAscent() / 2 - K.SHAPER_ICON_Y_OFFSET);
+        }
+
+        if (selectedSliceArea != null) {
+            g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+            g.setColor(Color.WHITE);
+            g.draw(selectedSliceArea);
+        }
+
+        g.setColor(K.UI_BACKGROUND_COLOR);
+        g.fill(innerHole);
+        g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
+        g.setColor(K.TEXT_COLOR_UNSELECTED);
+        g.draw(innerHole);
+
+        BrushType selectedType = types.get(selectedIdx);
+        String typeText = selectedType.getName();
+        g.setFont(new Font(K.HUD_FONT_FAMILY, Font.BOLD, K.HUD_FONT_SIZE));
+        FontMetrics fm = g.getFontMetrics();
+        int textX = centerX - fm.stringWidth(typeText) / 2;
+        int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
+
+        g.setColor(Color.WHITE);
+        g.drawString(typeText, textX, textY);
     }
 
     private void slider(Graphics2D g, Brush brush) {
