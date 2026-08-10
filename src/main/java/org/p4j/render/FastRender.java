@@ -452,7 +452,8 @@ public class FastRender extends Canvas {
 
         if (element == ElementID.MERCURY ||
             element == ElementID.IRON ||
-            element == ElementID.STEEL) {
+            element == ElementID.STEEL ||
+            element == ElementID.COPPER) {
             int shift = (int) v;
             return adjustBrightness(baseColor, shift);
         }
