@@ -725,9 +725,15 @@ public class ReactionEngine {
                         return true;
                     }
 
-                    if (neighbor == ElementID.FIRE ||
-                            neighbor == ElementID.LAVA ||
-                            neighbor.isHot()) {
+                    if (e == ElementID.HYDROGEN && neighbor == ElementID.CARBON) {
+                        grid[idx] = ElementID.BEIGE_POWDER.getId();
+                        grid[nIdx] = ElementID.BEIGE_POWDER.getId();
+                        updated[idx] = true;
+                        updated[nIdx] = true;
+                        return true;
+                    }
+
+                    if (neighbor == ElementID.FIRE || neighbor == ElementID.LAVA) {
                         ExplosionSystem.createExplosion(world, x, y,
                                 K.GENERAL_EXPLOSION_RADIUS);
                         grid[idx] = ElementID.STEAM.getId();
