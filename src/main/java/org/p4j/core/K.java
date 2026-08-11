@@ -48,6 +48,15 @@ public final class K {
     public static final float CAMERA_START_Y = 10.0f;
     public static final float CAMERA_START_Z = 30.0f;
 
+    public static final float CROSSHAIR_SIZE_PIXELS = 10.0f;
+    public static final float CROSSHAIR_LINE_WIDTH = 2.0f;
+    public static final float CROSSHAIR_COLOR_RED = 1.0f;
+    public static final float CROSSHAIR_COLOR_GREEN = 1.0f;
+    public static final float CROSSHAIR_COLOR_BLUE = 1.0f;
+    public static final float CROSSHAIR_COLOR_ALPHA = 0.8f;
+    public static final int CROSSHAIR_COMPONENTS_PER_VERTEX = 2;
+    public static final int CROSSHAIR_VERTEX_COUNT = 4;
+
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
     public static final float BUTTON_HOVER_SCALE = 1.05f;
     public static final float BUTTON_PRESSED_SCALE = 0.95f;

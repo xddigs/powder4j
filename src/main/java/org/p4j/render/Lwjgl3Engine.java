@@ -20,14 +20,14 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.glUniform4f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @SuppressWarnings("all")
 public class Lwjgl3Engine implements Engine {
     private static final Logger log = LoggerFactory.getLogger(Lwjgl3Engine.class);
-
-    private static final String VERTEX_SHADER_SRC = """
+    private static final String SCENE_VERTEX_SHADER_SRC = """
         #version 330 core
         layout (location = 0) in vec3 aPos;
         
@@ -40,12 +40,32 @@ public class Lwjgl3Engine implements Engine {
         }
         """;
 
-    private static final String FRAGMENT_SHADER_SRC = """
+    private static final String SCENE_FRAGMENT_SHADER_SRC = """
         #version 330 core
         out vec4 FragColor;
         
         void main() {
             FragColor = vec4(0.2, 0.8, 0.4, 1.0);
+        }
+        """;
+
+    private static final String HUD_VERTEX_SHADER_SRC = """
+        #version 330 core
+        layout (location = 0) in vec2 aPos;
+        
+        void main() {
+            gl_Position = vec4(aPos, 0.0, 1.0);
+        }
+        """;
+
+    private static final String HUD_FRAGMENT_SHADER_SRC = """
+        #version 330 core
+        out vec4 FragColor;
+        
+        uniform vec4 uColor;
+        
+        void main() {
+            FragColor = uColor;
         }
         """;
 
@@ -55,9 +75,11 @@ public class Lwjgl3Engine implements Engine {
 
     private long window = NULL;
 
-    private Shaders shaderProgram;
     private Voxel voxelMesh;
     private Camera camera;
+    private Shaders sceneShaderProgram;
+    private Shaders hudShaderProgram;
+    private Crosshair crosshair;
 
     private final Matrix4f projectionMatrix = new Matrix4f();
     private final Matrix4f modelMatrix = new Matrix4f();
@@ -101,16 +123,15 @@ public class Lwjgl3Engine implements Engine {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         this.camera = new Camera(new Vector3f(K.CAMERA_START_X, K.CAMERA_START_Y, K.CAMERA_START_Z));
-        this.shaderProgram = new Shaders(VERTEX_SHADER_SRC, FRAGMENT_SHADER_SRC);
+        this.sceneShaderProgram = new Shaders(SCENE_VERTEX_SHADER_SRC, SCENE_FRAGMENT_SHADER_SRC);
+        this.hudShaderProgram = new Shaders(HUD_VERTEX_SHADER_SRC, HUD_FRAGMENT_SHADER_SRC);
+        this.crosshair = new Crosshair();
         this.voxelMesh = new Voxel();
-
         setupInputCallbacks();
-
         glfwShowWindow(window);
         this.lastFrameTime = glfwGetTime();
 
-        log.info("OpenGL Context and Camera initialized successfully: {}",
-                glGetString(GL_VERSION));
+        log.info("OpenGL Context, Camera, and HUD initialized successfully: {}", glGetString(GL_VERSION));
     }
 
     private void setupInputCallbacks() {
@@ -156,7 +177,7 @@ public class Lwjgl3Engine implements Engine {
 
     @Override
     public void updatePixels(World world) {
-        // Reserved for GPU buffer updates
+
     }
 
     @Override
@@ -172,7 +193,8 @@ public class Lwjgl3Engine implements Engine {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shaderProgram.bind();
+        // --- 1. Pass 1: Render 3D Scene ---
+        sceneShaderProgram.bind();
 
         float aspectRatio = (float) K.DEFAULT_WINDOW_WIDTH / K.DEFAULT_WINDOW_HEIGHT;
         projectionMatrix.identity().perspective(
@@ -185,9 +207,9 @@ public class Lwjgl3Engine implements Engine {
         Matrix4f viewMatrix = camera.getViewMatrix();
         modelMatrix.identity();
 
-        int uProjectionLoc = shaderProgram.getUniformLocation("uProjection");
-        int uViewLoc = shaderProgram.getUniformLocation("uView");
-        int uModelLoc = shaderProgram.getUniformLocation("uModel");
+        int uProjectionLoc = sceneShaderProgram.getUniformLocation("uProjection");
+        int uViewLoc = sceneShaderProgram.getUniformLocation("uView");
+        int uModelLoc = sceneShaderProgram.getUniformLocation("uModel");
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16);
@@ -198,8 +220,20 @@ public class Lwjgl3Engine implements Engine {
         }
 
         voxelMesh.render();
+        sceneShaderProgram.unbind();
 
-        shaderProgram.unbind();
+        // --- 2. Pass 2: Render 2D HUD / Crosshair ---
+        glDisable(GL_DEPTH_TEST);
+
+        hudShaderProgram.bind();
+        int uColorLoc = hudShaderProgram.getUniformLocation("uColor");
+        glUniform4f(uColorLoc, K.CROSSHAIR_COLOR_RED, K.CROSSHAIR_COLOR_GREEN,
+                K.CROSSHAIR_COLOR_BLUE, K.CROSSHAIR_COLOR_ALPHA);
+
+        crosshair.render();
+
+        hudShaderProgram.unbind();
+        glEnable(GL_DEPTH_TEST);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -213,7 +247,9 @@ public class Lwjgl3Engine implements Engine {
     @Override
     public void cleanup() {
         if (voxelMesh != null) voxelMesh.cleanup();
-        if (shaderProgram != null) shaderProgram.cleanup();
+        if (sceneShaderProgram != null) sceneShaderProgram.cleanup();
+        if (hudShaderProgram != null) hudShaderProgram.cleanup();
+        if (crosshair != null) crosshair.cleanup();
         if (window != NULL) glfwDestroyWindow(window);
 
         glfwTerminate();
