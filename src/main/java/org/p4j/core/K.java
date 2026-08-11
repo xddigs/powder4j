@@ -55,6 +55,7 @@ public final class K {
     public static final int TNT_EXPLOSION_RADIUS = 24;
     public static final int CHLORINE_EXPLOSION_RADIUS = 12;
     public static final int GENERAL_EXPLOSION_RADIUS = 4;
+    public static final float NITRO_SPEED_MIN = 2.0f;
 
     public static final int BUFFER_STRATEGY_COUNT = 3;
     public static final int DEFAULT_PALETTE_COLOR = 0xFF000000;

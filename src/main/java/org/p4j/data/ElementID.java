@@ -45,7 +45,7 @@ public enum ElementID {
     CARBON((byte) 36, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 3550.0f, Float.MAX_VALUE, 0.71f, 0.60f, "CARBON_MONOXIDE", null),
     OXYGEN((byte) 37, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, State.GAS, false, 3, 20.0f, -218.8f, -183.0f, 0.92f, 0.02f, null, null),
     IRON((byte) 38, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
-    NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
+    NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, false, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
     STEEL((byte) 40, "Steel", "Fe+C", 0xFF708090, false, 4, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
     STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, null, null),
     ALUMINUM((byte) 42, "Aluminum", "Al", 0xFFD4D8DD, true, 3, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
@@ -56,7 +56,11 @@ public enum ElementID {
     WAX_LIQUID((byte) 47, "Liquid Wax", "C25H52(l)", 0xFFE6C894, false, 3, true, false, false, false, false, State.LIQUID, false, 2, 70.0f, Float.MAX_VALUE, 370.0f, 2.50f, 0.15f, null, "METHANE"),
     GALLIUM((byte) 48, "Gallium", "Ga", 0xFF8FA3AD, true, 5, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 29.8f, 2204.0f, 0.37f, 0.40f, "GALLIUM_LIQUID", null),
     GALLIUM_LIQUID((byte) 49, "Liquid Gallium", "Ga(l)", 0xFFB0BEC5, false, 5, false, true, false, false, true, State.LIQUID, false, 3, 35.0f, Float.MAX_VALUE, 2204.0f, 0.37f, 0.40f, null, null),
-    TITANIUM((byte) 50, "Titanium", "Ti", 0xFF90A4AE, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1668.0f, 3287.0f, 0.52f, 0.65f, "ASH", null);
+    TITANIUM((byte) 50, "Titanium", "Ti", 0xFF90A4AE, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1668.0f, 3287.0f, 0.52f, 0.65f, "ASH", null),
+    LIQUID_NITROGEN((byte) 51, "Liquid Nitrogen", "LN2", 0xFF80D8FF, true, 2, false, false, false, false, false, State.LIQUID, false, 5, -196.0f, Float.MAX_VALUE, -195.8f, 2.04f, 0.13f, null, "NITROGEN"),
+    SODIUM_HYDROXIDE((byte) 52, "Sodium Hydroxide", "NaOH", 0xFFECEFF1, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 318.0f, 1388.0f, 1.40f, 0.50f, "LAVA", null),
+    GOLD((byte) 53, "Gold", "Au", 0xFFFFD700, false, 5, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1064.0f, 2856.0f, 0.13f, 1.00f, "LAVA", null),
+    NITROGLYCERIN((byte) 54, "Nitroglycerin", "C3H5N3O9", 0xFF8BC34A, false, 2, true, false, false, false, false, State.LIQUID, false, 3, 20.0f, 13.0f, 50.0f, 1.80f, 0.10f, null, "FIRE");
 
     private final byte id;
     private final String name;
