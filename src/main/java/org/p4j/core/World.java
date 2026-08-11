@@ -36,7 +36,7 @@ public class World {
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
         this.cards = new CardsEngine(this);
-        this.heatmap = new HeatMap(this);
+        this.heatmap = new HeatMap();
         this.thermo = new ThermoEngine();
         this.width = width;
         this.height = height;

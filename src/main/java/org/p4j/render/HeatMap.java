@@ -1,18 +1,14 @@
 package org.p4j.render;
 
 import org.p4j.core.K;
-import org.p4j.core.World;
 import org.p4j.data.ElementID;
 
 public class HeatMap {
-    public enum Mode { NONE, HOT; }
+    public enum Mode { NONE, HOT}
 
     private Mode mode = Mode.NONE;
-    private final World world;
 
-    public HeatMap(World world) {
-        this.world = world;
-    }
+    public HeatMap() {}
 
     public int getColorForPixel(byte elementId, float temp) {
         if (mode == Mode.NONE) {
@@ -54,14 +50,6 @@ public class HeatMap {
         }
 
         return (0xFF << 24) | (r << 16) | (g << 8) | b;
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
     }
 
     public void toggleMode() {
