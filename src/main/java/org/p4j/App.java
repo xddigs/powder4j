@@ -19,10 +19,9 @@ import java.awt.*;
 
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
-
     private final World world;
     private final Engine engine;
-    private final SimulationLoop loop;
+    private SimulationLoop loop;
 
     private JFrame frame;
     private CardLayout cardLayout;
@@ -37,9 +36,6 @@ public class App {
         if (is3D) {
             this.engine = new Lwjgl3Engine(simWidth, simHeight, simDepth, world);
             this.engine.init(world);
-
-            this.loop = new SimulationLoop(world, engine);
-            this.loop.start();
         } else {
             this.frame = new JFrame(title);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,12 +45,9 @@ public class App {
             Brush brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
             this.swingRender = new RenderingEngine(simWidth, simHeight, world, scale);
             this.engine = swingRender;
-
             this.keyController = new KeyboardController(brush, world, swingRender);
             this.mouseController = new MouseController(world, brush, keyController, scale);
-
             this.loop = new SimulationLoop(world, swingRender, keyController, mouseController, brush);
-
             this.cardLayout = new CardLayout();
             this.mainContainer = new JPanel(cardLayout);
             Menu menuPanel = new Menu(this::start);
@@ -87,10 +80,19 @@ public class App {
         }
     }
 
+    public void run3DMainLoop() {
+        while (!engine.shouldClose()) {
+            engine.render(world, null, null, null);
+        }
+        engine.cleanup();
+    }
+
     static void main() {
         if (K.IS_3D) {
-            new App(K.APP_TITLE + K.VERSION, K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
+            App app = new App(K.APP_TITLE + K.VERSION, K.DEFAULT_SIM_WIDTH,
+                    K.DEFAULT_SIM_HEIGHT,
                     K.DEFAULT_SIM_DEPTH, K.DEFAULT_SCALE, true);
+            app.run3DMainLoop();
         } else {
             SwingUtilities.invokeLater(() -> new App(
                     K.APP_TITLE + K.VERSION,

@@ -24,6 +24,30 @@ public final class K {
     public static final int DEFAULT_SCALE = 4;
     public static final float INERTIA_FORCE = 15.0f;
 
+    public static final int DEFAULT_WINDOW_WIDTH = 1280;
+    public static final int DEFAULT_WINDOW_HEIGHT = 720;
+    public static final float FOV_DEGREES = 60.0f;
+    public static final float Z_NEAR = 0.1f;
+    public static final float Z_FAR = 1000.0f;
+
+    public static final float CLEAR_COLOR_RED = 0.12f;
+    public static final float CLEAR_COLOR_GREEN = 0.12f;
+    public static final float CLEAR_COLOR_BLUE = 0.15f;
+    public static final float CLEAR_COLOR_ALPHA = 1.0f;
+    public static final int GLFW_VSYNC_INTERVAL = 1;
+
+    public static final int POSITION_COMPONENTS_PER_VERTEX = 3;
+    public static final int FLOAT_SIZE_BYTES = 4;
+
+    public static final float CAMERA_MOVEMENT_SPEED = 5.0f;
+    public static final float CAMERA_MOUSE_SENSITIVITY = 0.1f;
+    public static final float CAMERA_MIN_PITCH = -89.0f;
+    public static final float CAMERA_MAX_PITCH = 89.0f;
+
+    public static final float CAMERA_START_X = 0.0f;
+    public static final float CAMERA_START_Y = 10.0f;
+    public static final float CAMERA_START_Z = 30.0f;
+
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
     public static final float BUTTON_HOVER_SCALE = 1.05f;
     public static final float BUTTON_PRESSED_SCALE = 0.95f;
