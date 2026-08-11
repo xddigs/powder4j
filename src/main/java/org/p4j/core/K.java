@@ -18,6 +18,7 @@ public final class K {
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
+    public static final float INERTIA_FORCE = 15.0f;
 
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
     public static final float BUTTON_HOVER_SCALE = 1.05f;

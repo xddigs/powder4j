@@ -8,6 +8,8 @@ import org.p4j.input.MouseController;
 import org.p4j.render.Render;
 import org.p4j.render.Palette;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Manages the execution of the simulation and rendering at a fixed frequency.
  * This class ensures that the world state updates and frame rendering occur
@@ -26,7 +28,8 @@ public class SimulationLoop implements Runnable {
     private final Brush brush;
 
     public SimulationLoop(World world, Render render, Palette palette,
-                          KeyboardController keyController, MouseController mouseController, Brush brush) {
+                          KeyboardController keyController,
+                          MouseController mouseController, Brush brush) {
         this.world = world;
         this.render = render;
         this.palette = palette;
@@ -55,6 +58,14 @@ public class SimulationLoop implements Runnable {
             lastTime = now;
             while (delta >= 1) {
                 world.update();
+                if (keyController.wasShakePressed()) {
+                    float intensity = K.INERTIA_FORCE;
+                    float forceX = (ThreadLocalRandom.current().nextFloat()
+                            * 2.0f - 1.0f) * intensity;
+                    float forceY = (ThreadLocalRandom.current().nextFloat()
+                            * 2.0f - 1.0f) * intensity;
+                    world.applyInertia(forceX, forceY);
+                }
                 delta--;
             }
             render.updatePixels(world);
