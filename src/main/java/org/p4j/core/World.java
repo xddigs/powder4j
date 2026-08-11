@@ -286,21 +286,13 @@ public class World {
     }
 
     public void applyInertia(float forceX, float forceY) {
-        int stepsX = Math.round(forceX * K.INERTIA_SENSITIVITY);
-        int stepsY = Math.round(forceY * K.INERTIA_SENSITIVITY);
+        int baseStepsX = Math.round(forceX * K.INERTIA_SENSITIVITY);
+        int baseStepsY = Math.round(forceY * K.INERTIA_SENSITIVITY);
+        if (baseStepsX == 0 && baseStepsY == 0) return;
 
-        if (stepsX == 0 && stepsY == 0) return;
-
-        stepsX = Math.clamp(stepsX, -K.INERTIA_MAX_STEP_LIMIT,
-                K.INERTIA_MAX_STEP_LIMIT);
-
-        stepsY = Math.clamp(stepsY, -K.INERTIA_MAX_STEP_LIMIT,
-                K.INERTIA_MAX_STEP_LIMIT);
-
-        if (stepsY != 0) {
-            boolean moveUp = stepsY < 0;
-            int absStepsY = Math.abs(stepsY);
-
+        if (baseStepsY != 0) {
+            boolean moveUp = baseStepsY < 0;
+            int absStepsY = Math.min(Math.abs(baseStepsY), K.INERTIA_MAX_STEP_LIMIT);
             int startY = moveUp ? 0 : height - 1;
             int endY = moveUp ? height : -1;
             int dirY = moveUp ? 1 : -1;
@@ -308,16 +300,18 @@ public class World {
             for (int y = startY; y != endY; y += dirY) {
                 for (int x = 0; x < width; x++) {
                     int idx = y * width + x;
-                    byte typeId = grid[idx];
-                    ElementID e = ElementID.fromId(typeId);
+                    ElementID e = ElementID.fromId(grid[idx]);
                     if (e.isBlock() || e == ElementID.EMPTY) continue;
+
+                    int effectiveSteps = calc(e, absStepsY);
                     int currentY = y;
-                    for (int s = 0; s < absStepsY; s++) {
+
+                    for (int s = 0; s < effectiveSteps; s++) {
                         int targetY = currentY + (moveUp ? -1 : 1);
                         if (targetY < 0 || targetY >= height) break;
+
                         int targetIdx = targetY * width + x;
-                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
-                                canDisplace(grid[idx], grid[targetIdx])) {
+                        if (canShakeDisplace(grid[idx], grid[targetIdx])) {
                             swap(currentY * width + x, targetIdx);
                             currentY = targetY;
                         } else {
@@ -328,10 +322,10 @@ public class World {
             }
         }
 
-        if (stepsX != 0) {
-            boolean moveLeft = stepsX < 0;
-            int absStepsX = Math.abs(stepsX);
-
+        if (baseStepsX != 0) {
+            boolean moveLeft = baseStepsX < 0;
+            int absStepsX = Math.min(Math.abs(baseStepsX),
+                    K.INERTIA_MAX_STEP_LIMIT);
             int startX = moveLeft ? 0 : width - 1;
             int endX = moveLeft ? width : -1;
             int dirX = moveLeft ? 1 : -1;
@@ -339,16 +333,25 @@ public class World {
             for (int y = 0; y < height; y++) {
                 for (int x = startX; x != endX; x += dirX) {
                     int idx = y * width + x;
-                    byte typeId = grid[idx];
-                    ElementID e = ElementID.fromId(typeId);
+                    ElementID e = ElementID.fromId(grid[idx]);
                     if (e.isBlock() || e == ElementID.EMPTY) continue;
+
+                    int effectiveSteps = calc(e, absStepsX);
                     int currentX = x;
-                    for (int s = 0; s < absStepsX; s++) {
+
+                    for (int s = 0; s < effectiveSteps; s++) {
                         int targetX = currentX + (moveLeft ? -1 : 1);
-                        if (targetX < 0 || targetX >= width) break;
-                        int targetIdx = y * width + targetX;
-                        if (grid[targetIdx] == ElementID.EMPTY.getId() ||
-                                canDisplace(grid[idx], grid[targetIdx])) {
+
+                        int targetY = y;
+                        if (e.isLiquid() && ThreadLocalRandom.current()
+                                .nextFloat() < 0.35f) {
+                            targetY += ThreadLocalRandom.current().nextBoolean() ? 1 : -1;
+                        }
+
+                        if (!isInBounds(targetX, targetY)) break;
+
+                        int targetIdx = targetY * width + targetX;
+                        if (canShakeDisplace(grid[idx], grid[targetIdx])) {
                             swap(y * width + currentX, targetIdx);
                             currentX = targetX;
                         } else {
@@ -358,6 +361,35 @@ public class World {
                 }
             }
         }
+    }
+
+    private int calc(ElementID e, int baseSteps) {
+        if (e.isGas()) {
+            return Math.max(1, baseSteps + 1);
+        }
+        if (e.isLiquid()) {
+            float viscosityFactor = Math.max(0.4f, e.getDispersionRate() / 5.0f);
+            return Math.max(1, Math.round(baseSteps * viscosityFactor));
+        }
+        if (e.isPowder()) {
+            return Math.max(1, Math.round(baseSteps * 0.7f));
+        }
+        return baseSteps;
+    }
+
+    private boolean canShakeDisplace(byte sourceId, byte targetId) {
+        if (targetId == ElementID.EMPTY.getId()) return true;
+        ElementID src = ElementID.fromId(sourceId);
+        ElementID tgt = ElementID.fromId(targetId);
+        if (tgt.isBlock()) return false;
+        if (src.isLiquid() && tgt.isLiquid()) {
+            int densityDiff = Math.abs(src.getDensity() - tgt.getDensity());
+            if (densityDiff <= 2 && ThreadLocalRandom.current().nextFloat() < 0.6f) {
+                return true;
+            }
+        }
+
+        return canDisplace(sourceId, targetId);
     }
 
     public boolean isInBounds(int x, int y) {
