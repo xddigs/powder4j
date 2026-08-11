@@ -27,14 +27,13 @@ public class World {
     private final ThermoEngine thermo;
     private final int width;
     private final int height;
-    private final int depth;
     private final byte[] grid;
     private final float[] velocity;
     private final boolean[] updated;
     private float[] temperature;
     private float[] nextTemperature;
 
-    public World(int width, int height, int depth) {
+    public World(int width, int height) {
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
         this.cards = new CardsEngine(this);
@@ -42,13 +41,11 @@ public class World {
         this.thermo = new ThermoEngine();
         this.width = width;
         this.height = height;
-        this.depth = depth;
-        int size = width * height * depth;
-        this.grid = new byte[size];
-        this.temperature = new float[size];
-        this.nextTemperature = new float[size];
-        this.updated = new boolean[size];
-        this.velocity = new float[size];
+        this.grid = new byte[width * height];
+        this.temperature = new float[width * height];
+        this.nextTemperature = new float[width * height];
+        this.updated = new boolean[width * height];
+        this.velocity = new float[width * height];
         Arrays.fill(temperature, K.DEFAULT_AMBIENT_TEMP);
         Arrays.fill(nextTemperature, K.DEFAULT_AMBIENT_TEMP);
 
@@ -57,10 +54,6 @@ public class World {
 
         log.debug("There's {} selectable elements", selectable.count());
         log.info("Constructed simulation world: {}x{}", width, height);
-    }
-
-    public int getIndex(int x, int y, int z) {
-        return x + (y * width) + (z * width * height);
     }
 
     public void update() {
@@ -77,24 +70,24 @@ public class World {
         temperature = nextTemperature;
         nextTemperature = tempSwap;
 
-        for (int z = 0; z < depth; z++) {
-            for (int y = height - 1; y >= 0; y--) {
-                for (int x = 0; x < width; x++) {
-                    int idx = getIndex(x, y, z);
-                    byte id = grid[idx];
+        for (int y = height - 1; y >= 0; y--) {
+            boolean leftToRight = ThreadLocalRandom.current().nextBoolean();
 
-                    if (updated[idx]) continue;
-                    if (id == 0) continue;
+            for (int i = 0; i < width; i++) {
+                int x = leftToRight ? i : (width - 1 - i);
+                int idx = getIndex(x, y);
+                byte id = grid[idx];
 
-                    boolean hasReacted = reaction.process(x, y, idx);
-                    if (hasReacted) continue;
+                if (updated[idx]) continue;
+                if (id == 0) continue;
 
-                    byte currentId = grid[idx];
-                    if (currentId == 0) continue;
-                    ElementID currentType = ElementID.fromId(currentId);
-                    movement.update(x, y, idx, currentType);
+                boolean hasReacted = reaction.process(x, y, idx);
+                if (hasReacted) continue;
 
-                }
+                byte currentId = grid[idx];
+                if (currentId == 0) continue;
+                ElementID currentType = ElementID.fromId(currentId);
+                movement.update(x, y, idx, currentType);
             }
         }
     }
@@ -280,16 +273,6 @@ public class World {
         }
     }
 
-    public void setCell(int x, int y, int z, ElementID type) {
-        if (isInBounds(x, y, z)) {
-            int index = getIndex(x, y, z);
-            grid[index] = type.getId();
-            velocity[index] = 0;
-            temperature[index] = type.getDefaultTemp();
-            nextTemperature[index] = type.getDefaultTemp();
-        }
-    }
-
     public boolean canDisplace(byte upperId, byte lowerId) {
         if (lowerId == ElementID.VOID.getId()) {
             return true;
@@ -420,10 +403,6 @@ public class World {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    public boolean isInBounds(int x, int y, int z) {
-        return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth;
-    }
-
     public int getIndex(int x, int y) {
         return y * width + x;
     }
@@ -446,16 +425,6 @@ public class World {
 
     public float getTemperatureAt(int x, int y) {
         return temperature[getIndex(x, y)];
-    }
-
-    public ElementID getElementAt(int x, int y, int z) {
-        if (!isInBounds(x, y, z)) return ElementID.VOID;
-        return ElementID.fromId(grid[getIndex(x, y, z)]);
-    }
-
-    public float getTemperatureAt(int x, int y, int z) {
-        if (!isInBounds(x, y, z)) return K.DEFAULT_AMBIENT_TEMP;
-        return temperature[getIndex(x, y, z)];
     }
 
     public boolean[] getUpdated() {

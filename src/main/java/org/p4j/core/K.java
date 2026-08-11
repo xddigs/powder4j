@@ -10,9 +10,6 @@ import java.awt.*;
 public final class K {
     private K() {}
 
-    public static boolean IS_3D = true;
-    public static boolean IS_RUNNING = true;
-
     public static final String APP_TITLE = "Powder4J ";
     public static final String VERSION = "1.0.0";
     public static final Font FONT_BIG = Fonts.get(32f, Font.PLAIN);
@@ -20,42 +17,8 @@ public final class K {
     public static final Font FONT_TINY = Fonts.get(16f, Font.PLAIN);
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
-    public static final int DEFAULT_SIM_DEPTH = 200;
     public static final int DEFAULT_SCALE = 4;
     public static final float INERTIA_FORCE = 15.0f;
-
-    public static final int DEFAULT_WINDOW_WIDTH = 1280;
-    public static final int DEFAULT_WINDOW_HEIGHT = 720;
-    public static final float FOV_DEGREES = 60.0f;
-    public static final float Z_NEAR = 0.1f;
-    public static final float Z_FAR = 1000.0f;
-
-    public static final float CLEAR_COLOR_RED = 0.12f;
-    public static final float CLEAR_COLOR_GREEN = 0.12f;
-    public static final float CLEAR_COLOR_BLUE = 0.15f;
-    public static final float CLEAR_COLOR_ALPHA = 1.0f;
-    public static final int GLFW_VSYNC_INTERVAL = 1;
-
-    public static final int POSITION_COMPONENTS_PER_VERTEX = 3;
-    public static final int FLOAT_SIZE_BYTES = 4;
-
-    public static final float CAMERA_MOVEMENT_SPEED = 5.0f;
-    public static final float CAMERA_MOUSE_SENSITIVITY = 0.1f;
-    public static final float CAMERA_MIN_PITCH = -89.0f;
-    public static final float CAMERA_MAX_PITCH = 89.0f;
-
-    public static final float CAMERA_START_X = 0.0f;
-    public static final float CAMERA_START_Y = 10.0f;
-    public static final float CAMERA_START_Z = 30.0f;
-
-    public static final float CROSSHAIR_SIZE_PIXELS = 10.0f;
-    public static final float CROSSHAIR_LINE_WIDTH = 2.0f;
-    public static final float CROSSHAIR_COLOR_RED = 1.0f;
-    public static final float CROSSHAIR_COLOR_GREEN = 1.0f;
-    public static final float CROSSHAIR_COLOR_BLUE = 1.0f;
-    public static final float CROSSHAIR_COLOR_ALPHA = 0.8f;
-    public static final int CROSSHAIR_COMPONENTS_PER_VERTEX = 2;
-    public static final int CROSSHAIR_VERTEX_COUNT = 4;
 
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
     public static final float BUTTON_HOVER_SCALE = 1.05f;
@@ -80,6 +43,8 @@ public final class K {
     public static final Color UI_BACKGROUND_COLOR = new Color(78, 84, 114);
     public static final Color UI_BACKGROUND_BORDER_COLOR = TEXT_COLOR;
     public static final Color HIGHLIGHT_COLOR = new Color(60, 120, 210, 200);
+
+    public static boolean IS_RUNNING = true;
 
     public static final double TICKS_PER_SECOND = 60.0;
     public static final long NANOSECONDS_IN_SECOND = 1_000_000_000L;

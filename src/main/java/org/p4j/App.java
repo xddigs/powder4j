@@ -4,12 +4,11 @@ import org.p4j.core.K;
 import org.p4j.core.SimulationLoop;
 import org.p4j.core.World;
 import org.p4j.data.ElementID;
-import org.p4j.gui.Engine;
 import org.p4j.gui.Menu;
 import org.p4j.input.Brush;
 import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
-import org.p4j.render.Lwjgl3Engine;
+import org.p4j.render.Palette;
 import org.p4j.render.RenderingEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,87 +16,67 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class App {
+@SuppressWarnings("unused")
+public class App extends JFrame {
     private static final Logger log = LoggerFactory.getLogger(App.class);
+    private final CardLayout cardLayout;
+    private final JPanel mainContainer;
+    private final SimulationLoop loop;
     private final World world;
-    private final Engine engine;
-    private SimulationLoop loop;
+    private final RenderingEngine render;
+    private final Brush brush;
+    private final Palette palette;
+    private final KeyboardController keyController;
+    private final MouseController mouseController;
 
-    private JFrame frame;
-    private CardLayout cardLayout;
-    private JPanel mainContainer;
-    private RenderingEngine swingRender;
-    private KeyboardController keyController;
-    private MouseController mouseController;
+    public App(String title, int simulationWidth,
+               int simulationHeight, int scale) {
+        setTitle(title);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
 
-    public App(String title, int simWidth, int simHeight, int simDepth, int scale, boolean is3D) {
-        this.world = new World(simWidth, simHeight, simDepth);
+        this.world = new World(simulationWidth, simulationHeight);
+        this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
+        this.palette = new Palette();
+        this.render = new RenderingEngine(simulationWidth, simulationHeight, world, scale);
 
-        if (is3D) {
-            this.engine = new Lwjgl3Engine(simWidth, simHeight, simDepth, world);
-            this.engine.init(world);
-        } else {
-            this.frame = new JFrame(title);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setResizable(false);
-            frame.setFocusTraversalKeysEnabled(false);
+        this.keyController = new KeyboardController(brush, world, render);
+        this.mouseController = new MouseController(world, brush, keyController, scale);
+        this.loop = new SimulationLoop(world, render,
+                keyController, mouseController, brush);
 
-            Brush brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
-            this.swingRender = new RenderingEngine(simWidth, simHeight, world, scale);
-            this.engine = swingRender;
-            this.keyController = new KeyboardController(brush, world, swingRender);
-            this.mouseController = new MouseController(world, brush, keyController, scale);
-            this.loop = new SimulationLoop(world, swingRender, keyController, mouseController, brush);
-            this.cardLayout = new CardLayout();
-            this.mainContainer = new JPanel(cardLayout);
-            Menu menuPanel = new Menu(this::start);
+        this.cardLayout = new CardLayout();
+        this.mainContainer = new JPanel(cardLayout);
+        Menu menuPanel = new Menu(this::start);
 
-            mainContainer.add(menuPanel, "MENU");
-            mainContainer.add(swingRender, "GAME");
+        mainContainer.add(menuPanel, "MENU");
+        mainContainer.add(render, "GAME");
 
-            frame.add(mainContainer);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-            cardLayout.show(mainContainer, "MENU");
-        }
+        add(mainContainer);
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+        cardLayout.show(mainContainer, "MENU");
     }
 
     private void start() {
-        if (cardLayout != null && mainContainer != null && swingRender != null) {
-            cardLayout.show(mainContainer, "GAME");
-            frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            swingRender.setFocusTraversalKeysEnabled(false);
-            swingRender.requestFocusInWindow();
-            swingRender.addMouseListener(mouseController);
-            swingRender.addMouseMotionListener(mouseController);
-            swingRender.addMouseWheelListener(mouseController);
-            swingRender.addKeyListener(keyController);
-            frame.addKeyListener(keyController);
-
-            loop.start();
-            log.info("Simulation loop started from menu.");
-        }
-    }
-
-    public void run3DMainLoop() {
-        while (!engine.shouldClose()) {
-            engine.render(world, null, null, null);
-        }
-        engine.cleanup();
+        cardLayout.show(mainContainer, "GAME");
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        render.setFocusTraversalKeysEnabled(false);
+        render.requestFocusInWindow();
+        render.addMouseListener(mouseController);
+        render.addMouseMotionListener(mouseController);
+        render.addMouseWheelListener(mouseController);
+        render.addKeyListener(keyController);
+        addKeyListener(keyController);
+        loop.start();
+        log.info("Simulation loop started from menu.");
     }
 
     static void main() {
-        if (K.IS_3D) {
-            App app = new App(K.APP_TITLE + K.VERSION, K.DEFAULT_SIM_WIDTH,
-                    K.DEFAULT_SIM_HEIGHT,
-                    K.DEFAULT_SIM_DEPTH, K.DEFAULT_SCALE, true);
-            app.run3DMainLoop();
-        } else {
-            SwingUtilities.invokeLater(() -> new App(
-                    K.APP_TITLE + K.VERSION,
-                    K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT, 1,
-                    K.DEFAULT_SCALE, false));
-        }
+        SwingUtilities.invokeLater(() -> new App(
+                K.APP_TITLE + K.VERSION,
+                K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
+                K.DEFAULT_SCALE));
     }
 }
