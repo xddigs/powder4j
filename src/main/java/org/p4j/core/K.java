@@ -31,7 +31,6 @@ public final class K {
 
     public static final int BUTTON_ANIMATION_DELAY_MS = 15;
     public static final float BUTTON_ANIMATION_THRESHOLD = 0.003f;
-    public static final float BUTTON_ANIMATION_LERP_FACTOR = 0.3f;
 
     public static final int BUTTON_CORNER_RADIUS = 24;
     public static final double BUTTON_CENTER_DIVISOR = 2.0;
@@ -126,8 +125,8 @@ public final class K {
     public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
     public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
 
-    public static final float HEAT_ADD_FIRE = 20.0f;
-    public static final float HEAT_ADD_LAVA = 100.0f;
+    public static final float HEAT_ADD_FIRE = 10.0f;
+    public static final float HEAT_ADD_LAVA = 80.0f;
 
     public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
@@ -159,7 +158,6 @@ public final class K {
     public static final String HUD_SLIDER_MINUS_SYMBOL = "-";
 
     public static final int HUD_SLIDER_SYMBOL_OFFSET = 15;
-    public static final int WINDOW_SHAKING_THRESHOLD = 5;
     public static final int INERTIA_MAX_STEP_LIMIT = 20;
 
     public static final float INERTIA_SENSITIVITY = 0.35f;
