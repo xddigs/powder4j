@@ -174,10 +174,6 @@ public enum ElementID {
         return isMetal;
     }
 
-    public State getState() {
-        return state;
-    }
-
     public boolean isLiquid() {
         return state == State.LIQUID;
     }

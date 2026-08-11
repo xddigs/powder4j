@@ -132,7 +132,7 @@ public class MovementEngine {
                     world.swap(currentIdx, aboveIdx);
 
                     if (targetBeforeSwap == ElementID.VOID.getId()) {
-                        leaveGasTrail(prevIdx, type);
+                        leaveGasTrail(prevIdx);
                     }
 
                     currentY = aboveY;
@@ -154,7 +154,7 @@ public class MovementEngine {
                                 world.swap(currentIdx, diagIdx);
 
                                 if (targetBeforeSwap == ElementID.VOID.getId()) {
-                                    leaveGasTrail(prevIdx, type);
+                                    leaveGasTrail(prevIdx);
                                 }
 
                                 currentX = diagX;
@@ -184,7 +184,7 @@ public class MovementEngine {
         return hasMoved;
     }
 
-    private void leaveGasTrail(int trailIdx, ElementID gasType) {
+    private void leaveGasTrail(int trailIdx) {
         if (ThreadLocalRandom.current().nextFloat() >
                 K.GAS_TRAIL_CHANCE) return;
         byte[] grid = world.getGrid();
