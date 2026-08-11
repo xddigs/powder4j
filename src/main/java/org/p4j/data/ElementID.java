@@ -50,7 +50,7 @@ public enum ElementID {
     STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, null, null),
     ALUMINUM((byte) 42, "Aluminum", "Al", 0xFFD4D8DD, true, 3, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
     COPPER((byte) 43, "Copper", "Cu", 0xFFB87333, true, 4, false, true, false, false, true, State.SOLID, true, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null),
-    COPPER_OXIDIZED((byte) 44, "Oxidized Copper", "Cu2O", 0xFF43B3AE, false, 4, false, false, false, false, false, State.SOLID, false, 0, 20.0f, 1235.0f, Float.MAX_VALUE, 0.51f, 0.20f, "LAVA", null),
+    COPPER_OXIDIZED((byte) 44, "Oxidized Copper", "Cu2O", 0xFF43B3AE, false, 4, false, false, false, false, false, State.SOLID, true, 0, 20.0f, 1235.0f, Float.MAX_VALUE, 0.51f, 0.20f, "LAVA", null),
     BEIGE_POWDER((byte) 45, "Beige Powder", "C25H52(p)", 0xFFE6D7B8, false, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 62.0f, Float.MAX_VALUE, 2.00f, 0.20f, "WAX_LIQUID", null),
     WAX((byte) 46, "Wax", "C25H52", 0xFFF5E6CC, false, 4, true, false, false, false, false, State.SOLID, false, 0, 20.0f, 62.0f, Float.MAX_VALUE, 2.14f, 0.25f, "WAX_LIQUID", null),
     WAX_LIQUID((byte) 47, "Liquid Wax", "C25H52(l)", 0xFFE6C894, false, 3, true, false, false, false, false, State.LIQUID, false, 2, 70.0f, Float.MAX_VALUE, 370.0f, 2.50f, 0.15f, null, "METHANE"),
