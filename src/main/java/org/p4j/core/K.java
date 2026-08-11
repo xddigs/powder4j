@@ -31,6 +31,7 @@ public final class K {
 
     public static final int BUTTON_ANIMATION_DELAY_MS = 15;
     public static final float BUTTON_ANIMATION_THRESHOLD = 0.003f;
+    public static final float BUTTON_ANIMATION_LERP_FACTOR = 0.15f;
 
     public static final int BUTTON_CORNER_RADIUS = 24;
     public static final double BUTTON_CENTER_DIVISOR = 2.0;
