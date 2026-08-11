@@ -19,6 +19,23 @@ public final class K {
     public static final int DEFAULT_SIM_HEIGHT = 200;
     public static final int DEFAULT_SCALE = 4;
 
+    public static final float BUTTON_DEFAULT_SCALE = 1.0f;
+    public static final float BUTTON_HOVER_SCALE = 1.05f;
+    public static final float BUTTON_PRESSED_SCALE = 0.95f;
+    public static final int BUTTON_MARGIN = 8;
+
+    public static final int BUTTON_PADDING_TOP = 14;
+    public static final int BUTTON_PADDING_LEFT = 36;
+    public static final int BUTTON_PADDING_BOTTOM = 14;
+    public static final int BUTTON_PADDING_RIGHT = 36;
+
+    public static final int BUTTON_ANIMATION_DELAY_MS = 15;
+    public static final float BUTTON_ANIMATION_THRESHOLD = 0.003f;
+    public static final float BUTTON_ANIMATION_LERP_FACTOR = 0.3f;
+
+    public static final int BUTTON_CORNER_RADIUS = 24;
+    public static final double BUTTON_CENTER_DIVISOR = 2.0;
+
     public static final Color GAME_BACKGROUND_COLOR = new Color(24, 24, 37);
     public static final Color TEXT_COLOR = new Color(202, 211, 245);
     public static final Color TEXT_COLOR_UNSELECTED = new Color(150, 160, 200);
