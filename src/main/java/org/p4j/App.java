@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
+@SuppressWarnings("unused")
 public class App extends JFrame {
     private static final Logger log = LoggerFactory.getLogger(App.class);
     private final CardLayout cardLayout;
@@ -41,7 +42,7 @@ public class App extends JFrame {
 
         this.keyController = new KeyboardController(brush, world, render);
         this.mouseController = new MouseController(world, brush, keyController, scale);
-        this.loop = new SimulationLoop(world, render, palette,
+        this.loop = new SimulationLoop(world, render,
                 keyController, mouseController, brush);
 
         this.cardLayout = new CardLayout();
