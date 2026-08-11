@@ -66,6 +66,8 @@ public final class K {
     public static final double HUD_FULL_CIRCLE = 360.0;
     public static final double HUD_START_OFFSET_DEG = -90.0;
     public static final int HUD_TEXT_Y_OFFSET = 20;
+    public static final int LOUPE_SAMPLE_RADIUS = 3;
+    public static final int LOUPE_CELL_SIZE = 10;
 
     public static final String NANINF = "naninf";
     public static final String PAUSE_TEXT = "PAUSED";

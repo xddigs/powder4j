@@ -116,7 +116,10 @@ public class KeyboardController extends KeyAdapter {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
             wasTabPressed = false;
-            brush.setElement(selectableElements.get(selectedIndex));
+            List<ElementID> elements = getSelectableElements();
+            if (selectedIndex >= 0 && selectedIndex < elements.size()) {
+                brush.setElement(elements.get(selectedIndex));
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_ALT) {
@@ -195,7 +198,9 @@ public class KeyboardController extends KeyAdapter {
     }
 
     public List<ElementID> getSelectableElements() {
-        return selectableElements;
+        return Arrays.stream(ElementID.values())
+                .filter(ElementID::isSelectable)
+                .toList();
     }
 
     public List<BrushShape> getSelectableShapes() {

@@ -371,6 +371,15 @@ public class RenderingEngine extends Canvas {
                         MouseController mouseController) {
         Graphics2D g2 = (Graphics2D) g;
         if (brush.getElement() == null) return;
+
+        int mouseX = mouseController.getMouseX();
+        int mouseY = mouseController.getMouseY();
+
+        if (brush.getType() == BrushType.DROPPER) {
+            loupe(g2, mouseX, mouseY);
+            return;
+        }
+
         long lastRadiusChange = System.currentTimeMillis() - brush.getLastRadiusChangeTime();
         if (lastRadiusChange > K.HUD_SLIDER_VISIBLE_MS) {
             return;
@@ -385,9 +394,6 @@ public class RenderingEngine extends Canvas {
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
                 RenderingHints.VALUE_STROKE_PURE);
 
-        int mouseX = mouseController.getMouseX();
-        int mouseY = mouseController.getMouseY();
-
         int scaledRadius = brush.getRadius() * scale;
         int diameter = scaledRadius * 2;
 
@@ -400,6 +406,61 @@ public class RenderingEngine extends Canvas {
 
         g2.setComposite(AlphaComposite.getInstance(
                 AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
+    }
+
+    private void loupe(Graphics2D g2, int mouseX, int mouseY) {
+        int gridX = mouseX / scale;
+        int gridY = mouseY / scale;
+
+        int sampleRadius = K.LOUPE_SAMPLE_RADIUS;
+        int cellSize = K.LOUPE_CELL_SIZE;
+        int gridSize = (sampleRadius * 2 + 1) * cellSize;
+
+        int loupeX = mouseX - gridSize / 2;
+        int loupeY = mouseY - gridSize / 2;
+
+        Shape oldClip = g2.getClip();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Ellipse2D.Double loupeCircle = new Ellipse2D.Double(loupeX, loupeY, gridSize, gridSize);
+
+        g2.setClip(loupeCircle);
+        g2.setColor(K.GAME_BACKGROUND_COLOR);
+        g2.fill(loupeCircle);
+
+        for (int dy = -sampleRadius; dy <= sampleRadius; dy++) {
+            for (int dx = -sampleRadius; dx <= sampleRadius; dx++) {
+                int sx = gridX + dx;
+                int sy = gridY + dy;
+
+                int cellX = loupeX + (dx + sampleRadius) * cellSize;
+                int cellY = loupeY + (dy + sampleRadius) * cellSize;
+
+                if (world.isInBounds(sx, sy)) {
+                    int color = pixelBuffer[world.getIndex(sx, sy)];
+                    g2.setColor(new Color(color, true));
+                } else {
+                    g2.setColor(K.TEXT_COLOR);
+                }
+                g2.fillRect(cellX, cellY, cellSize, cellSize);
+                g2.setColor(new Color(0, 0, 0, 45));
+                g2.drawRect(cellX, cellY, cellSize, cellSize);
+            }
+        }
+
+        g2.setClip(oldClip);
+
+        int centerX = loupeX + sampleRadius * cellSize;
+        int centerY = loupeY + sampleRadius * cellSize;
+
+        g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+        g2.setColor(Color.WHITE);
+        g2.drawRect(centerX, centerY, cellSize, cellSize);
+        g2.setColor(Color.BLACK);
+        g2.drawRect(centerX - 1, centerY - 1, cellSize + 2, cellSize + 2);
+
+        g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+        g2.setColor(K.TEXT_COLOR);
+        g2.draw(loupeCircle);
     }
 
     private void info(Graphics2D g2,

@@ -1,5 +1,8 @@
 package org.p4j.data;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Defines the distinct types of elements available within the simulation.
  * Pure periodic table elements and thermal catalysts are selectable.
@@ -63,11 +66,12 @@ public enum ElementID {
     NITROGLYCERIN((byte) 54, "Nitroglycerin", "C3H5N3O9", 0xFF8BC34A, false, 2, true, false, false, false, false, State.LIQUID, false, 3, 20.0f, 13.0f, 50.0f, 1.80f, 0.10f, null, "FIRE"),
     REDSTONE((byte) 55, "Redstone", "Rs", 0xFFFF1100, true, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1200.0f, Float.MAX_VALUE, 0.70f, 0.95f, "LAVA", null);
 
+    private static final Logger log = LoggerFactory.getLogger(ElementID.class);
     private final byte id;
     private final String name;
     private final String symbol;
     private final int colorArgb;
-    private final boolean isSelectable;
+    private boolean isSelectable;
     private final int density;
     private final boolean isFlammable;
     private final boolean isCorrosible;
@@ -245,5 +249,14 @@ public enum ElementID {
             return VOID;
         }
         return BY_ID[index];
+    }
+
+    public static ElementID unlock(ElementID element) {
+        if (element == null || element == VOID) return VOID;
+        if (!element.isSelectable) {
+            element.isSelectable = true;
+            log.info("Unlocked: {}", element.name());
+        }
+        return element;
     }
 }

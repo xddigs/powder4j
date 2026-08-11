@@ -38,14 +38,25 @@ public class MouseController extends MouseAdapter implements
     @Override
     public void mousePressed(MouseEvent e) {
         if (keyboardController.wasTabPressed() ||
-            keyboardController.wasAltPressed() ||
-            keyboardController.wasShiftPressed()) return;
-
-        log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
-        isPressed = true;
+                keyboardController.wasAltPressed() ||
+                keyboardController.wasShiftPressed()) return;
 
         int gridX = e.getX() / scale;
         int gridY = e.getY() / scale;
+
+        if (brush.getType() == BrushType.DROPPER) {
+            if (world.isInBounds(gridX, gridY)) {
+                if (world.getElementAt(gridX, gridY) == ElementID.VOID) return;
+                ElementID newborn = world.getElementAt(gridX, gridY);
+                ElementID.unlock(newborn);
+                brush.setElement(newborn);
+                brush.setType(BrushType.BRUSH);
+            }
+            return;
+        }
+
+        log.trace("Mouse pressed at ({}, {})", e.getX(), e.getY());
+        isPressed = true;
 
         if (brush.getType() == BrushType.FILLER) {
             floodFill(gridX, gridY);
