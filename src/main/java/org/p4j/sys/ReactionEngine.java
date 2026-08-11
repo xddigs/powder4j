@@ -23,28 +23,42 @@ public class ReactionEngine {
     private void init() {
         registry.register(ElementID.IRON, ElementID.ALUMINUM,
                           ElementID.THERMITE, ElementID.THERMITE);
+
         registry.register(ElementID.COPPER, ElementID.THERMITE,
                           ElementID.REDSTONE, ElementID.REDSTONE);
+
         registry.register(ElementID.IRON, ElementID.CHROMIUM,
                           ElementID.STAINLESS_STEEL, ElementID.STAINLESS_STEEL);
+
         registry.register(ElementID.OXYGEN, ElementID.COPPER,
                           ElementID.COPPER_OXIDIZED, ElementID.COPPER_OXIDIZED);
+
         registry.register(ElementID.HYDROGEN, ElementID.CHLORINE,
                           ElementID.ACID, ElementID.ACID);
+
         registry.register(ElementID.ACID, ElementID.STEEL,
                           ElementID.ASH, ElementID.ASH);
+
         registry.register(ElementID.SULFUR, ElementID.CARBON,
                           ElementID.BLACK_POWDER, ElementID.BLACK_POWDER);
+
         registry.register(ElementID.SILICON, ElementID.OXYGEN,
                           ElementID.SAND, ElementID.SAND);
+
         registry.register(ElementID.SODIUM, ElementID.ACID,
                           ElementID.SALT, ElementID.HYDROGEN);
+
         registry.register(ElementID.SODIUM, ElementID.WATER,
                           ElementID.SODIUM_HYDROXIDE, ElementID.HYDROGEN);
+
         registry.register(ElementID.ACID, ElementID.OIL,
                           ElementID.NITROGLYCERIN, ElementID.WATER);
+
         registry.register(ElementID.ACID, ElementID.SODIUM_HYDROXIDE,
                           ElementID.SALT, ElementID.WATER);
+
+        registry.register(ElementID.GUNPOWDER, ElementID.SAND,
+                          ElementID.TNT, ElementID.TNT);
     }
 
     private void registerReactions() {
