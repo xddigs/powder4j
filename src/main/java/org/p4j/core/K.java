@@ -80,25 +80,16 @@ public final class K {
 
     public static final long ESCAPE_DOUBLE_PRESS_INTERVAL = 500;
 
-    public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
-    public static final double STEAM_CONDENSATION_CHANCE = 0.05;
     public static final double HYDROGEN_DISSIPATION_CHANCE = 0.08;
-    public static final double FIRE_EVAPORATION_CHANCE = 0.2;
-    public static final double FIRE_DISSIPATION_CHANCE = 0.05;
     public static final double WOOD_IGNITION_CHANCE = 0.02;
     public static final double FIRE_IGNITION_CHANCE = 0.03;
     public static final double WATER_CREATION_CHANCE = 0.25;
-    public static final double GLASS_FUSION_CHANCE = 0.05;
     public static final double MUD_SPREAD_CHANCE = 0.15;
     public static final double GROW_TREE_CHANCE = 0.005;
     public static final double GROW_GRASS_CHANCE = 0.960;
     public static final double WOOD_ABSORPTION_CHANCE = 0.2;
     public static final double GASOLINE_CREATION_CHANCE = 0.15;
-    public static final double GRAVEL_CREATION_CHANCE = 0.2;
-    public static final double LAVA_CREATION_CHANCE = 0.001;
-    public static final double CEMENT_CREATION_CHANCE = 0.15;
-    public static final double METHANE_CREATION_CHANCE = 0.1;
     public static final double GAS_TRAIL_CHANCE = 0.04;
 
     public static final int TREE_WATER_ABSORB_RADIUS = 3;
@@ -175,9 +166,6 @@ public final class K {
     public static final int MOUSE_OFFSET_X = 20;
     public static final int MOUSE_OFFSET_Y = 20;
     public static final int SHAPER_ICON_Y_OFFSET = 2;
-
-    public static final double FIRE_SMOKE_GRAY_THRESHOLD = 0.66;
-    public static final double FIRE_NEAR_FUEL_PAUSE_CHANCE = 0.7;
 
     public static final int MUD_MAX_DEPTH = 15;
 
