@@ -38,6 +38,15 @@ public class ReactionEngine {
 
         registry.register(ElementID.SODIUM, ElementID.ACID,
                           ElementID.SALT, ElementID.HYDROGEN);
+
+        registry.register(ElementID.SODIUM, ElementID.WATER,
+                ElementID.SODIUM_HYDROXIDE, ElementID.HYDROGEN);
+
+        registry.register(ElementID.ACID, ElementID.OIL,
+                ElementID.NITROGLYCERIN, ElementID.WATER);
+
+        registry.register(ElementID.ACID, ElementID.SODIUM_HYDROXIDE,
+                ElementID.SALT, ElementID.WATER);
     }
 
     private void registerReactions() {
@@ -50,6 +59,7 @@ public class ReactionEngine {
         register(ElementID.ACID, this::reactAcid);
         register(ElementID.WOOD, this::reactWood);
         register(ElementID.HYDROGEN, this::reactHydrogen);
+        register(ElementID.NITROGLYCERIN, this::reactNitroglycerin);
     }
 
     private void register(ElementID id, ElementReaction reaction) {
@@ -518,6 +528,27 @@ public class ReactionEngine {
             }
         }
         return false;
+    }
+
+    private boolean reactNitroglycerin(int x, int y, int idx) {
+        float[] velocity = world.getVelocity();
+
+        if (Math.abs(velocity[idx]) > K.NITRO_SPEED_MIN) {
+            ExplosionSystem.createExplosion(world, x, y,
+                    K.GENERAL_EXPLOSION_RADIUS * 2);
+            return true;
+        }
+
+        return forEachNeighbor(x, y, (_, _, _, neighbor) -> {
+            if (neighbor == ElementID.FIRE ||
+                neighbor == ElementID.LAVA ||
+                neighbor.isHot()) {
+                ExplosionSystem.createExplosion(world, x, y,
+                        K.GENERAL_EXPLOSION_RADIUS * 2);
+                return true;
+            }
+            return false;
+        });
     }
 
     private boolean canBeSoaked(int waterX, int waterY, int waterIdx) {
