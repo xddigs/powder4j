@@ -19,7 +19,7 @@ public enum ElementID {
     ASH((byte) 10, "Ash", "C/Ash", 0xFF5C5C5C, false, 2, false, false, false, false, false, State.SOLID, true, 0, 20.0f, 1200.0f, Float.MAX_VALUE, 0.80f, 0.10f, "LAVA", null),
     ACID((byte) 11, "Acid", "HCl", 0xFF2ECC71, false, 2, false, false, false, false, false, State.LIQUID, false, 5, 20.0f, -30.0f, 108.0f, 3.10f, 0.50f, null, null),
     SALT((byte) 12, "Salt", "NaCl", 0xFFF5F5F5, false, 3, false, false, false, false, false, State.SOLID, true, 0, 20.0f, 801.0f, 1465.0f, 0.85f, 0.20f, "LAVA", null),
-    SAND((byte) 13, "Sand", "SiO2", 0xFFE5C07B, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1700.0f, Float.MAX_VALUE, 0.80f, 0.25f, "LAVA", null),
+    SAND((byte) 13, "Sand", "SiO2", 0xFFE5C07B, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1700.0f, 200.0f, 0.80f, 0.25f, "LAVA", "GLASS"),
     GLASS((byte) 14, "Glass", "SiO2", 0x80E0F7FA, false, 5, false, false, false, false, false, State.SOLID, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.84f, 0.80f, "LAVA", null),
     LAVA((byte) 15, "Lava", "SiO2(l)", 0xFFFF4500, false, 3, false, false, false, true, false, State.LIQUID, false, 2, 1200.0f, Float.MAX_VALUE, Float.MAX_VALUE, 1.00f, 0.60f, null, null),
     OBSIDIAN((byte) 16, "Obsidian", "SiO2", 0xFF1C1326, false, 5, false, false, false, false, false, State.SOLID, false, 0, 20.0f, 1100.0f, Float.MAX_VALUE, 0.84f, 0.30f, "LAVA", null),
@@ -44,19 +44,19 @@ public enum ElementID {
     BLACK_POWDER((byte) 35, "Black Powder", "S+C", 0xFF4A442D, false, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 250.0f, Float.MAX_VALUE, 0.71f, 0.30f, "CARBON_MONOXIDE", null),
     CARBON((byte) 36, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 3550.0f, Float.MAX_VALUE, 0.71f, 0.60f, "CARBON_MONOXIDE", null),
     OXYGEN((byte) 37, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, State.GAS, false, 3, 20.0f, -218.8f, -183.0f, 0.92f, 0.02f, null, null),
-    IRON((byte) 38, "Iron", "Fe", 0xFF795548, false, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
-    NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, false, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
+    IRON((byte) 38, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
+    NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, true, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
     STEEL((byte) 40, "Steel", "Fe+C", 0xFF708090, false, 4, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
-    STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, "LAVA", null),
-    ALUMINUM((byte) 42, "Aluminum", "Al", 0xFFD4D8DD, false, 3, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
-    COPPER((byte) 43, "Copper", "Cu", 0xFFB87333, false, 4, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null),
+    STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, null, null),
+    ALUMINUM((byte) 42, "Aluminum", "Al", 0xFFD4D8DD, true, 3, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
+    COPPER((byte) 43, "Copper", "Cu", 0xFFB87333, true, 4, false, true, false, false, true, State.SOLID, true, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null),
     COPPER_OXIDIZED((byte) 44, "Oxidized Copper", "Cu2O", 0xFF43B3AE, false, 4, false, false, false, false, false, State.SOLID, false, 0, 20.0f, 1235.0f, Float.MAX_VALUE, 0.51f, 0.20f, "LAVA", null),
     BEIGE_POWDER((byte) 45, "Beige Powder", "C25H52(p)", 0xFFE6D7B8, false, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 62.0f, Float.MAX_VALUE, 2.00f, 0.20f, "WAX_LIQUID", null),
     WAX((byte) 46, "Wax", "C25H52", 0xFFF5E6CC, false, 4, true, false, false, false, false, State.SOLID, false, 0, 20.0f, 62.0f, Float.MAX_VALUE, 2.14f, 0.25f, "WAX_LIQUID", null),
     WAX_LIQUID((byte) 47, "Liquid Wax", "C25H52(l)", 0xFFE6C894, false, 3, true, false, false, false, false, State.LIQUID, false, 2, 70.0f, Float.MAX_VALUE, 370.0f, 2.50f, 0.15f, null, "METHANE"),
     GALLIUM((byte) 48, "Gallium", "Ga", 0xFF8FA3AD, true, 5, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 29.8f, 2204.0f, 0.37f, 0.40f, "GALLIUM_LIQUID", null),
     GALLIUM_LIQUID((byte) 49, "Liquid Gallium", "Ga(l)", 0xFFB0BEC5, false, 5, false, true, false, false, true, State.LIQUID, false, 3, 35.0f, Float.MAX_VALUE, 2204.0f, 0.37f, 0.40f, null, null),
-    TITANIUM((byte) 50, "Titanium", "Ti", 0xFF90A4AE, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1668.0f, 3287.0f, 0.52f, 0.65f, "LAVA", null);
+    TITANIUM((byte) 50, "Titanium", "Ti", 0xFF90A4AE, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1668.0f, 3287.0f, 0.52f, 0.65f, "ASH", null);
 
     private final byte id;
     private final String name;
