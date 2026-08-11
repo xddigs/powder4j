@@ -11,9 +11,12 @@ Powder4J models complex emergent physics through local cell interactions. By app
 - **Dynamic Material Engine**: Simulates distinct physical properties for solids, fluids, gases, and reactive elements (Sand, Water, Fire, Lava, Mercury, etc.) with custom visual shading and noise filters.
 - **Radial Selection Menus**:
     - **Element Wheel (`TAB`)**: Quick-access radial HUD to select materials on the fly.
+    - **Change Brush Size (`Wheel`)**: Adjusts the brush size in real-time.
     - **Shape Wheel (`ALT`)**: Radial menu to switch brush geometries (**Circle**, **Square**, **Triangle**).
     - **Tool Wheel (`SHIFT`)**: Radial menu to switch brush tools (**Brush**,
       **Eraser**, **Fill**).
+    - **Temperature Regulator (`CTRL + Wheel`)**: Adjusts the ambient 
+      temperature of the scene.
     - **Toggle Current Element Info (`V`)**: Displays the current material's properties in a HUD.
     - **Toggle HeatMap (`T`)**: Displays a heat map of the current material's density.
     - **Clear Everything (`E`)**: Just a tiny bit more convinient than clearing by hand.
