@@ -116,6 +116,7 @@ public class Render extends Canvas {
         }
 
         slider(g, brush);
+        cursor(g, brush, mouseController);
         regulate(g, brush);
 
         if (!K.IS_RUNNING) {
@@ -190,6 +191,42 @@ public class Render extends Canvas {
 
         g.dispose();
         bs.show();
+    }
+
+    private void cursor(Graphics g,
+                        Brush brush,
+                        MouseController mouseController) {
+        Graphics2D g2 = (Graphics2D) g;
+        if (brush.getElement() == null) return;
+        long lastRadiusChange = System.currentTimeMillis() - brush.getLastRadiusChangeTime();
+        if (lastRadiusChange > K.HUD_SLIDER_VISIBLE_MS) {
+            return;
+        }
+
+        float opacity = getOpacity(lastRadiusChange);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_PURE);
+
+        int mouseX = mouseController.getMouseX();
+        int mouseY = mouseController.getMouseY();
+
+        int scaledRadius = brush.getRadius() * scale;
+        int diameter = scaledRadius * 2;
+
+        int drawX = mouseX - scaledRadius;
+        int drawY = mouseY - scaledRadius;
+
+        g2.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+        g2.setColor(K.TEXT_COLOR);
+        g2.drawOval(drawX, drawY, diameter, diameter);
+
+        g2.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
     }
 
     private void info(Graphics2D g2,
