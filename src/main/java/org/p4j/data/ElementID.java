@@ -47,7 +47,7 @@ public enum ElementID {
     IRON((byte) 38, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
     NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, false, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
     STEEL((byte) 40, "Steel", "Fe+C", 0xFF708090, false, 4, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
-    STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, null, null),
+    STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, false, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, null, null),
     ALUMINUM((byte) 42, "Aluminum", "Al", 0xFFD4D8DD, true, 3, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 660.3f, 2470.0f, 0.90f, 0.88f, "LAVA", null),
     COPPER((byte) 43, "Copper", "Cu", 0xFFB87333, true, 4, false, true, false, false, true, State.SOLID, true, 0, 20.0f, 1085.0f, 2562.0f, 0.39f, 0.98f, "LAVA", null),
     COPPER_OXIDIZED((byte) 44, "Oxidized Copper", "Cu2O", 0xFF43B3AE, false, 4, false, false, false, false, false, State.SOLID, true, 0, 20.0f, 1235.0f, Float.MAX_VALUE, 0.51f, 0.20f, "LAVA", null),
@@ -60,7 +60,8 @@ public enum ElementID {
     LIQUID_NITROGEN((byte) 51, "Liquid Nitrogen", "LN2", 0xFF80D8FF, true, 2, false, false, false, false, false, State.LIQUID, false, 5, -196.0f, Float.MAX_VALUE, -195.8f, 2.04f, 0.13f, null, "NITROGEN"),
     SODIUM_HYDROXIDE((byte) 52, "Sodium Hydroxide", "NaOH", 0xFFECEFF1, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 318.0f, 1388.0f, 1.40f, 0.50f, "LAVA", null),
     GOLD((byte) 53, "Gold", "Au", 0xFFFFD700, false, 5, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1064.0f, 2856.0f, 0.13f, 1.00f, "LAVA", null),
-    NITROGLYCERIN((byte) 54, "Nitroglycerin", "C3H5N3O9", 0xFF8BC34A, false, 2, true, false, false, false, false, State.LIQUID, false, 3, 20.0f, 13.0f, 50.0f, 1.80f, 0.10f, null, "FIRE");
+    NITROGLYCERIN((byte) 54, "Nitroglycerin", "C3H5N3O9", 0xFF8BC34A, false, 2, true, false, false, false, false, State.LIQUID, false, 3, 20.0f, 13.0f, 50.0f, 1.80f, 0.10f, null, "FIRE"),
+    REDSTONE((byte) 55, "Redstone", "Rs", 0xFFFF1100, true, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1200.0f, Float.MAX_VALUE, 0.70f, 0.95f, "LAVA", null);
 
     private final byte id;
     private final String name;
