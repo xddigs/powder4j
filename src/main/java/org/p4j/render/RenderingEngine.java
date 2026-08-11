@@ -19,6 +19,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Responsible for visual representation of the simulation state.
@@ -38,6 +40,11 @@ public class RenderingEngine extends Canvas {
     private float shockwaveAlpha = K.SHOCKWAVE_ALPHA;
     private int shockwaveCenterX;
     private int shockwaveCenterY;
+
+    @FunctionalInterface
+    private interface Slicer<T> {
+        void render(Graphics2D g, T item, boolean isSelected, int iconX, int iconY);
+    }
 
     public RenderingEngine(int simWidth, int simHeight, World world, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}",
@@ -103,7 +110,7 @@ public class RenderingEngine extends Canvas {
         }
 
         if (keyController.wasShiftPressed()) {
-            typer(g, keyController, mouseController);
+            tooler(g, keyController, mouseController);
         }
 
         if (keyController.wasEPressed()) {
@@ -193,6 +200,172 @@ public class RenderingEngine extends Canvas {
         bs.show();
     }
 
+    private <T> void radial(
+            Graphics2D g,
+            MouseController mouseController,
+            List<T> items,
+            int selectedIdx,
+            Consumer<Integer> onSelectIndex,
+            Function<T, String> nameExtractor,
+            Function<T, Color> highlightColorExtractor,
+            Slicer<T> contentRenderer
+    ) {
+        if (items == null || items.isEmpty()) return;
+
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        int totalItems = items.size();
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+        double outerRadius = K.HUD_OUTER_RADIUS;
+        double innerRadius = K.HUD_INNER_RADIUS;
+        double angleStep = K.HUD_FULL_CIRCLE / totalItems;
+
+        int mx = mouseController.getMouseX();
+        int my = mouseController.getMouseY();
+        double dx = mx - centerX;
+        double dy = my - centerY;
+        double distSq = dx * dx + dy * dy;
+
+        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
+            double angle = Math.toDegrees(Math.atan2(dy, dx));
+            if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG) % K.RENDERING_FULL_CIRCLE_DEGREES;
+            if (adjustedAngle < 0) adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
+
+            int hoveredIdx = (int) (adjustedAngle / angleStep);
+            if (hoveredIdx >= 0 && hoveredIdx < totalItems) {
+                onSelectIndex.accept(hoveredIdx);
+            }
+        }
+
+        Ellipse2D.Double innerHole = new Ellipse2D.Double(
+                centerX - innerRadius, centerY - innerRadius,
+                innerRadius * 2, innerRadius * 2
+        );
+
+        Area holeArea = new Area(innerHole);
+        Area selectedSliceArea = null;
+
+        for (int i = 0; i < totalItems; i++) {
+            T item = items.get(i);
+            boolean isSelected = (i == selectedIdx);
+            double startAngle = i * angleStep + K.HUD_START_OFFSET_DEG;
+
+            Arc2D.Double outerPie = new Arc2D.Double(
+                    centerX - outerRadius, centerY - outerRadius,
+                    outerRadius * 2, outerRadius * 2,
+                    -startAngle, -angleStep, Arc2D.PIE
+            );
+
+            Area sliceArea = new Area(outerPie);
+            sliceArea.subtract(holeArea);
+
+            Color fillColor = isSelected ? highlightColorExtractor.apply(item) : K.UI_BACKGROUND_COLOR;
+            g.setColor(fillColor);
+            g.fill(sliceArea);
+
+            if (isSelected) {
+                selectedSliceArea = sliceArea;
+            }
+
+            g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
+            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
+            g.draw(sliceArea);
+
+            double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
+            double iconRadius = (innerRadius + outerRadius) / 2.0;
+            int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
+            int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
+            contentRenderer.render(g, item, isSelected, iconX, iconY);
+        }
+
+        if (selectedSliceArea != null) {
+            g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
+            g.setColor(K.TEXT_COLOR);
+            g.draw(selectedSliceArea);
+        }
+
+        g.setColor(K.UI_BACKGROUND_COLOR);
+        g.fill(innerHole);
+        g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
+        g.setColor(K.TEXT_COLOR_UNSELECTED);
+        g.draw(innerHole);
+
+        if (selectedIdx >= 0 && selectedIdx < totalItems) {
+            T selectedItem = items.get(selectedIdx);
+            String text = nameExtractor.apply(selectedItem);
+
+            g.setFont(K.FONT_SMALL);
+            FontMetrics fm = g.getFontMetrics();
+            int textX = centerX - fm.stringWidth(text) / 2;
+            int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
+
+            g.setColor(K.TEXT_COLOR);
+            g.drawString(text, textX, textY);
+        }
+    }
+
+    private void drawSlider(Graphics2D g,
+                            int xPadding,
+                            float minVal, float maxVal, float currentVal,
+                            long lastChangeTime,
+                            Color fillColor,
+                            String topSymbol, String bottomSymbol) {
+
+        long timeSinceLastChange = System.currentTimeMillis() - lastChangeTime;
+        if (timeSinceLastChange > K.HUD_SLIDER_VISIBLE_MS) {
+            return;
+        }
+
+        float opacity = getOpacity(timeSinceLastChange);
+
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int sliderWidth = K.HUD_SLIDER_WIDTH;
+        int sliderHeight = getHeight() - (K.HUD_SLIDER_Y_PADDING * 2);
+        int sliderX = xPadding;
+        int sliderY = K.HUD_SLIDER_Y_PADDING;
+
+        g.setColor(K.UI_BACKGROUND_COLOR);
+        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight,
+                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
+
+        float ratio = (currentVal - minVal) / (maxVal - minVal);
+        ratio = Math.clamp(ratio, 0.0f, 1.0f);
+
+        int knobHeight = (int) (ratio * sliderHeight);
+        int knobY = sliderY + sliderHeight - knobHeight;
+
+        g.setColor(fillColor);
+        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight,
+                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
+
+        g.setFont(K.FONT_SMALL);
+        FontMetrics fm = g.getFontMetrics();
+
+        if (topSymbol != null && !topSymbol.isEmpty()) {
+            g.setColor(K.TEXT_COLOR);
+            g.drawString(topSymbol, sliderX + (sliderWidth / 2) -
+                            (fm.stringWidth(topSymbol) / 2),
+                    sliderY - K.HUD_SLIDER_SYMBOL_OFFSET);
+        }
+
+        if (bottomSymbol != null && !bottomSymbol.isEmpty()) {
+            g.setColor(K.TEXT_COLOR);
+            g.drawString(bottomSymbol, sliderX + (sliderWidth / 2) -
+                            (fm.stringWidth(bottomSymbol) / 2),
+                    sliderY + sliderHeight + fm.getAscent());
+        }
+
+        g.setComposite(AlphaComposite.getInstance(
+                AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
+    }
+
     private void cursor(Graphics g,
                         Brush brush,
                         MouseController mouseController) {
@@ -236,10 +409,10 @@ public class RenderingEngine extends Canvas {
         if (element == null) return;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-                            RenderingHints.VALUE_STROKE_PURE);
+                RenderingHints.VALUE_STROKE_PURE);
 
         g2.setFont(K.FONT_SMALL);
         FontMetrics fm = g2.getFontMetrics();
@@ -269,379 +442,57 @@ public class RenderingEngine extends Canvas {
         g2.drawString(elementInfo, textX, textY);
     }
 
-    private void wheel(Graphics2D g, KeyboardController keyController,
+    private void wheel(Graphics2D g,
+                       KeyboardController keyController,
                        MouseController mouseController) {
-        g.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g.setRenderingHint(
-                RenderingHints.KEY_STROKE_CONTROL,
-                RenderingHints.VALUE_STROKE_PURE);
-
-        List<ElementID> elements = keyController.getSelectableElements();
-        int totalElements = elements.size();
-
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
-        double outerRadius = K.HUD_OUTER_RADIUS;
-        double innerRadius = K.HUD_INNER_RADIUS;
-        double angleStep = K.HUD_FULL_CIRCLE / totalElements;
-
-        int mx = mouseController.getMouseX();
-        int my = mouseController.getMouseY();
-        double dx = mx - centerX;
-        double dy = my - centerY;
-        double distSq = dx * dx + dy * dy;
-
-        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
-            double angle = Math.toDegrees(Math.atan2(dy, dx));
-            if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
-                    % K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            if (adjustedAngle < 0) {
-                adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
-            }
-
-            int hoveredIdx = (int) (adjustedAngle / angleStep);
-            if (hoveredIdx >= 0 && hoveredIdx < totalElements) {
-                keyController.setSelectedIndex(hoveredIdx);
-            }
-        }
-
-        int selectedIdx = keyController.getSelectedIndex();
-        Ellipse2D.Double innerHole = new Ellipse2D.Double(
-                centerX - innerRadius, centerY - innerRadius,
-                innerRadius * 2, innerRadius * 2
+        radial(g, mouseController,
+                keyController.getSelectableElements(),
+                keyController.getSelectedIndex(),
+                keyController::setSelectedIndex,
+                el -> el.getName() + " (" + el.getSymbol() + ")",
+                el -> new Color(el.getColorArgb()),
+                (_, _, _, _, _) -> {}
         );
-
-        Area holeArea = new Area(innerHole);
-        Area selectedSliceArea = null;
-
-        for (int i = 0; i < totalElements; i++) {
-            ElementID el = elements.get(i);
-            double startAngle = i * angleStep + K.HUD_START_OFFSET_DEG;
-
-            Arc2D.Double outerPie = new Arc2D.Double(
-                    centerX - outerRadius, centerY - outerRadius,
-                    outerRadius * 2, outerRadius * 2,
-                    -startAngle, -angleStep, Arc2D.PIE
-            );
-
-            Area sliceArea = new Area(outerPie);
-            sliceArea.subtract(holeArea);
-
-            if (i == selectedIdx) {
-                selectedSliceArea = sliceArea;
-                g.setColor(new Color(el.getColorArgb()));
-            } else {
-                g.setColor(K.UI_BACKGROUND_COLOR);
-            }
-
-            g.fill(sliceArea);
-
-            g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
-            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
-            g.draw(sliceArea);
-        }
-
-        if (selectedSliceArea != null) {
-            g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(K.TEXT_COLOR);
-            g.draw(selectedSliceArea);
-        }
-
-        g.setColor(K.UI_BACKGROUND_COLOR);
-        g.fill(innerHole);
-        g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
-        g.setColor(K.TEXT_COLOR_UNSELECTED);
-        g.draw(innerHole);
-
-        ElementID selectedElement = elements.get(selectedIdx);
-        String elementName = selectedElement.getName();
-        elementName += " (" + selectedElement.getSymbol() + ")";
-        g.setFont(K.FONT_SMALL);
-        FontMetrics fm = g.getFontMetrics();
-        int textX = centerX - fm.stringWidth(elementName) / 2;
-        int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
-
-        g.setColor(K.TEXT_COLOR);
-        g.drawString(elementName, textX, textY);
     }
 
-    private void shaper(Graphics2D g, KeyboardController keyController,
+    private void shaper(Graphics2D g,
+                        KeyboardController keyController,
                         MouseController mouseController) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
-        List<BrushShape> shapes = keyController.getSelectableShapes();
-        int totalShapes = shapes.size();
-
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
-        double outerRadius = K.HUD_OUTER_RADIUS;
-        double innerRadius = K.HUD_INNER_RADIUS;
-        double angleStep = K.HUD_FULL_CIRCLE / totalShapes;
-
-        int mx = mouseController.getMouseX();
-        int my = mouseController.getMouseY();
-        double dx = mx - centerX;
-        double dy = my - centerY;
-        double distSq = dx * dx + dy * dy;
-
-        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
-            double angle = Math.toDegrees(Math.atan2(dy, dx));
-            if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
-                    % K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            if (adjustedAngle < 0) {
-                adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
-            }
-
-            int hoveredIdx = (int) (adjustedAngle / angleStep);
-            if (hoveredIdx >= 0 && hoveredIdx < totalShapes) {
-                keyController.setSelectedShapeIndex(hoveredIdx);
-            }
-        }
-
-        int selectedIdx = keyController.getSelectedShapeIndex();
-        Ellipse2D.Double innerHole = new Ellipse2D.Double(
-                centerX - innerRadius, centerY - innerRadius,
-                innerRadius * 2, innerRadius * 2
+        radial(g, mouseController,
+                keyController.getSelectableShapes(),
+                keyController.getSelectedShapeIndex(),
+                keyController::setSelectedShapeIndex,
+                BrushShape::getName,
+                _ -> K.HIGHLIGHT_COLOR,
+                (g2d, shape, _, iconX, iconY) -> {
+                    g2d.setFont(K.FONT_BIG);
+                    g2d.setColor(K.TEXT_COLOR);
+                    FontMetrics iconFm = g2d.getFontMetrics();
+                    g2d.drawString(shape.getSymbol(),
+                            iconX - iconFm.stringWidth(shape.getSymbol()) / 2,
+                            iconY + iconFm.getAscent() / 2 - K.SHAPER_ICON_Y_OFFSET);
+                }
         );
-
-        Area holeArea = new Area(innerHole);
-        Area selectedSliceArea = null;
-
-        for (int i = 0; i < totalShapes; i++) {
-            BrushShape shape = shapes.get(i);
-            double startAngle = i * angleStep + K.HUD_START_OFFSET_DEG;
-
-            Arc2D.Double outerPie = new Arc2D.Double(
-                    centerX - outerRadius, centerY - outerRadius,
-                    outerRadius * 2, outerRadius * 2,
-                    -startAngle, -angleStep, Arc2D.PIE
-            );
-
-            Area sliceArea = new Area(outerPie);
-            sliceArea.subtract(holeArea);
-
-            if (i == selectedIdx) {
-                selectedSliceArea = sliceArea;
-                g.setColor(K.HIGHLIGHT_COLOR);
-            } else {
-                g.setColor(K.UI_BACKGROUND_COLOR);
-            }
-
-            g.fill(sliceArea);
-
-            g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
-            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
-            g.draw(sliceArea);
-
-            double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
-            double iconRadius = (innerRadius + outerRadius) / 2.0;
-            int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
-            int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
-
-            g.setFont(K.FONT_BIG);
-            g.setColor(K.TEXT_COLOR);
-            FontMetrics iconFm = g.getFontMetrics();
-            g.drawString(shape.getSymbol(),
-                    iconX - iconFm.stringWidth(shape.getSymbol()) / 2,
-                    iconY + iconFm.getAscent() / 2 - K.SHAPER_ICON_Y_OFFSET);
-        }
-
-        if (selectedSliceArea != null) {
-            g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(K.TEXT_COLOR);
-            g.draw(selectedSliceArea);
-        }
-
-        g.setColor(K.UI_BACKGROUND_COLOR);
-        g.fill(innerHole);
-        g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
-        g.setColor(K.TEXT_COLOR_UNSELECTED);
-        g.draw(innerHole);
-
-        BrushShape selectedShape = shapes.get(selectedIdx);
-        String shapeText = selectedShape.getName();
-        g.setFont(K.FONT_SMALL);
-        FontMetrics fm = g.getFontMetrics();
-        int textX = centerX - fm.stringWidth(shapeText) / 2;
-        int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
-
-        g.setColor(K.TEXT_COLOR);
-        g.drawString(shapeText, textX, textY);
     }
 
-    private void typer(Graphics2D g, KeyboardController keyController,
+    private void tooler(Graphics2D g,
+                        KeyboardController keyController,
                         MouseController mouseController) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
-        List<BrushType> types = keyController.getSelectableTypes();
-        int totalTypes = types.size();
-
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
-        double outerRadius = K.HUD_OUTER_RADIUS;
-        double innerRadius = K.HUD_INNER_RADIUS;
-        double angleStep = K.HUD_FULL_CIRCLE / totalTypes;
-
-        int mx = mouseController.getMouseX();
-        int my = mouseController.getMouseY();
-        double dx = mx - centerX;
-        double dy = my - centerY;
-        double distSq = dx * dx + dy * dy;
-
-        if (distSq > innerRadius * innerRadius && distSq < outerRadius * outerRadius) {
-            double angle = Math.toDegrees(Math.atan2(dy, dx));
-            if (angle < 0) angle += K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            double adjustedAngle = (angle - K.HUD_START_OFFSET_DEG)
-                    % K.RENDERING_FULL_CIRCLE_DEGREES;
-
-            if (adjustedAngle < 0) {
-                adjustedAngle += K.RENDERING_FULL_CIRCLE_DEGREES;
-            }
-
-            int hoveredIdx = (int) (adjustedAngle / angleStep);
-            if (hoveredIdx >= 0 && hoveredIdx < totalTypes) {
-                keyController.setSelectedTypeIndex(hoveredIdx);
-            }
-        }
-
-        int selectedIdx = keyController.getSelectedTypeIndex();
-        Ellipse2D.Double innerHole = new Ellipse2D.Double(
-                centerX - innerRadius, centerY - innerRadius,
-                innerRadius * 2, innerRadius * 2
+        radial(g, mouseController,
+                keyController.getSelectableTypes(),
+                keyController.getSelectedTypeIndex(),
+                keyController::setSelectedTypeIndex,
+                BrushType::getName,
+                _ -> K.HIGHLIGHT_COLOR,
+                (g2d, type, _, iconX, iconY) -> {
+                    g2d.setFont(K.FONT_BIG);
+                    g2d.setColor(K.TEXT_COLOR);
+                    FontMetrics iconFm = g2d.getFontMetrics();
+                    g2d.drawString(type.getSymbol(),
+                            iconX - iconFm.stringWidth(type.getSymbol()) / 2,
+                            iconY + iconFm.getAscent() / 2 - K.SHAPER_ICON_Y_OFFSET);
+                }
         );
-
-        Area holeArea = new Area(innerHole);
-        Area selectedSliceArea = null;
-
-        for (int i = 0; i < totalTypes; i++) {
-            BrushType type = types.get(i);
-            double startAngle = i * angleStep + K.HUD_START_OFFSET_DEG;
-
-            Arc2D.Double outerPie = new Arc2D.Double(
-                    centerX - outerRadius, centerY - outerRadius,
-                    outerRadius * 2, outerRadius * 2,
-                    -startAngle, -angleStep, Arc2D.PIE
-            );
-
-            Area sliceArea = new Area(outerPie);
-            sliceArea.subtract(holeArea);
-
-            if (i == selectedIdx) {
-                selectedSliceArea = sliceArea;
-                g.setColor(K.HIGHLIGHT_COLOR);
-            } else {
-                g.setColor(K.UI_BACKGROUND_COLOR);
-            }
-
-            g.fill(sliceArea);
-            g.setStroke(new BasicStroke(K.HUD_BORDER_STROKE_WIDTH));
-            g.setColor(K.UI_BACKGROUND_BORDER_COLOR);
-            g.draw(sliceArea);
-
-            double midAngleRad = Math.toRadians(startAngle + angleStep / 2);
-            double iconRadius = (innerRadius + outerRadius) / 2.0;
-            int iconX = (int) (centerX + iconRadius * Math.cos(midAngleRad));
-            int iconY = (int) (centerY + iconRadius * Math.sin(midAngleRad));
-
-            g.setFont(K.FONT_BIG);
-            g.setColor(K.TEXT_COLOR);
-            FontMetrics iconFm = g.getFontMetrics();
-            g.drawString(type.getSymbol(),
-                    iconX - iconFm.stringWidth(type.getSymbol()) / 2,
-                    iconY + iconFm.getAscent() / 2 - K.SHAPER_ICON_Y_OFFSET);
-        }
-
-        if (selectedSliceArea != null) {
-            g.setStroke(new BasicStroke(K.HUD_SELECTED_STROKE_WIDTH));
-            g.setColor(K.TEXT_COLOR);
-            g.draw(selectedSliceArea);
-        }
-
-        g.setColor(K.UI_BACKGROUND_COLOR);
-        g.fill(innerHole);
-        g.setStroke(new BasicStroke(K.HUD_CENTER_STROKE_WIDTH));
-        g.setColor(K.TEXT_COLOR_UNSELECTED);
-        g.draw(innerHole);
-
-        BrushType selectedType = types.get(selectedIdx);
-        String typeText = selectedType.getName();
-        g.setFont(K.FONT_SMALL);
-        FontMetrics fm = g.getFontMetrics();
-        int textX = centerX - fm.stringWidth(typeText) / 2;
-        int textY = centerY + (int) outerRadius + K.HUD_TEXT_Y_OFFSET + fm.getAscent();
-
-        g.setColor(K.TEXT_COLOR);
-        g.drawString(typeText, textX, textY);
-    }
-
-    private void drawSlider(Graphics2D g,
-                                    int xPadding,
-                                    float minVal, float maxVal, float currentVal,
-                                    long lastChangeTime,
-                                    Color fillColor,
-                                    String topSymbol, String bottomSymbol) {
-
-        long timeSinceLastChange = System.currentTimeMillis() - lastChangeTime;
-        if (timeSinceLastChange > K.HUD_SLIDER_VISIBLE_MS) {
-            return;
-        }
-
-        float opacity = getOpacity(timeSinceLastChange);
-
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_ON);
-
-        int sliderWidth = K.HUD_SLIDER_WIDTH;
-        int sliderHeight = getHeight() - (K.HUD_SLIDER_Y_PADDING * 2);
-        int sliderX = xPadding;
-        int sliderY = K.HUD_SLIDER_Y_PADDING;
-
-        g.setColor(K.UI_BACKGROUND_COLOR);
-        g.fillRoundRect(sliderX, sliderY, sliderWidth, sliderHeight,
-                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
-
-        float ratio = (currentVal - minVal) / (maxVal - minVal);
-        ratio = Math.clamp(ratio, 0.0f, 1.0f);
-
-        int knobHeight = (int) (ratio * sliderHeight);
-        int knobY = sliderY + sliderHeight - knobHeight;
-
-        g.setColor(fillColor);
-        g.fillRoundRect(sliderX, knobY, sliderWidth, knobHeight,
-                K.HUD_SLIDER_CORNER_RADIUS, K.HUD_SLIDER_CORNER_RADIUS);
-
-        g.setFont(K.FONT_SMALL);
-        FontMetrics fm = g.getFontMetrics();
-
-        if (topSymbol != null && !topSymbol.isEmpty()) {
-            g.setColor(K.TEXT_COLOR);
-            g.drawString(topSymbol, sliderX + (sliderWidth / 2) -
-                        (fm.stringWidth(topSymbol) / 2),
-                      sliderY - K.HUD_SLIDER_SYMBOL_OFFSET);
-        }
-
-        if (bottomSymbol != null && !bottomSymbol.isEmpty()) {
-            g.setColor(K.TEXT_COLOR);
-            g.drawString(bottomSymbol, sliderX + (sliderWidth / 2) -
-                        (fm.stringWidth(bottomSymbol) / 2),
-                      sliderY + sliderHeight + fm.getAscent());
-        }
-
-        g.setComposite(AlphaComposite.getInstance(
-                AlphaComposite.SRC_OVER, K.HUD_SLIDER_MAX_OPACITY));
     }
 
     private static float getOpacity(long timeSinceLastChange) {
@@ -655,7 +506,7 @@ public class RenderingEngine extends Canvas {
                     K.HUD_SLIDER_FADE_DURATION_MS;
         }
         opacity = Math.clamp(opacity, K.HUD_SLIDER_MIN_OPACITY,
-                            K.HUD_SLIDER_MAX_OPACITY);
+                K.HUD_SLIDER_MAX_OPACITY);
         return opacity;
     }
 
@@ -673,7 +524,8 @@ public class RenderingEngine extends Canvas {
     }
 
     private void regulate(Graphics2D g, Brush brush) {
-        int xPosition = K.HUD_SLIDER_WIDTH + K.HUD_SLIDER_X_PADDING + K.HUD_SLIDER_SYMBOL_OFFSET;
+        int xPosition = K.HUD_SLIDER_WIDTH + K.HUD_SLIDER_X_PADDING +
+                K.HUD_SLIDER_SYMBOL_OFFSET;
         drawSlider(g, xPosition,
                 K.MIN_COLD_TEMP,
                 K.MAX_HOT_TEMP,
