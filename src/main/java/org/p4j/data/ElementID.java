@@ -44,7 +44,7 @@ public enum ElementID {
     BLACK_POWDER((byte) 35, "Black Powder", "S+C", 0xFF4A442D, false, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 250.0f, Float.MAX_VALUE, 0.71f, 0.30f, "CARBON_MONOXIDE", null),
     CARBON((byte) 36, "Carbon", "C", 0xFF222222, true, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 3550.0f, Float.MAX_VALUE, 0.71f, 0.60f, "CARBON_MONOXIDE", null),
     OXYGEN((byte) 37, "Oxygen", "O2", 0x88B0E0E6, true, -2, false, false, false, false, false, State.GAS, false, 3, 20.0f, -218.8f, -183.0f, 0.92f, 0.02f, null, null),
-    IRON((byte) 38, "Iron", "Fe", 0xFF795548, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
+    IRON((byte) 38, "Iron", "Fe", 0xFF795548, false, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1538.0f, Float.MAX_VALUE, 0.45f, 0.80f, "LAVA", null),
     NITROGEN((byte) 39, "Nitrogen", "N2", 0x88A0C4FF, false, -2, false, false, false, false, false, State.GAS, false, 0, 20.0f, -210.0f, -195.8f, 1.04f, 0.02f, null, null),
     STEEL((byte) 40, "Steel", "Fe+C", 0xFF708090, false, 4, false, true, false, false, true, State.SOLID, false, 0, 20.0f, 1400.0f, Float.MAX_VALUE, 0.49f, 0.75f, "LAVA", null),
     STAINLESS_STEEL((byte) 41, "Stainless Steel", "Fe+Cr", 0xFFCFD8DC, true, 4, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1450.0f, 2800.0f, 0.50f, 0.70f, "LAVA", null),

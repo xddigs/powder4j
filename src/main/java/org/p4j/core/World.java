@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 /**
  * The entire simulated world and its rulesets. Holds the state of the simulation
@@ -32,7 +33,6 @@ public class World {
     private float[] nextTemperature;
 
     public World(int width, int height) {
-        log.debug("Constructing simulation world: {}x{}", width, height);
         this.reaction = new ReactionEngine(this);
         this.movement = new MovementEngine(this);
         this.cards = new CardsEngine(this);
@@ -47,6 +47,12 @@ public class World {
         this.velocity = new float[width * height];
         Arrays.fill(temperature, K.DEFAULT_AMBIENT_TEMP);
         Arrays.fill(nextTemperature, K.DEFAULT_AMBIENT_TEMP);
+
+        Stream<ElementID> selectable = Arrays.stream(ElementID.values())
+                .sorted().filter(ElementID::isSelectable);
+
+        log.debug("There's {} selectable elements", selectable.count());
+        log.info("Constructed simulation world: {}x{}", width, height);
     }
 
     public void update() {
