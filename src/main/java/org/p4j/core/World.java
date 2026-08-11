@@ -17,6 +17,7 @@ import java.util.stream.Stream;
  * The entire simulated world and its rulesets. Holds the state of the simulation
  * grid and delegates element processing to the ReactionEngine.
  */
+@SuppressWarnings("unused")
 public class World {
     private static final Logger log = LoggerFactory.getLogger(World.class);
     private final ReactionEngine reaction;
