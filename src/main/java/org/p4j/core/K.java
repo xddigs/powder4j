@@ -10,6 +10,9 @@ import java.awt.*;
 public final class K {
     private K() {}
 
+    public static boolean IS_3D = true;
+    public static boolean IS_RUNNING = true;
+
     public static final String APP_TITLE = "Powder4J ";
     public static final String VERSION = "1.0.0";
     public static final Font FONT_BIG = Fonts.get(32f, Font.PLAIN);
@@ -17,6 +20,7 @@ public final class K {
     public static final Font FONT_TINY = Fonts.get(16f, Font.PLAIN);
     public static final int DEFAULT_SIM_WIDTH = 200;
     public static final int DEFAULT_SIM_HEIGHT = 200;
+    public static final int DEFAULT_SIM_DEPTH = 200;
     public static final int DEFAULT_SCALE = 4;
     public static final float INERTIA_FORCE = 15.0f;
 
@@ -43,8 +47,6 @@ public final class K {
     public static final Color UI_BACKGROUND_COLOR = new Color(78, 84, 114);
     public static final Color UI_BACKGROUND_BORDER_COLOR = TEXT_COLOR;
     public static final Color HIGHLIGHT_COLOR = new Color(60, 120, 210, 200);
-
-    public static boolean IS_RUNNING = true;
 
     public static final double TICKS_PER_SECOND = 60.0;
     public static final long NANOSECONDS_IN_SECOND = 1_000_000_000L;
