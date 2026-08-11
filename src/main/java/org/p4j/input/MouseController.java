@@ -190,18 +190,18 @@ public class MouseController extends MouseAdapter implements
 
     private ElementID getActiveElement() {
         if (brush.getType() == BrushType.ERASER) {
-            return ElementID.EMPTY;
+            return ElementID.VOID;
         }
         return brush.getElement();
     }
 
     private ElementID getResultingElement(ElementID brushElement,
                                           ElementID currentElement) {
-        if (brushElement == ElementID.EMPTY) {
-            return ElementID.EMPTY;
+        if (brushElement == ElementID.VOID) {
+            return ElementID.VOID;
         }
 
-        if (currentElement == ElementID.EMPTY) {
+        if (currentElement == ElementID.VOID) {
             return brushElement;
         }
 

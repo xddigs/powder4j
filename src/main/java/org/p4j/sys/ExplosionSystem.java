@@ -30,14 +30,14 @@ public class ExplosionSystem {
                     if (random.nextFloat() < K.EXPLOSION_MID_FIRE_CHANCE) {
                         world.setCell(targetX, targetY, ElementID.FIRE);
                     } else {
-                        world.setCell(targetX, targetY, ElementID.EMPTY);
+                        world.setCell(targetX, targetY, ElementID.VOID);
                     }
                 } else {
                     float rnd = random.nextFloat();
                     if (rnd < K.EXPLOSION_OUTER_CO2_CHANCE) {
                         world.setCell(targetX, targetY, ElementID.CARBON_DIOXIDE);
                     } else if (rnd < K.EXPLOSION_OUTER_EMPTY_CHANCE) {
-                        world.setCell(targetX, targetY, ElementID.EMPTY);
+                        world.setCell(targetX, targetY, ElementID.VOID);
                     }
                 }
             }

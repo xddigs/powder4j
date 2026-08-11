@@ -25,8 +25,8 @@ import java.util.List;
  * Using a buffered approach, this class efficiently renders the grid
  * to the screen by mapping element identifiers to their respective colors.
  */
-public class Render extends Canvas {
-    private static final Logger log = LoggerFactory.getLogger(Render.class);
+public class RenderingEngine extends Canvas {
+    private static final Logger log = LoggerFactory.getLogger(RenderingEngine.class);
     private final BufferedImage canvasImage;
     private final World world;
     private final int[] pixelBuffer;
@@ -39,7 +39,7 @@ public class Render extends Canvas {
     private int shockwaveCenterX;
     private int shockwaveCenterY;
 
-    public Render(int simWidth, int simHeight, World world, int scale) {
+    public RenderingEngine(int simWidth, int simHeight, World world, int scale) {
         log.debug("Initializing renderer: {}x{} at scale {}",
                 simWidth, simHeight, scale);
         this.scale = scale;
@@ -154,7 +154,7 @@ public class Render extends Canvas {
                     float dist = (float) Math.hypot(sx - centerSimX, sy - centerSimY);
                     if (dist >= currentSimRadius - ringThicknessSim && dist <= currentSimRadius) {
                         int idx = sy * simWidth + sx;
-                        grid[idx] = ElementID.EMPTY.getId();
+                        grid[idx] = ElementID.VOID.getId();
                     }
                 }
             }
@@ -687,18 +687,14 @@ public class Render extends Canvas {
 
     public int getParticleColor(int x, int y, ElementID element) {
         int baseColor = element.getColorArgb();
-        if (element == ElementID.EMPTY) {
+        if (element == ElementID.VOID) {
             return baseColor;
         }
 
         double v = (Math.sin(x * K.MERCURY_COLOR_WAVE_FREQUENCY + y *
                 K.MERCURY_COLOR_WAVE_FREQUENCY) + 1) * K.MERCURY_COLOR_SHIFT_MULTIPLIER;
 
-        if (element == ElementID.MERCURY ||
-            element == ElementID.IRON ||
-            element == ElementID.STEEL ||
-            element == ElementID.COPPER ||
-            element == ElementID.ALUMINUM) {
+        if (element.isMetal()) {
             int shift = (int) v;
             return adjustBrightness(baseColor, shift);
         }

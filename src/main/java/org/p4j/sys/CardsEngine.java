@@ -30,7 +30,7 @@ public class CardsEngine {
 
         ElementID currentElem = world.getElementAt(gx, gy);
 
-        if (currentElem == ElementID.EMPTY) {
+        if (currentElem == ElementID.VOID) {
             resetHover();
             return;
         }
@@ -51,7 +51,7 @@ public class CardsEngine {
         if (elapsedTime < K.HOVER_DELAY_MS) return;
 
         ElementID elem = world.getElementAt(lastGridX, lastGridY);
-        if (elem == ElementID.EMPTY) return;
+        if (elem == ElementID.VOID) return;
 
         float liveTemp = world.getTemperatureAt(lastGridX, lastGridY);
         ElementCard card = createCard(elem, liveTemp);

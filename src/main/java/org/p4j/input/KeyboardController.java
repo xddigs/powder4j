@@ -5,7 +5,7 @@ import org.p4j.core.World;
 import org.p4j.data.BrushShape;
 import org.p4j.data.BrushType;
 import org.p4j.data.ElementID;
-import org.p4j.render.Render;
+import org.p4j.render.RenderingEngine;
 import org.p4j.sys.Screenshot;
 
 import java.awt.event.KeyAdapter;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class KeyboardController extends KeyAdapter {
     private final Brush brush;
     private final World world;
-    private final Render render;
+    private final RenderingEngine render;
     private final List<ElementID> selectableElements;
     private final List<BrushShape> selectableShapes;
     private final List<BrushType> selectableTypes;
@@ -38,7 +38,7 @@ public class KeyboardController extends KeyAdapter {
     private int selectedTypeIndex = 0;
     private long lastEscapeTime = 0;
 
-    public KeyboardController(Brush brush, World world, Render render) {
+    public KeyboardController(Brush brush, World world, RenderingEngine render) {
         this.brush = brush;
         this.world = world;
         this.render = render;

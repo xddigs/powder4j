@@ -375,7 +375,7 @@ public class ReactionEngine {
                             boolean isStackedOnSeed = (ground == ElementID.SEED);
 
                             if (isStackedOnSeed) {
-                                grid[idx] = ElementID.EMPTY.getId();
+                                grid[idx] = ElementID.VOID.getId();
                                 updated[idx] = true;
                                 return true;
                             }
@@ -456,7 +456,7 @@ public class ReactionEngine {
                     int nIdx = ny * width + nx;
                     if (ElementID.fromId(grid[nIdx]).isWater()) {
                         grid[idx] = ElementID.STONE.getId();
-                        grid[nIdx] = ElementID.EMPTY.getId();
+                        grid[nIdx] = ElementID.VOID.getId();
                         updated[idx] = true;
                         updated[nIdx] = true;
                         return true;
@@ -513,7 +513,7 @@ public class ReactionEngine {
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                     int nIdx = ny * width + nx;
                     ElementID neighbor = ElementID.fromId(grid[nIdx]);
-                    boolean isCorrosible = neighbor != ElementID.EMPTY &&
+                    boolean isCorrosible = neighbor != ElementID.VOID &&
                             neighbor.isCorrosible();
 
                     if (neighbor == ElementID.SODIUM) {
@@ -530,7 +530,7 @@ public class ReactionEngine {
                         grid[nIdx] = ElementID.CARBON_MONOXIDE.getId();
                         velocity[nIdx] = 0;
                         updated[nIdx] = true;
-                        grid[idx] = ElementID.EMPTY.getId();
+                        grid[idx] = ElementID.VOID.getId();
                         velocity[idx] = 0;
                         return true;
                     }
@@ -572,7 +572,7 @@ public class ReactionEngine {
                 int smokeY = y - 1;
                 if (world.isInBounds(x, smokeY)) {
                     int smokeIdx = smokeY * width + x;
-                    if (grid[smokeIdx] == ElementID.EMPTY.getId()) {
+                    if (grid[smokeIdx] == ElementID.VOID.getId()) {
                         grid[smokeIdx] = ElementID.CARBON_MONOXIDE.getId();
                         updated[smokeIdx] = true;
                     }
@@ -663,7 +663,7 @@ public class ReactionEngine {
                             grid[nIdx] = smokeType.getId();
                         }
                         updated[nIdx] = true;
-                        grid[idx] = ElementID.EMPTY.getId();
+                        grid[idx] = ElementID.VOID.getId();
                         velocity[idx] = 0;
                         return true;
 
@@ -681,7 +681,7 @@ public class ReactionEngine {
         }
 
         if (Math.random() < K.FIRE_DISSIPATION_CHANCE) {
-            grid[idx] = ElementID.EMPTY.getId();
+            grid[idx] = ElementID.VOID.getId();
             velocity[idx] = 0;
             return true;
         }
@@ -746,7 +746,7 @@ public class ReactionEngine {
         }
 
         if (Math.random() < K.HYDROGEN_DISSIPATION_CHANCE) {
-            grid[idx] = ElementID.EMPTY.getId();
+            grid[idx] = ElementID.VOID.getId();
             velocity[idx] = 0;
             return true;
         }
@@ -767,8 +767,14 @@ public class ReactionEngine {
         float temp = world.getTemperatureAt(x, y);
 
         if (Math.random() < K.SMOKE_DISSIPATION_CHANCE) {
-            grid[idx] = ElementID.EMPTY.getId();
+            grid[idx] = ElementID.VOID.getId();
             velocity[idx] = 0;
+            return true;
+        }
+
+        if (Math.random() < K.STEAM_CONDENSATION_CHANCE) {
+            grid[idx] = ElementID.WATER.getId();
+            updated[idx] = true;
             return true;
         }
 
@@ -794,8 +800,8 @@ public class ReactionEngine {
             if (temp > e.getBoilingPoint()) {
                 ExplosionSystem.createExplosion(world, x, y,
                         K.CHLORINE_EXPLOSION_RADIUS);
-                grid[idx] = ElementID.EMPTY.getId();
-                grid[nIdx] = ElementID.EMPTY.getId();
+                grid[idx] = ElementID.VOID.getId();
+                grid[nIdx] = ElementID.VOID.getId();
                 velocity[idx] = 0;
                 velocity[nIdx] = 0;
                 updated[idx] = true;
@@ -826,7 +832,7 @@ public class ReactionEngine {
                 ElementID element = ElementID.fromId(grid[targetIdx]);
 
                 if (element == ElementID.DIRT) {
-                    grid[waterIdx] = ElementID.EMPTY.getId();
+                    grid[waterIdx] = ElementID.VOID.getId();
                     velocity[waterIdx] = 0;
                     updated[waterIdx] = true;
 
@@ -902,7 +908,7 @@ public class ReactionEngine {
                     ElementID element = ElementID.fromId(grid[nIdx]);
 
                     if (world.isInBounds(nx, ny) && element.isWater()) {
-                        grid[nIdx] = ElementID.EMPTY.getId();
+                        grid[nIdx] = ElementID.VOID.getId();
                         updated[nIdx] = true;
                         count++;
                     }

@@ -14,7 +14,7 @@ public class MovementEngine {
     }
 
     public boolean update(int x, int y, int idx, ElementID e) {
-        if (e.isBlock() || e == ElementID.EMPTY) {
+        if (e.isBlock() || e == ElementID.VOID) {
             world.setVelocity(idx, 0.0f);
             return false;
         }
@@ -131,7 +131,7 @@ public class MovementEngine {
 
                     world.swap(currentIdx, aboveIdx);
 
-                    if (targetBeforeSwap == ElementID.EMPTY.getId()) {
+                    if (targetBeforeSwap == ElementID.VOID.getId()) {
                         leaveGasTrail(prevIdx, type);
                     }
 
@@ -153,7 +153,7 @@ public class MovementEngine {
 
                                 world.swap(currentIdx, diagIdx);
 
-                                if (targetBeforeSwap == ElementID.EMPTY.getId()) {
+                                if (targetBeforeSwap == ElementID.VOID.getId()) {
                                     leaveGasTrail(prevIdx, type);
                                 }
 
@@ -189,14 +189,14 @@ public class MovementEngine {
                 K.GAS_TRAIL_CHANCE) return;
         byte[] grid = world.getGrid();
 
-        if (grid[trailIdx] == ElementID.EMPTY.getId()) {
-            grid[trailIdx] = ElementID.EMPTY.getId();
+        if (grid[trailIdx] == ElementID.VOID.getId()) {
+            grid[trailIdx] = ElementID.VOID.getId();
             world.getUpdated()[trailIdx] = true;
         }
     }
 
     private boolean canGasDisplace(byte currentId, byte targetId) {
-        if (targetId == ElementID.EMPTY.getId()) {
+        if (targetId == ElementID.VOID.getId()) {
             return true;
         }
 

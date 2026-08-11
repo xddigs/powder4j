@@ -82,6 +82,7 @@ public final class K {
 
     public static final double SALT_CHANCE = 0.05;
     public static final double SMOKE_DISSIPATION_CHANCE = 0.05;
+    public static final double STEAM_CONDENSATION_CHANCE = 0.05;
     public static final double HYDROGEN_DISSIPATION_CHANCE = 0.08;
     public static final double FIRE_EVAPORATION_CHANCE = 0.2;
     public static final double FIRE_DISSIPATION_CHANCE = 0.05;
@@ -127,15 +128,15 @@ public final class K {
     public static final float EXPLOSION_OUTER_CO2_CHANCE = 0.35f;
     public static final float EXPLOSION_OUTER_EMPTY_CHANCE = 0.60f;
 
-    public static final float HEAT_ADD_FIRE = 10.0f;
-    public static final float HEAT_ADD_LAVA = 80.0f;
+    public static final float HEAT_ADD_FIRE = 40.0f;
+    public static final float HEAT_ADD_LAVA = 200.0f;
 
     public static final float DEFAULT_AMBIENT_TEMP = 20.0f;
     public static final float DEFAULT_AMBIENT_LOSS_RATE = 0.0002f;
     public static final float DEFAULT_SIMULATION_SPEED = 0.18f;
 
-    public static final float MIN_COLD_TEMP  = -300.0f;
-    public static final float MAX_HOT_TEMP  = 1800.0f;
+    public static final float MIN_COLD_TEMP  = -100.0f;
+    public static final float MAX_HOT_TEMP  = 1500.0f;
 
     public static final float LATENT_HEAT_ACTIVATION_DELTA = 1.2f;
     public static final float BOIL_LATENT_HEAT_CONSUMPTION = 8.0f;

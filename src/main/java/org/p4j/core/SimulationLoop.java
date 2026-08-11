@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.p4j.input.Brush;
 import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
-import org.p4j.render.Render;
+import org.p4j.render.RenderingEngine;
 import org.p4j.render.Palette;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SimulationLoop implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(SimulationLoop.class);
     private final World world;
-    private final Render render;
+    private final RenderingEngine render;
     private final Palette palette;
     private boolean isRunning;
     private Thread thread;
@@ -27,7 +27,7 @@ public class SimulationLoop implements Runnable {
 
     private final Brush brush;
 
-    public SimulationLoop(World world, Render render, Palette palette,
+    public SimulationLoop(World world, RenderingEngine render, Palette palette,
                           KeyboardController keyController,
                           MouseController mouseController, Brush brush) {
         this.world = world;

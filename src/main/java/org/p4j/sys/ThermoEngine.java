@@ -26,7 +26,7 @@ public class ThermoEngine {
                 int index = rowOffset + x;
                 ElementID currentElem = ElementID.fromId(elements[index]);
 
-                if (currentElem == ElementID.EMPTY) {
+                if (currentElem == ElementID.VOID) {
                     nextTemps[index] = ambientTemp;
                     continue;
                 }
@@ -82,7 +82,7 @@ public class ThermoEngine {
 
         for (int i = 0; i < totalCells; i++) {
             ElementID e = ElementID.fromId(elements[i]);
-            if (e == ElementID.EMPTY) continue;
+            if (e == ElementID.VOID) continue;
             float temp = nextTemps[i];
 
             boolean canBoil = temp >= e.getBoilingPoint() + K.LATENT_HEAT_ACTIVATION_DELTA;
@@ -90,7 +90,7 @@ public class ThermoEngine {
 
             if (e.isLiquid() && canBoil) {
                 ElementID ne = e.getBoilsInto();
-                if (ne != ElementID.EMPTY) {
+                if (ne != ElementID.VOID) {
                     elements[i] = ne.getId();
                 }
                 float postBoilTemp = Math.max(
@@ -100,7 +100,7 @@ public class ThermoEngine {
                 callback.onPhaseChange(i, postBoilTemp);
             } else if (e.isSolid() && canMelt) {
                 ElementID ne = e.getMeltsInto();
-                if (ne != ElementID.EMPTY) {
+                if (ne != ElementID.VOID) {
                     elements[i] = ne.getId();
                 }
                 float postMeltTemp = Math.max(
@@ -124,7 +124,7 @@ public class ThermoEngine {
         int nIndex = nx + ny * width;
         ElementID targetElem = ElementID.fromId(elements[nIndex]);
 
-        if (targetElem == ElementID.EMPTY) {
+        if (targetElem == ElementID.VOID) {
             float k = sourceElem.getConductivity() *
                     K.EMPTY_CONDUCTIVITY_FACTOR;
             return (ambientTemp - sourceTemp) * k;

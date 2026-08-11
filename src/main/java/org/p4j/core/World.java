@@ -118,7 +118,7 @@ public class World {
 
             if (canDisplace(currentId, targetId)) {
                 bestX = nextX;
-                if (targetId == ElementID.EMPTY.getId()) {
+                if (targetId == ElementID.VOID.getId()) {
                     break;
                 }
             } else {
@@ -147,7 +147,7 @@ public class World {
 
             if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                 int nIdx = ny * width + nx;
-                if (grid[nIdx] == ElementID.EMPTY.getId()) {
+                if (grid[nIdx] == ElementID.VOID.getId()) {
                     grid[nIdx] = ElementID.GRASS.getId();
                     updated[nIdx] = true;
                 }
@@ -184,7 +184,7 @@ public class World {
                 if (tx >= 0 && tx < width) {
                     int idx = currentY * width + tx;
                     ElementID current = ElementID.fromId(grid[idx]);
-                    if (current == ElementID.EMPTY || current == ElementID.SEED ||
+                    if (current == ElementID.VOID || current == ElementID.SEED ||
                             current.isLiquid() ||
                             current == ElementID.GRASS) {
                         grid[idx] = ElementID.WOOD.getId();
@@ -208,7 +208,7 @@ public class World {
 
                             if (leafX >= 0 && leafX < width && leafY >= 0 && leafY < height) {
                                 int leafIdx = leafY * width + leafX;
-                                if (grid[leafIdx] == ElementID.EMPTY.getId()) {
+                                if (grid[leafIdx] == ElementID.VOID.getId()) {
                                     grid[leafIdx] = ElementID.GRASS.getId();
                                     updated[leafIdx] = true;
                                 }
@@ -246,7 +246,7 @@ public class World {
                     ElementID element = ElementID.fromId(grid[nIdx]);
 
                     if (isInBounds(nx, ny) && element.isWater()) {
-                        grid[nIdx] = ElementID.EMPTY.getId();
+                        grid[nIdx] = ElementID.VOID.getId();
                         updated[nIdx] = true;
                         count++;
                     }
@@ -267,7 +267,7 @@ public class World {
     }
 
     public boolean canDisplace(byte upperId, byte lowerId) {
-        if (lowerId == ElementID.EMPTY.getId()) {
+        if (lowerId == ElementID.VOID.getId()) {
             return true;
         }
 
@@ -301,7 +301,7 @@ public class World {
                 for (int x = 0; x < width; x++) {
                     int idx = y * width + x;
                     ElementID e = ElementID.fromId(grid[idx]);
-                    if (e.isBlock() || e == ElementID.EMPTY) continue;
+                    if (e.isBlock() || e == ElementID.VOID) continue;
 
                     int effectiveSteps = calc(e, absStepsY);
                     int currentY = y;
@@ -334,7 +334,7 @@ public class World {
                 for (int x = startX; x != endX; x += dirX) {
                     int idx = y * width + x;
                     ElementID e = ElementID.fromId(grid[idx]);
-                    if (e.isBlock() || e == ElementID.EMPTY) continue;
+                    if (e.isBlock() || e == ElementID.VOID) continue;
 
                     int effectiveSteps = calc(e, absStepsX);
                     int currentX = x;
@@ -378,7 +378,7 @@ public class World {
     }
 
     private boolean canShakeDisplace(byte sourceId, byte targetId) {
-        if (targetId == ElementID.EMPTY.getId()) return true;
+        if (targetId == ElementID.VOID.getId()) return true;
         ElementID src = ElementID.fromId(sourceId);
         ElementID tgt = ElementID.fromId(targetId);
         if (tgt.isBlock()) return false;

@@ -9,7 +9,7 @@ import org.p4j.input.Brush;
 import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
 import org.p4j.render.Palette;
-import org.p4j.render.Render;
+import org.p4j.render.RenderingEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class App extends JFrame {
     private final JPanel mainContainer;
     private final SimulationLoop loop;
     private final World world;
-    private final Render render;
+    private final RenderingEngine render;
     private final Brush brush;
     private final Palette palette;
     private final KeyboardController keyController;
@@ -37,7 +37,7 @@ public class App extends JFrame {
         this.world = new World(simulationWidth, simulationHeight);
         this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
         this.palette = new Palette();
-        this.render = new Render(simulationWidth, simulationHeight, world, scale);
+        this.render = new RenderingEngine(simulationWidth, simulationHeight, world, scale);
 
         this.keyController = new KeyboardController(brush, world, render);
         this.mouseController = new MouseController(world, brush, keyController, scale);

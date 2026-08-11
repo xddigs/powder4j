@@ -19,7 +19,7 @@ public class HeatMap {
             return -1;
         }
 
-        if (elementId == ElementID.EMPTY.getId()) {
+        if (elementId == ElementID.VOID.getId()) {
             return 0xFF000000;
         }
 
