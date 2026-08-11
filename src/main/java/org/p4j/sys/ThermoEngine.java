@@ -12,7 +12,7 @@ public class ThermoEngine {
 
     private float ambientTemp = K.DEFAULT_AMBIENT_TEMP;
     private final float ambientLossRate = K.DEFAULT_AMBIENT_LOSS_RATE;
-    private float simulationSpeed = K.DEFAULT_SIMULATION_SPEED;
+    private final float simulationSpeed = K.DEFAULT_SIMULATION_SPEED;
 
     public ThermoEngine() {}
 
@@ -161,13 +161,5 @@ public class ThermoEngine {
 
     public void setAmbientTemp(float ambientTemp) {
         this.ambientTemp = ambientTemp;
-    }
-
-    public float getSimulationSpeed() {
-        return simulationSpeed;
-    }
-
-    public void setSimulationSpeed(float simulationSpeed) {
-        this.simulationSpeed = simulationSpeed;
     }
 }
