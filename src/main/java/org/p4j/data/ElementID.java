@@ -40,7 +40,7 @@ public enum ElementID {
     GRAVEL((byte) 28, "Gravel", "SiO2", 0xFF9B8773, false, 3, false, true, false, false, false, State.SOLID, false, 0, 20.0f, 1200.0f, Float.MAX_VALUE, 0.84f, 0.40f, "LAVA", null),
     DIRT((byte) 29, "Dirt", "CSi+H2O", 0xFF5D4037, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1100.0f, Float.MAX_VALUE, 1.00f, 0.35f, "LAVA", null),
     WET_SAND((byte) 30, "Wet Sand", "SiO2+H2O", 0xFF9E753B, false, 4, false, true, false, false, false, State.SOLID, false, 0, 20.0f, 1700.0f, 100.0f, 2.10f, 0.50f, "LAVA", "STEAM"),
-    FIRE((byte) 31, "Fire", "Q", 0xFFFF5722, true, 0, false, false, false, true, false, State.NONE, false, 0, 800.0f, Float.MAX_VALUE, Float.MAX_VALUE, 0.10f, 0.90f, null, null),
+    FIRE((byte) 31, "Fire", "Q", 0xFFFF5722, true, 0, false, false, false, true, false, State.GAS, false, 0, 800.0f, Float.MAX_VALUE, Float.MAX_VALUE, 0.10f, 0.90f, null, null),
     GRASS((byte) 32, "Grass", "C6H10O5", 0xFF4CAF50, false, 4, true, true, false, false, false, State.SOLID, false, 0, 20.0f, 200.0f, Float.MAX_VALUE, 1.60f, 0.12f, "CARBON_MONOXIDE", null),
     SILICON((byte) 33, "Silicon", "Si", 0xFF5C6BC0, true, 4, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1414.0f, Float.MAX_VALUE, 0.71f, 0.85f, "LAVA", null),
     SULFUR((byte) 34, "Sulfur", "S", 0xFFFFEB3B, true, 3, true, false, false, false, false, State.SOLID, true, 0, 20.0f, 115.2f, 444.6f, 0.71f, 0.20f, "LAVA", "CARBON_DIOXIDE"),
