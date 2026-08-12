@@ -20,8 +20,8 @@ public class CardsEngine {
     }
 
     public void update(MouseController mouseController) {
-        int gx = mouseController.getMouseX() / K.DEFAULT_SCALE;
-        int gy = mouseController.getMouseY() / K.DEFAULT_SCALE;
+        int gx = (int) (mouseController.getMouseX() / K.DEFAULT_SCALE);
+        int gy = (int) (mouseController.getMouseY() / K.DEFAULT_SCALE);
 
         if (!world.isInBounds(gx, gy)) {
             resetHover();
@@ -58,12 +58,12 @@ public class CardsEngine {
         String header = card.name() + " (" + card.symbol() + ")";
         FontMetrics fm = g2d.getFontMetrics();
 
-        int px = lastGridX * K.DEFAULT_SCALE;
-        int py = lastGridY * K.DEFAULT_SCALE;
+        int px = (int) (lastGridX * K.DEFAULT_SCALE);
+        int py = (int) (lastGridY * K.DEFAULT_SCALE);
         g2d.setColor(K.HIGHLIGHT_COLOR);
         g2d.drawRect(px - 1, py - 1,
-                K.DEFAULT_SCALE + 1,
-                K.DEFAULT_SCALE + 1);
+                (int) (K.DEFAULT_SCALE + 1),
+                (int) (K.DEFAULT_SCALE + 1));
 
         int mx = mouseController.getMouseX();
         int my = mouseController.getMouseY();

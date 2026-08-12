@@ -86,6 +86,6 @@ public class App extends JFrame {
         SwingUtilities.invokeLater(() -> new App(
                 K.APP_TITLE + K.VERSION,
                 K.DEFAULT_SIM_WIDTH, K.DEFAULT_SIM_HEIGHT,
-                K.DEFAULT_SCALE));
+                (int) K.DEFAULT_SCALE));
     }
 }

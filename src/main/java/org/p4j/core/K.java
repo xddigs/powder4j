@@ -16,8 +16,8 @@ public final class K {
     public static final Font FONT_SMALL = Fonts.get(18f, Font.PLAIN);
     public static final Font FONT_TINY = Fonts.get(16f, Font.PLAIN);
     public static final int DEFAULT_SIM_WIDTH = 400;
-    public static final int DEFAULT_SIM_HEIGHT = 200;
-    public static final int DEFAULT_SCALE = 4;
+    public static final int DEFAULT_SIM_HEIGHT = 400;
+    public static final double DEFAULT_SCALE = 2;
     public static final float INERTIA_FORCE = 15.0f;
 
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
@@ -75,7 +75,7 @@ public final class K {
 
     public static final Color MENU_BACKGROUND_COLOR = UI_BACKGROUND_COLOR;
 
-    public static final float GRAVITY = 0.4f;
+    public static final float GRAVITY = 0.6f;
     public static final float GRAVITY_MASS_FACTOR = 3.0f;
 
     public static final float MAX_GAS_SPEED = 3.0f;
