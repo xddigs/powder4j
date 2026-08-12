@@ -15,9 +15,9 @@ public final class K {
     public static final Font FONT_BIG = Fonts.get(32f, Font.PLAIN);
     public static final Font FONT_SMALL = Fonts.get(18f, Font.PLAIN);
     public static final Font FONT_TINY = Fonts.get(16f, Font.PLAIN);
-    public static final int DEFAULT_SIM_WIDTH = 400;
-    public static final int DEFAULT_SIM_HEIGHT = 400;
-    public static final double DEFAULT_SCALE = 2;
+    public static final int DEFAULT_SIM_WIDTH = 200;
+    public static final int DEFAULT_SIM_HEIGHT = 200;
+    public static final double DEFAULT_SCALE = 4;
     public static final float INERTIA_FORCE = 15.0f;
 
     public static final float BUTTON_DEFAULT_SCALE = 1.0f;
