@@ -65,9 +65,7 @@ public enum ElementID {
     GOLD((byte) 53, "Gold", "Au", 0xFFFFD700, false, 5, false, false, false, false, true, State.SOLID, false, 0, 20.0f, 1064.0f, 2856.0f, 0.13f, 1.00f, "LAVA", null),
     NITROGLYCERIN((byte) 54, "Nitroglycerin", "C3H5N3O9", 0xFF8BC34A, false, 2, true, false, false, false, false, State.LIQUID, false, 3, 20.0f, 13.0f, 50.0f, 1.80f, 0.10f, null, "FIRE"),
     REDSTONE((byte) 55, "Redstone", "Cu80Fe2O3Al", 0xFFFF1100, false, 3, false, true, false, false, false, State.SOLID, true, 0, 20.0f, 1200.0f, Float.MAX_VALUE, 0.70f, 0.95f, "LAVA", null),
-    CHROMIUM((byte) 56, "Chromium", "Cr", 0xFFA8B8C0, true, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1907.0f, 2671.0f, 0.45f, 0.90f, "LAVA", null),
-    RUBBER((byte) 57, "Rubber", "C9H16", 0xFF2A2A2A, false, 4, true, false, false, false, false, State.SOLID, false, 0, 20.0f, 180.0f, Float.MAX_VALUE, 2.00f, 0.01f, "OIL", null),
-    SPARK((byte) 58, "Spark", "e-", 0xFFFFF500, false, -3, false, false, false, true, false, State.GAS, false, 0, 500.0f, Float.MAX_VALUE, Float.MAX_VALUE, 0.01f, 1.00f, null, null);
+    CHROMIUM((byte) 56, "Chromium", "Cr", 0xFFA8B8C0, true, 4, false, false, false, false, true, State.SOLID, true, 0, 20.0f, 1907.0f, 2671.0f, 0.45f, 0.90f, "LAVA", null);
 
     private static final Logger log = LoggerFactory.getLogger(ElementID.class);
     private final byte id;
