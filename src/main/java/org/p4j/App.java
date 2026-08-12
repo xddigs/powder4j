@@ -10,6 +10,7 @@ import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
 import org.p4j.render.Palette;
 import org.p4j.render.RenderingEngine;
+import org.p4j.render.VoxelEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +22,19 @@ public class App extends JFrame {
     private static final Logger log = LoggerFactory.getLogger(App.class);
     private final CardLayout cardLayout;
     private final JPanel mainContainer;
-    private final SimulationLoop loop;
+
     private final World world;
-    private final RenderingEngine render;
     private final Brush brush;
     private final Palette palette;
+
+    private final RenderingEngine renderingEngine2D;
+    private final VoxelEngine voxelEngine3D;
+
     private final KeyboardController keyController;
     private final MouseController mouseController;
+    private SimulationLoop loop;
 
-    public App(String title, int simulationWidth,
-               int simulationHeight, int scale) {
+    public App(String title, int simulationWidth, int simulationHeight, int scale) {
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -38,19 +42,20 @@ public class App extends JFrame {
         this.world = new World(simulationWidth, simulationHeight);
         this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);
         this.palette = new Palette();
-        this.render = new RenderingEngine(simulationWidth, simulationHeight, world, scale);
 
-        this.keyController = new KeyboardController(brush, world, render);
+        this.renderingEngine2D = new RenderingEngine(simulationWidth, simulationHeight, world, scale);
+        this.voxelEngine3D = new VoxelEngine(simulationWidth, simulationHeight, world, scale);
+
+        this.keyController = new KeyboardController(brush, world, renderingEngine2D);
         this.mouseController = new MouseController(world, brush, keyController, scale);
-        this.loop = new SimulationLoop(world, render,
-                keyController, mouseController, brush);
 
         this.cardLayout = new CardLayout();
         this.mainContainer = new JPanel(cardLayout);
-        Menu menuPanel = new Menu(this::start);
+        Menu menuPanel = new Menu(this::start2D, this::start3D);
 
         mainContainer.add(menuPanel, "MENU");
-        mainContainer.add(render, "GAME");
+        mainContainer.add(renderingEngine2D, "GAME_2D");
+        mainContainer.add(voxelEngine3D, "GAME_3D");
 
         add(mainContainer);
         pack();
@@ -59,18 +64,38 @@ public class App extends JFrame {
         cardLayout.show(mainContainer, "MENU");
     }
 
-    private void start() {
-        cardLayout.show(mainContainer, "GAME");
-        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        render.setFocusTraversalKeysEnabled(false);
-        render.requestFocusInWindow();
-        render.addMouseListener(mouseController);
-        render.addMouseMotionListener(mouseController);
-        render.addMouseWheelListener(mouseController);
-        render.addKeyListener(keyController);
-        addKeyListener(keyController);
+    private void start2D() {
+        log.info("Starting 2D Mode...");
+        cardLayout.show(mainContainer, "GAME_2D");
+        setupEngineInput(renderingEngine2D);
+
+        this.loop = new SimulationLoop(world, renderingEngine2D,
+                keyController, mouseController, brush);
+
         loop.start();
-        log.info("Simulation loop started from menu.");
+        log.info("Simulation loop started in 2D mode.");
+    }
+
+    private void start3D() {
+        log.info("Starting 2.5D Isometric Mode...");
+        cardLayout.show(mainContainer, "GAME_3D");
+        setupEngineInput(voxelEngine3D);
+
+        this.loop = new SimulationLoop(world, voxelEngine3D,
+                keyController, mouseController, brush);
+        loop.start();
+        log.info("Simulation loop started in 2.5D Isometric mode.");
+    }
+
+    private void setupEngineInput(Component engineComponent) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        engineComponent.setFocusTraversalKeysEnabled(false);
+        engineComponent.requestFocusInWindow();
+        engineComponent.addMouseListener(mouseController);
+        engineComponent.addMouseMotionListener(mouseController);
+        engineComponent.addMouseWheelListener(mouseController);
+        engineComponent.addKeyListener(keyController);
+        addKeyListener(keyController);
     }
 
     static void main() {
