@@ -48,7 +48,7 @@ public class App extends JFrame {
 
         this.cardLayout = new CardLayout();
         this.mainContainer = new JPanel(cardLayout);
-        Menu menuPanel = new Menu(this::start2D);
+        Menu menuPanel = new Menu(this::start);
 
         mainContainer.add(menuPanel, "MENU");
         mainContainer.add(renderingEngine2D, "GAME_2D");
@@ -60,8 +60,8 @@ public class App extends JFrame {
         cardLayout.show(mainContainer, "MENU");
     }
 
-    private void start2D() {
-        log.info("Starting 2D Mode...");
+    private void start() {
+        log.info("Starting a new fresh simulation");
         cardLayout.show(mainContainer, "GAME_2D");
         setupEngineInput(renderingEngine2D);
 
@@ -69,7 +69,6 @@ public class App extends JFrame {
                 keyController, mouseController, brush);
 
         loop.start();
-        log.info("Simulation loop started in 2D mode.");
     }
 
     private void setupEngineInput(Component engineComponent) {
