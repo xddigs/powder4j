@@ -14,7 +14,7 @@ public class Fonts {
     static {
         Font font;
         try (InputStream is = Fonts.class
-                .getResourceAsStream("/ArimoNerdFont-Bold.ttf")) {
+                .getResourceAsStream("/BigBlueTerm437NerdFontMono-Regular.ttf")) {
             if (is == null) {
                 throw new IOException("Font not found");
             }
