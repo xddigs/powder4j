@@ -1,6 +1,8 @@
 package org.p4j.render;
 
+import org.p4j.core.Engine;
 import org.p4j.core.K;
+import org.p4j.core.Legacy;
 import org.p4j.core.World;
 import org.p4j.data.BrushShape;
 import org.p4j.data.BrushType;
@@ -27,7 +29,8 @@ import java.util.function.Function;
  * Using a buffered approach, this class efficiently renders the grid
  * to the screen by mapping element identifiers to their respective colors.
  */
-public class RenderingEngine extends Canvas {
+@Legacy
+public class RenderingEngine extends Canvas implements Engine {
     private static final Logger log = LoggerFactory.getLogger(RenderingEngine.class);
     private final BufferedImage canvasImage;
     private final World world;
@@ -68,6 +71,7 @@ public class RenderingEngine extends Canvas {
                         .getDataBuffer()).getData();
     }
 
+    @Override
     public void updatePixels(World world) {
         byte[] grid = world.getGrid();
         int width = world.getWidth();
@@ -89,6 +93,7 @@ public class RenderingEngine extends Canvas {
         }
     }
 
+    @Override
     public void render(World world, KeyboardController keyController,
                        MouseController mouseController, Brush brush) {
         BufferStrategy bs = getBufferStrategy();
@@ -643,4 +648,8 @@ public class RenderingEngine extends Canvas {
     public int[] getPixelBuffer() {
         return pixelBuffer;
     }
+
+    @Override
+    public void dispose() {}
+
 }
