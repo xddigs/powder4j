@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class Menu extends JPanel {
 
-    public Menu(Runnable onStart2D, Runnable onStart3D) {
+    public Menu(Runnable onStart2D) {
         super();
         setBackground(K.GAME_BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
@@ -25,10 +25,6 @@ public class Menu extends JPanel {
         play2DButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         play2DButton.addActionListener(_ -> onStart2D.run());
 
-        Button play3DButton = new Button("PLAY 2.5D (ISOMETRIC)");
-        play3DButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        play3DButton.addActionListener(_ -> onStart3D.run());
-
         Button exitButton = new Button("EXIT");
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(_ -> System.exit(0));
@@ -36,8 +32,6 @@ public class Menu extends JPanel {
         container.add(titleLabel);
         container.add(Box.createRigidArea(new Dimension(0, 30)));
         container.add(play2DButton);
-        container.add(Box.createRigidArea(new Dimension(0, 15)));
-        container.add(play3DButton);
         container.add(Box.createRigidArea(new Dimension(0, 15)));
         container.add(exitButton);
         add(container);

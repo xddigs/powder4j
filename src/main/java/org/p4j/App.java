@@ -10,7 +10,6 @@ import org.p4j.input.KeyboardController;
 import org.p4j.input.MouseController;
 import org.p4j.render.Palette;
 import org.p4j.render.RenderingEngine;
-import org.p4j.render.VoxelEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,6 @@ public class App extends JFrame {
     private final Palette palette;
 
     private final RenderingEngine renderingEngine2D;
-    private final VoxelEngine voxelEngine3D;
 
     private final KeyboardController keyController;
     private final MouseController mouseController;
@@ -44,18 +42,16 @@ public class App extends JFrame {
         this.palette = new Palette();
 
         this.renderingEngine2D = new RenderingEngine(simulationWidth, simulationHeight, world, scale);
-        this.voxelEngine3D = new VoxelEngine(simulationWidth, simulationHeight, world, scale);
 
         this.keyController = new KeyboardController(brush, world, renderingEngine2D);
         this.mouseController = new MouseController(world, brush, keyController, scale);
 
         this.cardLayout = new CardLayout();
         this.mainContainer = new JPanel(cardLayout);
-        Menu menuPanel = new Menu(this::start2D, this::start3D);
+        Menu menuPanel = new Menu(this::start2D);
 
         mainContainer.add(menuPanel, "MENU");
         mainContainer.add(renderingEngine2D, "GAME_2D");
-        mainContainer.add(voxelEngine3D, "GAME_3D");
 
         add(mainContainer);
         pack();
@@ -74,17 +70,6 @@ public class App extends JFrame {
 
         loop.start();
         log.info("Simulation loop started in 2D mode.");
-    }
-
-    private void start3D() {
-        log.info("Starting 2.5D Isometric Mode...");
-        cardLayout.show(mainContainer, "GAME_3D");
-        setupEngineInput(voxelEngine3D);
-
-        this.loop = new SimulationLoop(world, voxelEngine3D,
-                keyController, mouseController, brush);
-        loop.start();
-        log.info("Simulation loop started in 2.5D Isometric mode.");
     }
 
     private void setupEngineInput(Component engineComponent) {
