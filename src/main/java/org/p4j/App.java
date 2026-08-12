@@ -35,7 +35,7 @@ public class App extends JFrame {
     public App(String title, int simulationWidth, int simulationHeight, int scale) {
         setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        setResizable(true);
 
         this.world = new World(simulationWidth, simulationHeight);
         this.brush = new Brush(ElementID.SODIUM, K.DEFAULT_BRUSH_RADIUS, world);

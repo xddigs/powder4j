@@ -41,8 +41,8 @@ public class MouseController extends MouseAdapter implements
                 keyboardController.wasAltPressed() ||
                 keyboardController.wasShiftPressed()) return;
 
-        int gridX = e.getX() / scale;
-        int gridY = e.getY() / scale;
+        int gridX = toGridX(e);
+        int gridY = toGridY(e);
 
         if (brush.getType() == BrushType.DROPPER) {
             if (world.isInBounds(gridX, gridY)) {
@@ -87,8 +87,8 @@ public class MouseController extends MouseAdapter implements
             return;
         }
 
-        int gridX = e.getX() / scale;
-        int gridY = e.getY() / scale;
+        int gridX = toGridX(e);
+        int gridY = toGridY(e);
 
         if (brush.getType() == BrushType.FILLER) {
             if (gridX != lastGridX || gridY != lastGridY) {
@@ -245,5 +245,15 @@ public class MouseController extends MouseAdapter implements
 
     public int getMouseY() {
         return mouseY;
+    }
+
+    private int toGridX(MouseEvent e) {
+        double scaleX = (double) e.getComponent().getWidth() / world.getWidth();
+        return Math.clamp((int) (e.getX() / scaleX), 0, world.getWidth() - 1);
+    }
+
+    private int toGridY(MouseEvent e) {
+        double scaleY = (double) e.getComponent().getHeight() / world.getHeight();
+        return Math.clamp((int) (e.getY() / scaleY), 0, world.getHeight() - 1);
     }
 }
